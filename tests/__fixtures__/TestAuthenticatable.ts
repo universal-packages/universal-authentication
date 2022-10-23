@@ -23,10 +23,30 @@ export default class TestAuthenticatable implements Authenticatable {
       case '<multi-factor>':
         instance.multiFactorEnabled = true
         break
+      case '<unconfirmed>':
+        instance.confirmationToken = 'confirm-me'
+        instance.confirmedAt = null
+        break
       default:
     }
 
     return instance
+  })
+
+  public static readonly existsWithEmail = jest.fn().mockImplementation((email: string): boolean => {
+    switch (email) {
+      default:
+    }
+
+    return true
+  })
+
+  public static readonly existsWithUsername = jest.fn().mockImplementation((username: string): boolean => {
+    switch (username) {
+      default:
+    }
+
+    return true
   })
 
   public constructor() {
@@ -39,6 +59,7 @@ export default class TestAuthenticatable implements Authenticatable {
   public profilePictureUrl: string
   public firstName: string = 'David'
   public lastName: string = 'De Anda'
+  public name: string = 'David De Anda'
   @Encrypt()
   public password: string = 'secret'
   public encryptedPassword: string
@@ -48,12 +69,11 @@ export default class TestAuthenticatable implements Authenticatable {
   public resetPasswordToken: string
   public logInCount: number = 0
   public confirmationToken: string
-  public confirmedAt: Date
+  public confirmedAt: Date = new Date()
   public failedLogInAttempts: number = 0
   public unlockToken: string
   public lockedAt: Date
-  public invitationToken: string
-  public inviterId: string
+  public inviterId: bigint
 
   public readonly save = jest.fn()
 }

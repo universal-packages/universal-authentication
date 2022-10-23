@@ -1,10 +1,10 @@
 import Authentication from '../Authentication'
-import { Authenticatable, AuthenticationResult, DynamicPayload, LogInBody } from '../Authentication.types'
+import { Authenticatable, AuthenticationResult, AuthDynamicPayload, LogInBody } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
 @AuthDynamic('log-in', true)
 export default class LogInDynamic {
-  public async perform(payload: DynamicPayload<LogInBody>, authentication: Authentication): Promise<AuthenticationResult> {
+  public async perform(payload: AuthDynamicPayload<LogInBody>, authentication: Authentication): Promise<AuthenticationResult> {
     const authenticatable: Authenticatable = await authentication.performDynamic('authenticatable-by-credential', { credential: payload.body.credential })
 
     if (authenticatable) {
@@ -25,6 +25,11 @@ export default class LogInDynamic {
               await authentication.performDynamic('save-authenticatable', { authenticatable })
 
               return { authenticatable, state: 'warning', message: 'multi-factor-inbound' }
+            }
+          }
+          if (payload.authOptions.enableConfirmation && payload.authOptions.enforceConfirmation) {
+            if (!authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable })) {
+              return { state: 'warning', message: 'confirmation-required' }
             }
           }
 

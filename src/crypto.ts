@@ -35,7 +35,7 @@ export function encryptSubject(subject: Record<string, any>, secret: string, exp
   return Buffer.concat([iv, encryptedPayload, cipher.getAuthTag()]).toString(FINAL_FORMAT)
 }
 
-export function decryptSubject(encryptedSubject: string, secret: string): Record<string, any> {
+export function decryptSubject(encryptedSubject: string, secret: string): any {
   const encryptedSubjectBuffer = Buffer.from(encryptedSubject, FINAL_FORMAT)
   const authTag = encryptedSubjectBuffer.slice(-AUTH_TAG_SIZE)
   const iv = encryptedSubjectBuffer.slice(0, GENERAL_BYTE_SIZE)

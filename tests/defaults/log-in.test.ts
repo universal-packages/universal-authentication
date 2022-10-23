@@ -6,7 +6,7 @@ describe('Authentication', (): void => {
     describe('log-in', (): void => {
       describe('providing right credentials', (): void => {
         it('returns success with the authenticatable', async (): Promise<void> => {
-          const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+          const authentication = new Authentication({ encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
           await authentication.loadDynamics()
 
           const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
@@ -18,7 +18,7 @@ describe('Authentication', (): void => {
 
         describe('and the enableLogInCount option is set', (): void => {
           it('returns success with the authenticatable ans sets the login count', async (): Promise<void> => {
-            const authentication = new Authentication({ enableLogInCount: true, dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+            const authentication = new Authentication({ enableLogInCount: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
             await authentication.loadDynamics()
 
             const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
@@ -32,12 +32,16 @@ describe('Authentication', (): void => {
         describe('and the enableMultiFactor option is set', (): void => {
           describe('and the authenticatable has multi factor enabled', (): void => {
             it('returns warning and the authenticatable with the multi-factor token saved', async (): Promise<void> => {
-              const authentication = new Authentication({ enableMultiFactor: true, dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication(
+                { enableMultiFactor: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                TestAuthenticatable
+              )
               await authentication.loadDynamics()
 
               const result = await authentication.performDynamic('log-in', { credential: '<multi-factor>', password: 'secret' })
 
               expect(result.state).toEqual('warning')
+              expect(result.message).toEqual('multi-factor-inbound')
               expect(result.authenticatable).not.toBeUndefined()
               expect(result.authenticatable.multiFactorToken).toEqual(expect.any(String))
               expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
@@ -46,7 +50,10 @@ describe('Authentication', (): void => {
 
           describe('and the authenticatable has multi factor disabled', (): void => {
             it('returns success with the authenticatable', async (): Promise<void> => {
-              const authentication = new Authentication({ enableMultiFactor: true, dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication(
+                { enableMultiFactor: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                TestAuthenticatable
+              )
               await authentication.loadDynamics()
 
               const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
@@ -58,7 +65,7 @@ describe('Authentication', (): void => {
             describe('but the multi-factor is enforced by enforceMultiFactor option', (): void => {
               it('returns warning and the authenticatable with the multi-factor token saved', async (): Promise<void> => {
                 const authentication = new Authentication(
-                  { enableMultiFactor: true, enforceMultiFactor: true, dynamicsLocation: './tests/__fixtures__/defaults' },
+                  { enableMultiFactor: true, enforceMultiFactor: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
                   TestAuthenticatable
                 )
                 await authentication.loadDynamics()
@@ -66,6 +73,7 @@ describe('Authentication', (): void => {
                 const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
 
                 expect(result.state).toEqual('warning')
+                expect(result.message).toEqual('multi-factor-inbound')
                 expect(result.authenticatable).not.toBeUndefined()
                 expect(result.authenticatable.multiFactorToken).toEqual(expect.any(String))
                 expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
@@ -74,11 +82,47 @@ describe('Authentication', (): void => {
           })
         })
 
+        describe('and the enableConfirmation option is set and enforced', (): void => {
+          describe('and the authenticatable is confirmed', (): void => {
+            it('returns success and the authenticatable', async (): Promise<void> => {
+              const authentication = new Authentication(
+                { enableConfirmation: true, enforceConfirmation: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                TestAuthenticatable
+              )
+              await authentication.loadDynamics()
+
+              const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
+
+              expect(result.state).toEqual('success')
+              expect(result.authenticatable).not.toBeUndefined()
+            })
+          })
+
+          describe('and the authenticatable is not yet confirmed', (): void => {
+            it('returns warning and the authenticatable', async (): Promise<void> => {
+              const authentication = new Authentication(
+                { enableConfirmation: true, enforceConfirmation: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                TestAuthenticatable
+              )
+              await authentication.loadDynamics()
+
+              const result = await authentication.performDynamic('log-in', { credential: '<unconfirmed>', password: 'secret' })
+
+              expect(result.state).toEqual('warning')
+              expect(result.message).toEqual('confirmation-required')
+              expect(result.authenticatable).toBeUndefined()
+            })
+          })
+        })
+
         describe('and the authenticatable is locked', (): void => {
           describe('and the unlockAfter option is set', (): void => {
             describe('and the configured time has passed', (): void => {
               it('returns success and unlocks the authenticatable', async (): Promise<void> => {
-                const authentication = new Authentication({ unlockAfter: '1 second', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+                const authentication = new Authentication(
+                  { unlockAfter: '1 second', encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                  TestAuthenticatable
+                )
                 await authentication.loadDynamics()
 
                 const result = await authentication.performDynamic('log-in', { credential: '<locked-ready>', password: 'secret' })
@@ -90,7 +134,10 @@ describe('Authentication', (): void => {
 
             describe('and the configured time has not passed', (): void => {
               it('returns failure and does not unlock the authenticatable', async (): Promise<void> => {
-                const authentication = new Authentication({ unlockAfter: '1 second', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+                const authentication = new Authentication(
+                  { unlockAfter: '1 second', encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                  TestAuthenticatable
+                )
                 await authentication.loadDynamics()
 
                 const result = await authentication.performDynamic('log-in', { credential: '<locked>', password: 'secret' })
@@ -106,7 +153,7 @@ describe('Authentication', (): void => {
       describe('providing wrong credentials', (): void => {
         describe('and lockAfterMaxFailedAttempts option is not set', (): void => {
           it('returns failure', async (): Promise<void> => {
-            const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
+            const authentication = new Authentication({ encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
             await authentication.loadDynamics()
 
             const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'bad' })
@@ -120,7 +167,10 @@ describe('Authentication', (): void => {
 
         describe('and lockAfterMaxFailedAttempts option is set', (): void => {
           it('returns failure and sets the failed attempt', async (): Promise<void> => {
-            const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults', lockAfterMaxFailedAttempts: true }, TestAuthenticatable)
+            const authentication = new Authentication(
+              { lockAfterMaxFailedAttempts: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+              TestAuthenticatable
+            )
             await authentication.loadDynamics()
 
             const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'bad' })
@@ -133,7 +183,10 @@ describe('Authentication', (): void => {
 
           describe('and the authenticatable is about to lock', (): void => {
             it('returns failure and locks the authenticatable', async (): Promise<void> => {
-              const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults', lockAfterMaxFailedAttempts: true }, TestAuthenticatable)
+              const authentication = new Authentication(
+                { lockAfterMaxFailedAttempts: true, encryptionSecret: '123', dynamicsLocation: './tests/__fixtures__/defaults' },
+                TestAuthenticatable
+              )
               await authentication.loadDynamics()
 
               const result = await authentication.performDynamic('log-in', { credential: '<about-to-lock>', password: 'bad' })

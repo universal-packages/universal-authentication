@@ -1,9 +1,9 @@
-import { AuthenticatableBody, DynamicPayload } from '../Authentication.types'
+import { AuthenticatableBody, AuthDynamicPayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
 @AuthDynamic('save-authenticatable', true)
 export default class SaveAuthenticatableDynamic {
-  public async perform(payload: DynamicPayload<AuthenticatableBody>): Promise<void> {
+  public async perform(payload: AuthDynamicPayload<AuthenticatableBody>): Promise<void> {
     await payload.body.authenticatable.save()
   }
 }
