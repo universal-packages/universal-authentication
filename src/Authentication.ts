@@ -1,7 +1,7 @@
 import { DynamicApi } from '@universal-packages/dynamic-api'
-import { AuthenticatableClass, AuthenticationOptions, AuthenticationResult, DynamicPayload } from './Authentication.types'
+import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, DynamicPayload } from './Authentication.types'
 
-export default class Authentication extends DynamicApi {
+export default class Authentication<D extends Record<string, any> = AuthDynamicNames> extends DynamicApi<D> {
   public Authenticatable?: AuthenticatableClass
 
   public constructor(options: AuthenticationOptions, Authenticatable?: AuthenticatableClass) {
@@ -16,13 +16,13 @@ export default class Authentication extends DynamicApi {
     this.Authenticatable = Authenticatable
   }
 
-  public async performDynamic(name: string, body?: Record<string, any>): Promise<any> {
+  public async performDynamic<N extends keyof D>(name: N, body?: D[N]['payload']): Promise<D[N]['result']> {
     const payload: DynamicPayload = { body, authOptions: this.options, Authenticatable: this.Authenticatable }
 
     return await super.performDynamic(name, payload)
   }
 
-  public performDynamicSync(name: string, body?: Record<string, any>): any {
+  public performDynamicSync<N extends keyof D>(name: N, body?: D[N]['payload']): D[N]['result'] {
     const payload: DynamicPayload = { body, authOptions: this.options, Authenticatable: this.Authenticatable }
 
     return super.performDynamicSync(name, payload)

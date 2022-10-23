@@ -1,4 +1,4 @@
-import { Authentication, AuthenticationResult } from '../../src'
+import { Authentication } from '../../src'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -9,7 +9,7 @@ describe('Authentication', (): void => {
           const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
           await authentication.loadDynamics()
 
-          const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
+          const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
 
           expect(result.state).toEqual('success')
           expect(result.authenticatable).not.toBeUndefined()
@@ -21,7 +21,7 @@ describe('Authentication', (): void => {
             const authentication = new Authentication({ enableLogInCount: true, dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
             await authentication.loadDynamics()
 
-            const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
+            const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
 
             expect(result.state).toEqual('success')
             expect(result.authenticatable).not.toBeUndefined()
@@ -35,7 +35,7 @@ describe('Authentication', (): void => {
               const authentication = new Authentication({ enableMultiFactor: true, dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
               await authentication.loadDynamics()
 
-              const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: '<multi-factor>', password: 'secret' })
+              const result = await authentication.performDynamic('log-in', { credential: '<multi-factor>', password: 'secret' })
 
               expect(result.state).toEqual('warning')
               expect(result.authenticatable).not.toBeUndefined()
@@ -49,7 +49,7 @@ describe('Authentication', (): void => {
               const authentication = new Authentication({ enableMultiFactor: true, dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
               await authentication.loadDynamics()
 
-              const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
+              const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
 
               expect(result.state).toEqual('success')
               expect(result.authenticatable).not.toBeUndefined()
@@ -63,7 +63,7 @@ describe('Authentication', (): void => {
                 )
                 await authentication.loadDynamics()
 
-                const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
+                const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'secret' })
 
                 expect(result.state).toEqual('warning')
                 expect(result.authenticatable).not.toBeUndefined()
@@ -81,7 +81,7 @@ describe('Authentication', (): void => {
                 const authentication = new Authentication({ unlockAfter: '1 second', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
                 await authentication.loadDynamics()
 
-                const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: '<locked-ready>', password: 'secret' })
+                const result = await authentication.performDynamic('log-in', { credential: '<locked-ready>', password: 'secret' })
 
                 expect(result.state).toEqual('success')
                 expect(result.authenticatable).not.toBeUndefined()
@@ -93,7 +93,7 @@ describe('Authentication', (): void => {
                 const authentication = new Authentication({ unlockAfter: '1 second', dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
                 await authentication.loadDynamics()
 
-                const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: '<locked>', password: 'secret' })
+                const result = await authentication.performDynamic('log-in', { credential: '<locked>', password: 'secret' })
 
                 expect(result.state).toEqual('failure')
                 expect(result.authenticatable).toBeUndefined()
@@ -109,7 +109,7 @@ describe('Authentication', (): void => {
             const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults' }, TestAuthenticatable)
             await authentication.loadDynamics()
 
-            const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: 'universal', password: 'bad' })
+            const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'bad' })
 
             expect(result.state).toEqual('failure')
             expect(result.authenticatable).toBeUndefined()
@@ -123,7 +123,7 @@ describe('Authentication', (): void => {
             const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults', lockAfterMaxFailedAttempts: true }, TestAuthenticatable)
             await authentication.loadDynamics()
 
-            const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: 'universal', password: 'bad' })
+            const result = await authentication.performDynamic('log-in', { credential: 'universal', password: 'bad' })
 
             expect(result.state).toEqual('failure')
             expect(result.authenticatable).toBeUndefined()
@@ -136,7 +136,7 @@ describe('Authentication', (): void => {
               const authentication = new Authentication({ dynamicsLocation: './tests/__fixtures__/defaults', lockAfterMaxFailedAttempts: true }, TestAuthenticatable)
               await authentication.loadDynamics()
 
-              const result: AuthenticationResult = await authentication.performDynamic('log-in', { credential: '<about-to-lock>', password: 'bad' })
+              const result = await authentication.performDynamic('log-in', { credential: '<about-to-lock>', password: 'bad' })
 
               expect(result.state).toEqual('failure')
               expect(result.authenticatable).toBeUndefined()

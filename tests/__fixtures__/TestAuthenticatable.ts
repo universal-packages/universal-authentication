@@ -1,6 +1,6 @@
-import { Encrypt } from '../../src'
+import { Authenticatable, Encrypt } from '../../src'
 
-export default class TestAuthenticatable {
+export default class TestAuthenticatable implements Authenticatable {
   public static lastInstance: TestAuthenticatable
 
   public static readonly findByCredential = jest.fn().mockImplementation((credential: string): TestAuthenticatable => {

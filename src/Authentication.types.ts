@@ -14,12 +14,6 @@ export interface Authenticatable {
   username: string
   email: string
   encryptedPassword: string
-
-  // guestId: string
-  // appleId: string
-  // facebookId: string
-  // googleId: string
-
   multiFactorEnabled: boolean
   multiFactorToken: string
   resetPasswordToken: string
@@ -39,6 +33,12 @@ export interface AuthenticatableClass {
   findByCredential: (credential: string) => Promise<Authenticatable>
 }
 
+export interface DynamicPayload<B = Record<string, any>> {
+  authOptions: AuthenticationOptions
+  Authenticatable: AuthenticatableClass
+  body: B
+}
+
 export interface AuthenticationResult {
   authenticatable?: Authenticatable
   message?: string
@@ -46,10 +46,33 @@ export interface AuthenticationResult {
   // validation?: ValidationResult
 }
 
-export interface DynamicPayload<B = Record<string, any>> {
-  authOptions: AuthenticationOptions
-  Authenticatable: AuthenticatableClass
-  body: B
+export interface AuthDynamicNames {
+  'authenticatable-by-credential': { payload: CredentialBody; result: Authenticatable }
+  'does-authenticatable-requires-multi-factor?': { payload: AuthenticatableBody; result: boolean }
+  'is-authenticatable-lockable?': { payload: AuthenticatableBody; result: boolean }
+  'is-authenticatable-locked?': { payload: AuthenticatableBody; result: boolean }
+  'is-authenticatable-password?': { payload: AuthenticatablePasswordBody; result: boolean }
+  'is-authenticatable-ready-to-unlock?': { payload: AuthenticatableBody; result: boolean }
+  'log-in': { payload: LogInBody; result: AuthenticationResult }
+  'save-authenticatable': { payload: AuthenticatableBody; result: void }
+  'set-authenticatable-fail-attempt': { payload: AuthenticatableBody; result: void }
+  'set-authenticatable-locked': { payload: AuthenticatableBody; result: void }
+  'set-authenticatable-log-in-count': { payload: AuthenticatableBody; result: void }
+  'set-authenticatable-multi-factor': { payload: AuthenticatableBody; result: void }
+  'set-authenticatable-unlocked': { payload: AuthenticatableBody; result: void }
+}
+
+export interface CredentialBody {
+  credential: string
+}
+
+export interface AuthenticatableBody {
+  authenticatable: Authenticatable
+}
+
+export interface AuthenticatablePasswordBody {
+  authenticatable: Authenticatable
+  password: string
 }
 
 export interface LogInBody {
@@ -96,9 +119,4 @@ export interface UnlockBody {
 
 export interface InviteBody {
   email: string
-}
-
-export interface Customs {
-  'check-password': (authenticatable: Authenticatable, password: string) => boolean
-  'set-password': (authenticatable: Authenticatable, password: string) => Promise<void>
 }
