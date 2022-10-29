@@ -1,25 +1,27 @@
 import Authentication from '../Authentication'
-import { AuthenticationResult, AuthDynamicPayload, SignUpBody, SignUpPayload } from '../Authentication.types'
+import { AuthenticationResult, AuthDynamicPayload, SignUpPayload, AuthenticatableFromSignUpPayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
 @AuthDynamic('sign-up', true)
 export default class SignUpDynamic {
-  public async perform(payload: AuthDynamicPayload<SignUpBody>, authentication: Authentication): Promise<AuthenticationResult> {
-    const invitation = payload.authOptions.enableInvitations ? authentication.performDynamicSync('decrypt-invitation-token', { token: payload.body.invitationToken }) : undefined
+  public async perform(payload: AuthDynamicPayload<SignUpPayload>, authentication: Authentication): Promise<AuthenticationResult> {
+    const invitationPayload = payload.authOptions.enableInvitations
+      ? authentication.performDynamicSync('decrypt-invitation-token', { token: payload.body.invitationToken })
+      : undefined
 
-    if (!invitation && payload.authOptions.enforceInvitations) {
-      return { state: 'failure', validation: { errors: { invitation: ['incitation-required'] }, valid: false } }
+    if (!invitationPayload && payload.authOptions.enforceInvitations) {
+      return { status: 'failure', validation: { errors: { invitation: ['invitation-required'] }, valid: false } }
     }
 
-    const validation = await authentication.performDynamic('validate-sign-up-body', payload.body)
+    const validation = await authentication.performDynamic('validate-sign-up-payload', payload.body)
 
     if (validation.valid) {
-      const signUpPayload: SignUpPayload = { body: payload.body, invitation }
-      const authenticatable = await authentication.performDynamic('authenticatable-from-sign-up-payload', signUpPayload)
+      const authenticatableFromSignUpPayload: AuthenticatableFromSignUpPayload = { signUpPayload: payload.body, invitationPayload }
+      const authenticatable = await authentication.performDynamic('authenticatable-from-sign-up', authenticatableFromSignUpPayload)
 
-      return { state: 'success', authenticatable, validation }
+      return { status: 'success', authenticatable, validation }
     }
 
-    return { state: 'failure', validation }
+    return { status: 'failure', validation }
   }
 }

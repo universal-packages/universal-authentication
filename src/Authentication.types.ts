@@ -91,59 +91,65 @@ export interface ValidationResult {
 export interface AuthenticationResult {
   authenticatable?: Authenticatable
   message?: string
-  state: 'success' | 'failure' | 'warning'
+  status: 'success' | 'failure' | 'warning'
   validation?: ValidationResult
 }
 
 export interface SimplifiedAuthDynamicNames {
-  'log-in': { payload: LogInBody; result: AuthenticationResult }
-  'sign-up': { payload: SignUpBody; result: AuthenticationResult }
+  'log-in': { payload: LogInPayload; result: AuthenticationResult }
+  'sign-up': { payload: SignUpPayload; result: AuthenticationResult }
   // zz__ignore: { payload: Record<string, any>; result: any }
 }
 
 export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
-  'authenticatable-by-credential': { payload: CredentialBody; result: Authenticatable }
-  'authenticatable-from-sign-up-payload': { payload: SignUpPayload; result: Authenticatable }
-  'decrypt-invitation-token': { payload: TokenBody; result: InvitationPayload }
-  'does-authenticatable-requires-multi-factor?': { payload: AuthenticatableBody; result: boolean }
+  'authenticatable-from-credential': { payload: AuthenticatableFromCredentialPayload; result: Authenticatable }
+  'authenticatable-from-sign-up': { payload: AuthenticatableFromSignUpPayload; result: Authenticatable }
+  'decrypt-invitation-token': { payload: TokenPayload; result: InvitationPayload }
+  'does-authenticatable-requires-multi-factor?': { payload: AuthenticatablePayload; result: boolean }
   'encrypt-invitation-payload': { payload: InvitationPayload; result: string }
-  'is-authenticatable-confirmed?': { payload: AuthenticatableBody; result: boolean }
-  'is-authenticatable-lockable?': { payload: AuthenticatableBody; result: boolean }
-  'is-authenticatable-locked?': { payload: AuthenticatableBody; result: boolean }
-  'is-authenticatable-password?': { payload: AuthenticatablePasswordBody; result: boolean }
-  'is-authenticatable-ready-to-unlock?': { payload: AuthenticatableBody; result: boolean }
-  'save-authenticatable': { payload: AuthenticatableBody; result: void }
-  'set-authenticatable-fail-attempt': { payload: AuthenticatableBody; result: void }
-  'set-authenticatable-locked': { payload: AuthenticatableBody; result: void }
-  'set-authenticatable-log-in-count': { payload: AuthenticatableBody; result: void }
-  'set-authenticatable-multi-factor': { payload: AuthenticatableBody; result: void }
-  'set-authenticatable-unlocked': { payload: AuthenticatableBody; result: void }
-  'validate-sign-up-body': { payload: SignUpBody; result: ValidationResult }
+  'is-authenticatable-confirmed?': { payload: AuthenticatablePayload; result: boolean }
+  'is-authenticatable-lockable?': { payload: AuthenticatablePayload; result: boolean }
+  'is-authenticatable-locked?': { payload: AuthenticatablePayload; result: boolean }
+  'is-authenticatable-password?': { payload: AuthenticatablePasswordPayload; result: boolean }
+  'is-authenticatable-ready-to-unlock?': { payload: AuthenticatablePayload; result: boolean }
+  'save-authenticatable': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-fail-attempt': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-locked': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-log-in-count': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-multi-factor': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-unlocked': { payload: AuthenticatablePayload; result: void }
+  'validate-sign-up-payload': { payload: SignUpPayload; result: ValidationResult }
 }
 
-export interface CredentialBody {
+export interface AuthenticatableFromCredentialPayload {
   credential: string
 }
 
-export interface AuthenticatableBody {
+export interface AuthenticatableFromSignUpPayload {
+  signUpPayload: SignUpPayload
+  invitationPayload?: InvitationPayload
+}
+
+export interface AuthenticatablePayload {
   authenticatable: Authenticatable
 }
 
-export interface AuthenticatablePasswordBody {
+export interface AuthenticatablePasswordPayload {
   authenticatable: Authenticatable
   password: string
 }
 
-export interface LogInBody {
+export interface InvitationPayload {
+  inviterId: bigint
+  invitedEmail: string
+}
+
+export interface LogInPayload {
   credential: string
   password: string
 }
 
-export interface TokenBody {
-  token: string
-}
-
-export interface SignUpBody {
+export interface SignUpPayload {
   email: string
   username: string
   password: string
@@ -153,14 +159,8 @@ export interface SignUpBody {
   invitationToken?: string
 }
 
-export interface InvitationPayload {
-  inviterId: bigint
-  invitedEmail: string
-}
-
-export interface SignUpPayload {
-  body: SignUpBody
-  invitation?: InvitationPayload
+export interface TokenPayload {
+  token: string
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
