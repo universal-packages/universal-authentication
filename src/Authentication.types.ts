@@ -1,78 +1,91 @@
 // export type ExtensibleUnion<T extends U, U = string | number | symbol> = T | (U & { __any?: never })
 export type ExtensibleUnion<T> = T
-
+export type CredentialKind = 'email' | 'phone'
 export interface AuthenticationOptions {
   dynamicsLocation: string
-
   encryptionSecret: string
+  email?: AuthenticationCredentialOptions
+  phone?: AuthenticationCredentialOptions
+}
+
+export interface AuthenticationCredentialOptions {
+  confirmationGracePeriod?: string
 
   enableConfirmation?: boolean
-  enableInvitations?: boolean
   enableLogInCount?: boolean
+  enableLocking?: boolean
   enableMultiFactor?: boolean
+  enablePasswordCheck?: boolean
+  enableSignUpCorroboration?: boolean
+  enableSignUpInvitations?: boolean
 
   enforceConfirmation?: boolean
-  enforceInvitations?: boolean
   enforceMultiFactor?: boolean
+  enforceSignUpInvitations?: boolean
 
-  lockAfterMaxFailedAttempts?: boolean
   maxAttemptsUntilLock?: number
 
-  validations?: {
-    email?: {
-      optional: boolean
-    }
-    firstName?: {
-      optional: boolean
-      size?: { min?: number; max?: number }
-    }
-    lastName?: {
-      optional: boolean
-      size?: { min?: number; max?: number }
-    }
-    name?: {
-      optional: boolean
-      size?: { min?: number; max?: number }
-    }
-    password?: {
-      optional: boolean
-      size?: { min?: number; max?: number }
-    }
-    username?: {
-      optional: boolean
-      matcher?: RegExp
-      size?: { min?: number; max?: number }
-    }
-  }
+  sendMultiFactorInPlace?: boolean
+
+  signUpValidations?: AuthenticationValidationsOptions
 
   unlockAfter?: string
 }
 
+export interface AuthenticationValidationsOptions {
+  email?: ValidationOptions | false
+  firstName?: ValidationOptions | false
+  lastName?: ValidationOptions | false
+  name?: ValidationOptions | false
+  password?: ValidationOptions | false
+  phone?: ValidationOptions | false
+  username?: ValidationOptions | false
+}
+
+export interface ValidationOptions {
+  optional?: boolean
+  matcher?: RegExp
+  size?: { min?: number; max?: number }
+  validator?: (value: any) => boolean
+}
+
 export interface Authenticatable {
-  id: bigint
-  username: string
-  email: string
+  id: number | bigint
+
+  email?: string
+  emailConfirmedAt?: Date
+  emailFailedLogInAttempts?: number
+  emailLockedAt?: Date
+  emailLogInCount?: number
+  emailMultiFactorEnabled?: boolean
+
+  phone?: string
+  phoneConfirmedAt?: Date
+  phoneFailedLogInAttempts?: number
+  phoneLockedAt?: Date
+  phoneLogInCount?: number
+  phoneMultiFactorEnabled?: boolean
+
+  username?: string
+
+  password?: string
+  encryptedPassword?: string
+
   firstName?: string
   lastName?: string
   name?: string
-  password?: string
-  encryptedPassword: string
-  multiFactorEnabled: boolean
-  multiFactorToken: string
-  resetPasswordToken: string
-  logInCount: number
-  confirmationToken: string
-  confirmedAt: Date
-  failedLogInAttempts: number
-  unlockToken: string
-  lockedAt: Date
-  inviterId: bigint
+
+  inviterId?: number | bigint
+
+  createdAt?: Date
+
   save: () => Promise<Authenticatable>
 }
 
-export interface AuthenticatableClass {
-  new (...args: any[]): Authenticatable
+export interface AuthenticatableClass<A = Authenticatable> {
+  new (...args: any[]): A
   existsWithEmail: (email: string) => Promise<boolean>
+  existsWithPhone: (phone: string) => Promise<boolean>
   existsWithUsername: (username: string) => Promise<boolean>
   findByCredential: (credential: string) => Promise<Authenticatable>
 }
@@ -104,20 +117,28 @@ export interface SimplifiedAuthDynamicNames {
 export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'authenticatable-from-credential': { payload: AuthenticatableFromCredentialPayload; result: Authenticatable }
   'authenticatable-from-sign-up': { payload: AuthenticatableFromSignUpPayload; result: Authenticatable }
+  'credential-kind-from-credential-authenticatable': { payload: CredentialAuthenticatablePayload; result: CredentialKind }
+  'decrypt-corroboration-token': { payload: TokenPayload; result: CorroborationPayload }
   'decrypt-invitation-token': { payload: TokenPayload; result: InvitationPayload }
-  'does-authenticatable-requires-multi-factor?': { payload: AuthenticatablePayload; result: boolean }
+  'does-authenticatable-requires-multi-factor?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'encrypt-corroboration-payload': { payload: CorroborationPayload; result: string }
   'encrypt-invitation-payload': { payload: InvitationPayload; result: string }
-  'is-authenticatable-confirmed?': { payload: AuthenticatablePayload; result: boolean }
-  'is-authenticatable-lockable?': { payload: AuthenticatablePayload; result: boolean }
-  'is-authenticatable-locked?': { payload: AuthenticatablePayload; result: boolean }
-  'is-authenticatable-password?': { payload: AuthenticatablePasswordPayload; result: boolean }
-  'is-authenticatable-ready-to-unlock?': { payload: AuthenticatablePayload; result: boolean }
+  'has-authenticatable-confirmation-passed-grace-period?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'is-authenticatable-confirmed?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'is-authenticatable-lockable?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'is-authenticatable-locked?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'is-authenticatable-password?': { payload: PasswordAuthenticatablePayload; result: boolean }
+  'is-authenticatable-ready-to-unlock?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'refine-sign-up-payload': { payload: SignUpPayloadRefinementPayload; result: void }
   'save-authenticatable': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-fail-attempt': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-locked': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-log-in-count': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-multi-factor': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-unlocked': { payload: AuthenticatablePayload; result: void }
+  'send-confirmation-request': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'send-corroboration-request': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'send-multi-factor-request': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'send-unlock-request': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'set-authenticatable-fail-attempt': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'set-authenticatable-locked': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'set-authenticatable-log-in-count': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'set-authenticatable-unlocked': { payload: CredentialKindAuthenticatablePayload; result: void }
   'validate-sign-up-payload': { payload: SignUpPayload; result: ValidationResult }
 }
 
@@ -125,76 +146,72 @@ export interface AuthenticatableFromCredentialPayload {
   credential: string
 }
 
+export interface AuthenticatableFromPhoneNumberPayload {
+  phone: string
+}
+
 export interface AuthenticatableFromSignUpPayload {
-  signUpPayload: SignUpPayload
+  corroborationPayload?: CorroborationPayload
   invitationPayload?: InvitationPayload
+  signUpPayload: SignUpPayload
 }
 
 export interface AuthenticatablePayload {
   authenticatable: Authenticatable
 }
 
-export interface AuthenticatablePasswordPayload {
+export interface CorroborationPayload {
+  credential: string
+  credentialKind: CredentialKind
+}
+
+export interface CredentialKindAuthenticatablePayload {
   authenticatable: Authenticatable
-  password: string
+  credentialKind: CredentialKind
+}
+
+export interface CredentialAuthenticatablePayload {
+  authenticatable: Authenticatable
+  credential: string
 }
 
 export interface InvitationPayload {
   inviterId: bigint
-  invitedEmail: string
+  credential: string
+  credentialKind: CredentialKind
 }
 
 export interface LogInPayload {
   credential: string
+  password?: string
+}
+
+export interface PasswordAuthenticatablePayload {
+  authenticatable: Authenticatable
   password: string
 }
 
 export interface SignUpPayload {
-  email: string
-  username: string
-  password: string
+  credentialKind: CredentialKind
+
+  email?: string
+  username?: string
+  phone?: string
+  password?: string
   firstName?: string
   lastName?: string
   name?: string
+
+  corroborationToken?: string
   invitationToken?: string
+}
+
+export interface SignUpPayloadRefinementPayload {
+  corroborationPayload?: CorroborationPayload
+  invitationPayload?: InvitationPayload
+  signUpPayload: SignUpPayload
 }
 
 export interface TokenPayload {
   token: string
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export interface ConnectBody {
-  plugin: string
-  token: string
-}
-
-export interface RequestMagicLoginBody {
-  credential: string
-}
-
-export interface MagicLoginBody {
-  token: string
-}
-
-export interface ConfirmationBody {
-  token: string
-}
-
-export interface RequestResetPasswordBody {
-  credential: string
-}
-
-export interface ResetPasswordBody {
-  token: string
-  password: string
-}
-
-export interface UnlockBody {
-  token: string
-}
-
-export interface InviteBody {
-  email: string
 }

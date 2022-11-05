@@ -1,10 +1,16 @@
-import { AuthDynamicPayload, InvitationPayload, TokenPayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, InvitationPayload, TokenPayload } from '../Authentication.types'
 import { decryptSubject } from '../crypto'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('decrypt=invitation-token', true)
+@AuthDynamic<AuthDynamicNames>('decrypt-invitation-token', true)
 export default class DecryptTokenDynamic {
   public perform(payload: AuthDynamicPayload<TokenPayload>): InvitationPayload {
-    return decryptSubject(payload.body.token, payload.authOptions.encryptionSecret)
+    if (!payload.body.token) return
+
+    const decryptedPayload: InvitationPayload = decryptSubject(payload.body.token, payload.authOptions.encryptionSecret)
+
+    decryptedPayload.inviterId = BigInt(decryptedPayload.inviterId)
+
+    return decryptedPayload
   }
 }

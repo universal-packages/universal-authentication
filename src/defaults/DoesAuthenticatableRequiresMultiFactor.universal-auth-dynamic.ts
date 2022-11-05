@@ -1,9 +1,11 @@
-import { AuthenticatablePayload, AuthDynamicPayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('does-authenticatable-requires-multi-factor?', true)
+@AuthDynamic<AuthDynamicNames>('does-authenticatable-requires-multi-factor?', true)
 export default class DoesAuthenticatableRequiresMultiFactorDynamic {
-  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): boolean {
-    return !!payload.body.authenticatable.multiFactorEnabled
+  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): boolean {
+    const { authenticatable, credentialKind } = payload.body
+
+    return !!authenticatable[`${credentialKind}MultiFactorEnabled`]
   }
 }

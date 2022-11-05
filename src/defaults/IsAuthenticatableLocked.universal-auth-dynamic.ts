@@ -1,9 +1,11 @@
-import { AuthenticatablePayload, AuthDynamicPayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('is-authenticatable-locked?', true)
+@AuthDynamic<AuthDynamicNames>('is-authenticatable-locked?', true)
 export default class IsAuthenticatableLockedDynamic {
-  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): boolean {
-    return !!payload.body.authenticatable.lockedAt
+  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): boolean {
+    const { authenticatable, credentialKind } = payload.body
+
+    return !!authenticatable[`${credentialKind}LockedAt`]
   }
 }

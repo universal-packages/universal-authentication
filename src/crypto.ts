@@ -56,3 +56,7 @@ export function decryptSubject(encryptedSubject: string, secret: string): any {
 export function generateRandomToken(size = GENERAL_BYTE_SIZE, format = FINAL_FORMAT): string {
   return crypto.randomBytes(size).toString(format)
 }
+
+export function generateRandomNumber(max = 999999): number {
+  return Math.floor(Math.random() * max)
+}

@@ -1,9 +1,11 @@
-import { AuthenticatablePayload, AuthDynamicPayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('is-authenticatable-confirmed?', true)
+@AuthDynamic<AuthDynamicNames>('is-authenticatable-confirmed?', true)
 export default class IsAuthenticatableConfirmedDynamic {
-  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): boolean {
-    return !!payload.body.authenticatable.confirmedAt
+  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): boolean {
+    const { authenticatable, credentialKind } = payload.body
+
+    return !!authenticatable[`${credentialKind}ConfirmedAt`]
   }
 }

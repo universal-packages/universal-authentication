@@ -1,10 +1,12 @@
-import { AuthDynamicPayload, SignUpPayload, ValidationResult } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, SignUpPayload, ValidationResult } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
-import SignUpBodyValidation from '../validations/SignUpBodyValidation'
+import SignUpPayloadValidation from '../validations/SignUpPayloadValidation'
 
-@AuthDynamic('validate-sign-up-payload', true)
+@AuthDynamic<AuthDynamicNames>('validate-sign-up-payload', true)
 export default class ValidateSignUpPayloadDynamic {
   public async perform(payload: AuthDynamicPayload<SignUpPayload>): Promise<ValidationResult> {
-    return await new SignUpBodyValidation(payload.Authenticatable, payload.authOptions).validate(payload.body)
+    const { credentialKind } = payload.body
+
+    return await new SignUpPayloadValidation(payload.Authenticatable, payload.authOptions[credentialKind].signUpValidations).validate(payload.body)
   }
 }

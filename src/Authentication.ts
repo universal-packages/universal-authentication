@@ -6,7 +6,37 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
   public Authenticatable?: AuthenticatableClass
 
   public constructor(options: AuthenticationOptions, Authenticatable?: AuthenticatableClass) {
-    const newOptions: AuthenticationOptions = { maxAttemptsUntilLock: 5, ...options }
+    const newOptions: AuthenticationOptions = {
+      ...options,
+      email: {
+        enablePasswordCheck: true,
+        maxAttemptsUntilLock: 5,
+        ...options.email,
+        signUpValidations: {
+          email: options.email?.signUpValidations?.email || {},
+          firstName: options.email?.signUpValidations?.firstName || false,
+          lastName: options.email?.signUpValidations?.lastName || false,
+          name: options.email?.signUpValidations?.name || false,
+          password: options.email?.signUpValidations?.password || { size: { min: 8, max: 256 } },
+          phone: options.email?.signUpValidations?.phone || false,
+          username: options.email?.signUpValidations?.username || { matcher: /^[a-zA-Z.0-9_\-&]+$/i }
+        }
+      },
+      phone: {
+        enableMultiFactor: true,
+        maxAttemptsUntilLock: 5,
+        ...options.phone,
+        signUpValidations: {
+          email: options.phone?.signUpValidations?.email || false,
+          firstName: options.phone?.signUpValidations?.firstName || false,
+          lastName: options.phone?.signUpValidations?.lastName || false,
+          name: options.phone?.signUpValidations?.name || false,
+          password: options.phone?.signUpValidations?.password || { size: { min: 8, max: 256 } },
+          phone: options.phone?.signUpValidations?.phone || {},
+          username: options.phone?.signUpValidations?.username || { matcher: /^[a-zA-Z.0-9_\-&]+$/i }
+        }
+      }
+    }
 
     super({ ...newOptions, namespace: 'auth' })
 

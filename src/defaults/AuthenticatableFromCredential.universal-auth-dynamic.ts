@@ -1,7 +1,7 @@
-import { Authenticatable, AuthDynamicPayload, AuthenticatableFromCredentialPayload } from '../Authentication.types'
+import { Authenticatable, AuthDynamicPayload, AuthenticatableFromCredentialPayload, AuthDynamicNames } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('authenticatable-from-credential', true)
+@AuthDynamic<AuthDynamicNames>('authenticatable-from-credential', true)
 export default class AuthenticatableFromCredentialDynamic {
   public async perform(payload: AuthDynamicPayload<AuthenticatableFromCredentialPayload>): Promise<Authenticatable> {
     const Authenticatable = payload.Authenticatable

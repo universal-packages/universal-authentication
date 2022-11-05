@@ -1,9 +1,11 @@
-import { AuthenticatablePayload, AuthDynamicPayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('is-authenticatable-lockable?', true)
+@AuthDynamic<AuthDynamicNames>('is-authenticatable-lockable?', true)
 export default class IsAuthenticatableLockableDynamic {
-  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): boolean {
-    return payload.authOptions.maxAttemptsUntilLock <= payload.body.authenticatable.failedLogInAttempts
+  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): boolean {
+    const { authenticatable, credentialKind } = payload.body
+
+    return payload.authOptions[credentialKind].maxAttemptsUntilLock <= authenticatable[`${credentialKind}FailedLogInAttempts`]
   }
 }

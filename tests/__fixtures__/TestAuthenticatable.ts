@@ -1,4 +1,4 @@
-import { Authenticatable, Encrypt } from '../../src'
+import { Authenticatable, CredentialKind, Encrypt } from '../../src'
 
 export default class TestAuthenticatable implements Authenticatable {
   public static lastInstance: TestAuthenticatable
@@ -6,28 +6,43 @@ export default class TestAuthenticatable implements Authenticatable {
   public static readonly findByCredential = jest.fn().mockImplementation((credential: string): TestAuthenticatable => {
     const instance = new TestAuthenticatable()
 
-    switch (credential) {
-      case '<about-to-lock>':
-        instance.failedLogInAttempts = 4
+    instance.password = 'password'
+    instance.createdAt = new Date(new Date().getTime() - 10000)
+
+    const credentialKind: CredentialKind = credential.split('-')[0] as any
+    instance[credentialKind] = credential
+
+    const directive = credential.split('-').splice(1).join('-')
+
+    switch (directive) {
+      case 'about-to-lock':
+        instance[`${credentialKind}FailedLogInAttempts`] = 2
         break
-      case '<locked>':
-        instance.lockedAt = new Date(new Date().getTime() + 10000)
-        instance.unlockToken = 'unlock-me'
-        instance.failedLogInAttempts = 5
+
+      case 'nop':
+        return
+
+      case 'confirmed':
+        instance[`${credentialKind}ConfirmedAt`] = new Date()
         break
-      case '<locked-ready>':
-        instance.lockedAt = new Date(new Date().getTime() - 10000)
-        instance.unlockToken = 'unlock-me'
-        instance.failedLogInAttempts = 5
+
+      case 'locked':
+        instance[`${credentialKind}FailedLogInAttempts`] = 3
+        instance[`${credentialKind}LockedAt`] = new Date()
         break
-      case '<multi-factor>':
-        instance.multiFactorEnabled = true
+
+      case 'multi-factor-enabled':
+        instance[`${credentialKind}MultiFactorEnabled`] = true
         break
-      case '<unconfirmed>':
-        instance.confirmationToken = 'confirm-me'
-        instance.confirmedAt = null
+
+      case 'ready-to-unlock':
+        instance[`${credentialKind}FailedLogInAttempts`] = 5
+        instance[`${credentialKind}LockedAt`] = new Date(new Date().getTime() - 10000)
         break
-      default:
+
+      case 'unconfirmed':
+        instance[`${credentialKind}ConfirmedAt`] = null
+        break
     }
 
     return instance
@@ -38,7 +53,7 @@ export default class TestAuthenticatable implements Authenticatable {
       default:
     }
 
-    return true
+    return false
   })
 
   public static readonly existsWithUsername = jest.fn().mockImplementation((username: string): boolean => {
@@ -46,34 +61,52 @@ export default class TestAuthenticatable implements Authenticatable {
       default:
     }
 
-    return true
+    return false
+  })
+
+  public static readonly existsWithPhone = jest.fn().mockImplementation((username: string): boolean => {
+    switch (username) {
+      default:
+    }
+
+    return false
   })
 
   public constructor() {
     TestAuthenticatable.lastInstance = this
   }
 
-  public id: bigint = 69n
-  public username: string = 'universal'
-  public email = 'omarandstuff@gmail.com'
-  public profilePictureUrl: string
-  public firstName: string = 'David'
-  public lastName: string = 'De Anda'
-  public name: string = 'David De Anda'
-  @Encrypt()
-  public password: string = 'secret'
-  public encryptedPassword: string
-  public multiFactorEnabled: boolean = false
-  public multiFactorToken: string
-  public locale: string = 'esMX'
-  public resetPasswordToken: string
-  public logInCount: number = 0
-  public confirmationToken: string
-  public confirmedAt: Date = new Date()
-  public failedLogInAttempts: number = 0
-  public unlockToken: string
-  public lockedAt: Date
-  public inviterId: bigint
+  id: number = 69
 
-  public readonly save = jest.fn()
+  email?: string = null
+  emailConfirmedAt?: Date = null
+  emailFailedLogInAttempts?: number = 0
+  emailLockedAt?: Date = null
+  emailLogInCount?: number = 0
+  emailMultiFactorEnabled?: boolean = null
+
+  phone?: string = null
+  phoneConfirmedAt?: Date = null
+  phoneFailedLogInAttempts?: number = 0
+  phoneLockedAt?: Date = null
+  phoneLogInCount?: number = 0
+  phoneMultiFactorEnabled?: boolean = null
+
+  username?: string = null
+
+  @Encrypt()
+  password?: string
+  encryptedPassword?: string = null
+
+  firstName?: string = null
+  lastName?: string = null
+  name?: string = null
+
+  inviterId?: number = null
+
+  createdAt?: Date = null
+
+  public readonly save = jest.fn().mockImplementation(() => {
+    if (!this.createdAt) this.createdAt = new Date()
+  })
 }

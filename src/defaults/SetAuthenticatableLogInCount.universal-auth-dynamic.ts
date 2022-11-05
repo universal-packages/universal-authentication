@@ -1,9 +1,11 @@
-import { AuthenticatablePayload, AuthDynamicPayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('set-authenticatable-log-in-count', true)
+@AuthDynamic<AuthDynamicNames>('set-authenticatable-log-in-count', true)
 export default class SetAuthenticatableLogInCountDynamic {
-  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): void {
-    payload.body.authenticatable.logInCount = (payload.body.authenticatable.logInCount || 0) + 1
+  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): void {
+    const { authenticatable, credentialKind } = payload.body
+
+    authenticatable[`${credentialKind}LogInCount`] = (authenticatable[`${credentialKind}LogInCount`] || 0) + 1
   }
 }

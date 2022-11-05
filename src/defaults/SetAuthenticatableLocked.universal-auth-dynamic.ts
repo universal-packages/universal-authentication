@@ -1,11 +1,11 @@
-import { AuthenticatablePayload, AuthDynamicPayload } from '../Authentication.types'
-import { generateRandomToken } from '../crypto'
+import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic('set-authenticatable-locked', true)
+@AuthDynamic<AuthDynamicNames>('set-authenticatable-locked', true)
 export default class SetAuthenticatableLockedDynamic {
-  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): void {
-    payload.body.authenticatable.unlockToken = generateRandomToken()
-    payload.body.authenticatable.lockedAt = new Date()
+  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): void {
+    const { authenticatable, credentialKind } = payload.body
+
+    authenticatable[`${credentialKind}LockedAt`] = new Date()
   }
 }
