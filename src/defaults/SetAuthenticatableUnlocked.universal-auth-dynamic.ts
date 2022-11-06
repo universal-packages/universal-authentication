@@ -1,12 +1,12 @@
-import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, AuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-unlocked', true)
 export default class SetAuthenticatableUnlockedDynamic {
-  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): void {
-    const { authenticatable, credentialKind } = payload.body
+  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): void {
+    const { authenticatable } = payload.body
 
-    authenticatable[`${credentialKind}FailedLogInAttempts`] = 0
-    authenticatable[`${credentialKind}LockedAt`] = null
+    authenticatable.failedLogInAttempts = 0
+    authenticatable.lockedAt = null
   }
 }

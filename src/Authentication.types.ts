@@ -3,33 +3,36 @@ export type ExtensibleUnion<T> = T
 export type CredentialKind = 'email' | 'phone'
 export interface AuthenticationOptions {
   dynamicsLocation: string
-  encryptionSecret: string
+  secret: string
+
   email?: AuthenticationCredentialOptions
   phone?: AuthenticationCredentialOptions
+
+  enableLocking?: boolean
+  enableLogInCount?: boolean
+  enableMultiFactor?: boolean
+
+  enforceMultiFactor?: boolean
+
+  sendMultiFactorInPlace?: boolean
+
+  maxAttemptsUntilLock?: number
+  unlockAfter?: string
 }
 
 export interface AuthenticationCredentialOptions {
   confirmationGracePeriod?: string
 
   enableConfirmation?: boolean
-  enableLogInCount?: boolean
-  enableLocking?: boolean
-  enableMultiFactor?: boolean
+
   enablePasswordCheck?: boolean
   enableSignUpCorroboration?: boolean
   enableSignUpInvitations?: boolean
 
   enforceConfirmation?: boolean
-  enforceMultiFactor?: boolean
   enforceSignUpInvitations?: boolean
 
-  maxAttemptsUntilLock?: number
-
-  sendMultiFactorInPlace?: boolean
-
   signUpValidations?: AuthenticationValidationsOptions
-
-  unlockAfter?: string
 }
 
 export interface AuthenticationValidationsOptions {
@@ -54,19 +57,20 @@ export interface Authenticatable {
 
   email?: string
   emailConfirmedAt?: Date
-  emailFailedLogInAttempts?: number
-  emailLockedAt?: Date
-  emailLogInCount?: number
-  emailMultiFactorEnabled?: boolean
 
   phone?: string
   phoneConfirmedAt?: Date
-  phoneFailedLogInAttempts?: number
-  phoneLockedAt?: Date
-  phoneLogInCount?: number
-  phoneMultiFactorEnabled?: boolean
 
   username?: string
+
+  failedLogInAttempts?: number
+  lockedAt?: Date
+
+  logInCount?: number
+
+  multiFactorEnabled?: boolean
+  multiFactorCurrentOneTimePassword?: string
+  multiFactorCurrentOneTimePasswordSetAt?: Date
 
   password?: string
   encryptedPassword?: string
@@ -101,9 +105,10 @@ export interface ValidationResult {
   valid: boolean
 }
 
-export interface AuthenticationResult {
+export interface AuthenticationResult<M = Record<string, any>> {
   authenticatable?: Authenticatable
   message?: string
+  metadata?: M
   status: 'success' | 'failure' | 'warning'
   validation?: ValidationResult
 }
@@ -120,34 +125,32 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'credential-kind-from-credential-authenticatable': { payload: CredentialAuthenticatablePayload; result: CredentialKind }
   'decrypt-corroboration-token': { payload: TokenPayload; result: CorroborationPayload }
   'decrypt-invitation-token': { payload: TokenPayload; result: InvitationPayload }
-  'does-authenticatable-requires-multi-factor?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'does-authenticatable-requires-multi-factor?': { payload: AuthenticatablePayload; result: boolean }
   'encrypt-corroboration-payload': { payload: CorroborationPayload; result: string }
   'encrypt-invitation-payload': { payload: InvitationPayload; result: string }
+  'generate-multi-factor-order-metadata': { payload: AuthenticatablePayload; result: MultiFactorOrderMetadata }
   'has-authenticatable-confirmation-passed-grace-period?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
   'is-authenticatable-confirmed?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
-  'is-authenticatable-lockable?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
-  'is-authenticatable-locked?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'is-authenticatable-lockable?': { payload: AuthenticatablePayload; result: boolean }
+  'is-authenticatable-locked?': { payload: AuthenticatablePayload; result: boolean }
   'is-authenticatable-password?': { payload: PasswordAuthenticatablePayload; result: boolean }
-  'is-authenticatable-ready-to-unlock?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
+  'is-authenticatable-ready-to-unlock?': { payload: AuthenticatablePayload; result: boolean }
   'refine-sign-up-payload': { payload: SignUpPayloadRefinementPayload; result: void }
   'save-authenticatable': { payload: AuthenticatablePayload; result: void }
   'send-confirmation-request': { payload: CredentialKindAuthenticatablePayload; result: void }
   'send-corroboration-request': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'send-multi-factor-request': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'send-unlock-request': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'set-authenticatable-fail-attempt': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'set-authenticatable-locked': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'set-authenticatable-log-in-count': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'set-authenticatable-unlocked': { payload: CredentialKindAuthenticatablePayload; result: void }
+  'send-multi-factor-request': { payload: AuthenticatablePayload; result: void }
+  'send-unlock-request': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-fail-attempt': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-locked': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-log-in-count': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-multi-factor': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-unlocked': { payload: AuthenticatablePayload; result: void }
   'validate-sign-up-payload': { payload: SignUpPayload; result: ValidationResult }
 }
 
 export interface AuthenticatableFromCredentialPayload {
   credential: string
-}
-
-export interface AuthenticatableFromPhoneNumberPayload {
-  phone: string
 }
 
 export interface AuthenticatableFromSignUpPayload {
@@ -184,6 +187,11 @@ export interface InvitationPayload {
 export interface LogInPayload {
   credential: string
   password?: string
+}
+
+export interface MultiFactorOrderMetadata {
+  email?: string
+  phone?: string
 }
 
 export interface PasswordAuthenticatablePayload {

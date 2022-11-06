@@ -21,7 +21,7 @@ describe('Authentication', (): void => {
             it('returns success and creates the authenticatable', async (): Promise<void> => {
               const credentialKindOptions: AuthenticationCredentialOptions = { ...allDisabledOptions }
               const authentication = new Authentication(
-                { [credentialKind]: credentialKindOptions, encryptionSecret: '123', dynamicsLocation: './src/defaults' },
+                { [credentialKind]: credentialKindOptions, secret: '123', dynamicsLocation: './src/defaults' },
                 TestAuthenticatable
               )
               authentication.options['namespace'] = 'universal-auth'

@@ -16,7 +16,7 @@ export default class TestAuthenticatable implements Authenticatable {
 
     switch (directive) {
       case 'about-to-lock':
-        instance[`${credentialKind}FailedLogInAttempts`] = 2
+        instance.failedLogInAttempts = 2
         break
 
       case 'nop':
@@ -27,17 +27,17 @@ export default class TestAuthenticatable implements Authenticatable {
         break
 
       case 'locked':
-        instance[`${credentialKind}FailedLogInAttempts`] = 3
-        instance[`${credentialKind}LockedAt`] = new Date()
+        instance.failedLogInAttempts = 3
+        instance.lockedAt = new Date()
         break
 
       case 'multi-factor-enabled':
-        instance[`${credentialKind}MultiFactorEnabled`] = true
+        instance.multiFactorEnabled = true
         break
 
       case 'ready-to-unlock':
-        instance[`${credentialKind}FailedLogInAttempts`] = 5
-        instance[`${credentialKind}LockedAt`] = new Date(new Date().getTime() - 10000)
+        instance.failedLogInAttempts = 5
+        instance.lockedAt = new Date(new Date().getTime() - 10000)
         break
 
       case 'unconfirmed':
@@ -80,19 +80,19 @@ export default class TestAuthenticatable implements Authenticatable {
 
   email?: string = null
   emailConfirmedAt?: Date = null
-  emailFailedLogInAttempts?: number = 0
-  emailLockedAt?: Date = null
-  emailLogInCount?: number = 0
-  emailMultiFactorEnabled?: boolean = null
 
   phone?: string = null
   phoneConfirmedAt?: Date = null
-  phoneFailedLogInAttempts?: number = 0
-  phoneLockedAt?: Date = null
-  phoneLogInCount?: number = 0
-  phoneMultiFactorEnabled?: boolean = null
 
   username?: string = null
+
+  failedLogInAttempts?: number = 0
+  lockedAt?: Date = null
+  logInCount?: number = 0
+
+  multiFactorEnabled?: boolean = null
+  multiFactorCurrentOneTimePassword?: string = null
+  multiFactorCurrentOneTimePasswordSetAt?: Date = null
 
   @Encrypt()
   password?: string

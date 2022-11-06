@@ -6,22 +6,23 @@ import { AuthDynamic } from '../decorators'
 export default class LogInDynamic {
   public async perform(payload: AuthDynamicPayload<LogInPayload>, authentication: Authentication): Promise<AuthenticationResult> {
     const { credential, password } = payload.body
+    const { authOptions } = payload
     const authenticatable: Authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
     if (authenticatable) {
       const credentialKind = authentication.performDynamicSync('credential-kind-from-credential-authenticatable', { credential, authenticatable })
-      const credentialKindOptions = payload.authOptions[credentialKind]
+      const credentialKindOptions = authOptions[credentialKind]
 
-      if (credentialKindOptions.enableLocking && credentialKindOptions.unlockAfter) {
-        if (authentication.performDynamicSync('is-authenticatable-locked?', { authenticatable, credentialKind })) {
-          if (authentication.performDynamicSync('is-authenticatable-ready-to-unlock?', { authenticatable, credentialKind })) {
-            authentication.performDynamicSync('set-authenticatable-unlocked', { authenticatable, credentialKind })
+      if (authOptions.enableLocking && authOptions.unlockAfter) {
+        if (authentication.performDynamicSync('is-authenticatable-locked?', { authenticatable })) {
+          if (authentication.performDynamicSync('is-authenticatable-ready-to-unlock?', { authenticatable })) {
+            authentication.performDynamicSync('set-authenticatable-unlocked', { authenticatable })
             await authentication.performDynamic('save-authenticatable', { authenticatable })
           }
         }
       }
 
-      if (!authentication.performDynamicSync('is-authenticatable-locked?', { authenticatable, credentialKind })) {
+      if (!authentication.performDynamicSync('is-authenticatable-locked?', { authenticatable })) {
         const passwordCheck = credentialKindOptions.enablePasswordCheck ? authentication.performDynamicSync('is-authenticatable-password?', { authenticatable, password }) : true
 
         if (passwordCheck) {
@@ -39,33 +40,38 @@ export default class LogInDynamic {
             }
           }
 
-          if (credentialKindOptions.enableMultiFactor) {
-            if (credentialKindOptions.enforceMultiFactor || authentication.performDynamicSync('does-authenticatable-requires-multi-factor?', { authenticatable, credentialKind })) {
-              if (credentialKindOptions.sendMultiFactorInPlace) {
-                await authentication.performDynamic('send-multi-factor-request', { authenticatable, credentialKind })
+          if (authOptions.enableMultiFactor) {
+            if (authOptions.enforceMultiFactor || authentication.performDynamicSync('does-authenticatable-requires-multi-factor?', { authenticatable })) {
+              authentication.performDynamicSync('set-authenticatable-multi-factor', { authenticatable })
+              await authentication.performDynamic('save-authenticatable', { authenticatable })
+
+              if (authOptions.sendMultiFactorInPlace) {
+                await authentication.performDynamic('send-multi-factor-request', { authenticatable })
 
                 return { authenticatable, status: 'warning', message: 'multi-factor-inbound' }
-              }
+              } else {
+                const metadata = authentication.performDynamicSync('generate-multi-factor-order-metadata', { authenticatable })
 
-              return { authenticatable, status: 'warning', message: 'multi-factor-waiting' }
+                return { authenticatable, status: 'warning', message: 'multi-factor-waiting', metadata }
+              }
             }
           }
 
-          if (credentialKindOptions.enableLogInCount) {
-            authentication.performDynamicSync('set-authenticatable-log-in-count', { authenticatable, credentialKind })
+          if (authOptions.enableLogInCount) {
+            authentication.performDynamicSync('set-authenticatable-log-in-count', { authenticatable })
             await authentication.performDynamic('save-authenticatable', { authenticatable })
           }
 
           return { authenticatable, status: 'success' }
         } else {
-          if (credentialKindOptions.enableLocking && credentialKindOptions.maxAttemptsUntilLock) {
-            authentication.performDynamicSync('set-authenticatable-fail-attempt', { authenticatable, credentialKind })
+          if (authOptions.enableLocking && authOptions.maxAttemptsUntilLock) {
+            authentication.performDynamicSync('set-authenticatable-fail-attempt', { authenticatable })
 
-            if (authentication.performDynamicSync('is-authenticatable-lockable?', { authenticatable, credentialKind })) {
-              authentication.performDynamicSync('set-authenticatable-locked', { authenticatable, credentialKind })
+            if (authentication.performDynamicSync('is-authenticatable-lockable?', { authenticatable })) {
+              authentication.performDynamicSync('set-authenticatable-locked', { authenticatable })
               await authentication.performDynamic('save-authenticatable', { authenticatable })
 
-              await authentication.performDynamic('send-unlock-request', { authenticatable, credentialKind })
+              await authentication.performDynamic('send-unlock-request', { authenticatable })
             } else {
               await authentication.performDynamic('save-authenticatable', { authenticatable })
             }

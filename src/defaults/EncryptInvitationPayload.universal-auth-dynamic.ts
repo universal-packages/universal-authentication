@@ -9,6 +9,6 @@ export default class EncryptTokenDynamic {
 
     suitablePayload.inviterId = String(suitablePayload.inviterId)
 
-    return encryptSubject(suitablePayload, payload.authOptions.encryptionSecret)
+    return encryptSubject(suitablePayload, payload.authOptions.secret)
   }
 }

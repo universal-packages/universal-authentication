@@ -1,11 +1,11 @@
-import { AuthDynamicNames, AuthDynamicPayload, CredentialKindAuthenticatablePayload } from '../Authentication.types'
+import { AuthDynamicNames, AuthDynamicPayload, AuthenticatablePayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-fail-attempt', true)
 export default class SetAuthenticatableFailAttemptDynamic {
-  public perform(payload: AuthDynamicPayload<CredentialKindAuthenticatablePayload>): void {
-    const { authenticatable, credentialKind } = payload.body
+  public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): void {
+    const { authenticatable } = payload.body
 
-    authenticatable[`${credentialKind}FailedLogInAttempts`] = (authenticatable[`${credentialKind}FailedLogInAttempts`] || 0) + 1
+    authenticatable.failedLogInAttempts = (authenticatable.failedLogInAttempts || 0) + 1
   }
 }

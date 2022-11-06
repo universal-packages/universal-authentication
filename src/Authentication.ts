@@ -7,10 +7,10 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
 
   public constructor(options: AuthenticationOptions, Authenticatable?: AuthenticatableClass) {
     const newOptions: AuthenticationOptions = {
+      maxAttemptsUntilLock: 5,
       ...options,
       email: {
         enablePasswordCheck: true,
-        maxAttemptsUntilLock: 5,
         ...options.email,
         signUpValidations: {
           email: options.email?.signUpValidations?.email || {},
@@ -23,8 +23,6 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
         }
       },
       phone: {
-        enableMultiFactor: true,
-        maxAttemptsUntilLock: 5,
         ...options.phone,
         signUpValidations: {
           email: options.phone?.signUpValidations?.email || false,

@@ -1,4 +1,4 @@
-import crypto, { CipherCCMTypes, CipherGCMTypes, CipherOCBTypes, ScryptOptions, Sign } from 'crypto'
+import crypto, { ScryptOptions } from 'crypto'
 
 const AUTH_TAG_SIZE = 16
 const GENERAL_BYTE_SIZE = 64
