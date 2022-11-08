@@ -11,26 +11,34 @@ export default class SignUpDynamic {
     let corroborationPayload: CorroborationPayload
 
     if (credentialKindOptions.enableSignUpInvitations) {
-      invitationPayload = authentication.performDynamicSync('decrypt-invitation-token', { token: payload.body.invitationToken })
+      try {
+        invitationPayload = authentication.performDynamicSync('decrypt-invitation-token', { token: payload.body.invitationToken })
 
-      if (invitationPayload) {
-        if (invitationPayload.credentialKind !== credentialKind) {
-          return { status: 'failure', message: 'invalid-invitation' }
+        if (invitationPayload) {
+          if (invitationPayload.credentialKind !== credentialKind) {
+            return { status: 'failure', message: 'invalid-invitation' }
+          }
+        } else if (credentialKindOptions.enforceSignUpInvitations) {
+          return { status: 'failure', message: 'invitation-required' }
         }
-      } else if (credentialKindOptions.enforceSignUpInvitations) {
-        return { status: 'failure', message: 'invitation-required' }
+      } catch {
+        return { status: 'failure', message: 'invalid-invitation' }
       }
     }
 
     if (!invitationPayload && credentialKindOptions.enableSignUpCorroboration) {
-      corroborationPayload = authentication.performDynamicSync('decrypt-corroboration-token', { token: payload.body.corroborationToken })
+      try {
+        corroborationPayload = authentication.performDynamicSync('decrypt-corroboration-token', { token: payload.body.corroborationToken })
 
-      if (corroborationPayload) {
-        if (corroborationPayload.credentialKind !== credentialKind) {
-          return { status: 'failure', message: 'invalid-corroboration' }
+        if (corroborationPayload) {
+          if (corroborationPayload.credentialKind !== credentialKind) {
+            return { status: 'failure', message: 'invalid-corroboration' }
+          }
+        } else {
+          return { status: 'failure', message: 'corroboration-required' }
         }
-      } else {
-        return { status: 'failure', message: 'corroboration-required' }
+      } catch {
+        return { status: 'failure', message: 'invalid-corroboration' }
       }
     }
 

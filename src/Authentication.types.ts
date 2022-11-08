@@ -53,7 +53,7 @@ export interface ValidationOptions {
 }
 
 export interface Authenticatable {
-  id: number | bigint
+  id: number | bigint | string
 
   email?: string
   emailConfirmedAt?: Date
@@ -79,7 +79,7 @@ export interface Authenticatable {
   lastName?: string
   name?: string
 
-  inviterId?: number | bigint
+  inviterId?: number | bigint | string
 
   createdAt?: Date
 
@@ -179,7 +179,7 @@ export interface CredentialAuthenticatablePayload {
 }
 
 export interface InvitationPayload {
-  inviterId: bigint
+  inviterId: number | bigint | string
   credential: string
   credentialKind: CredentialKind
 }

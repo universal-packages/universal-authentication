@@ -104,7 +104,7 @@ export default class SignUpPayloadValidation extends BaseValidation {
     return true
   }
 
-  @Validator('phone', { message: 'invalid-phone-number' })
+  @Validator('phone', { message: 'invalid-phone' })
   public phoneFormat(phone: string): boolean {
     if (this.options.phone === false) return true
     if (this.options.phone?.optional && (phone === undefined || phone === null)) return true
@@ -113,7 +113,7 @@ export default class SignUpPayloadValidation extends BaseValidation {
     return validator.isMobilePhone(phone)
   }
 
-  @Validator('phone', { message: 'phone-number-out-of-size' })
+  @Validator('phone', { message: 'phone-out-of-size' })
   public phoneSize(phone: string): boolean {
     if (this.options.phone === false) return true
     if (this.options.phone?.optional && (phone === undefined || phone === null)) return true
@@ -121,7 +121,7 @@ export default class SignUpPayloadValidation extends BaseValidation {
     return true
   }
 
-  @Validator('phone', { priority: 1, message: 'phone-number-in-use' })
+  @Validator('phone', { priority: 1, message: 'phone-in-use' })
   public async phoneUnique(phone: string): Promise<boolean> {
     if (this.options.phone === false) return true
     if (this.options.phone?.optional && (phone === undefined || phone === null)) return true

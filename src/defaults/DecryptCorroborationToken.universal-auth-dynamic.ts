@@ -2,8 +2,8 @@ import { AuthDynamicNames, AuthDynamicPayload, InvitationPayload, TokenPayload }
 import { decryptSubject } from '../crypto'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic<AuthDynamicNames>('decrypt-invitation-token', true)
-export default class DecryptInvitationTokenDynamic {
+@AuthDynamic<AuthDynamicNames>('decrypt-corroboration-token', true)
+export default class DecryptCorroborationTokenDynamic {
   public perform(payload: AuthDynamicPayload<TokenPayload>): InvitationPayload {
     if (!payload.body.token) return
 
