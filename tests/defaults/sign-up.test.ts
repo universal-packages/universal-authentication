@@ -455,7 +455,11 @@ describe('Authentication', (): void => {
                     name: 'David De Anda'
                   })
 
-                  expect(result).toEqual({ status: 'warning', message: 'confirmation-inbound' })
+                  expect(result).toEqual({
+                    status: 'warning',
+                    message: 'confirmation-inbound',
+                    metadata: { credential: credentialValues[credentialKind].toLowerCase(), credentialKind }
+                  })
                   expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                 })
               })

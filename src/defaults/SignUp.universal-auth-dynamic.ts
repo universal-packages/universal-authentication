@@ -1,5 +1,5 @@
 import Authentication from '../Authentication'
-import { AuthenticationResult, AuthDynamicPayload, AuthDynamicNames, SignUpPayload, InvitationPayload, CorroborationPayload } from '../Authentication.types'
+import { AuthenticationResult, AuthDynamicPayload, AuthDynamicNames, SignUpPayload, InvitationPayload, CredentialAndKindPayload } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
 @AuthDynamic<AuthDynamicNames>('sign-up', true)
@@ -8,7 +8,7 @@ export default class SignUpDynamic {
     const { credentialKind } = payload.body
     const credentialKindOptions = payload.authOptions[credentialKind]
     let invitationPayload: InvitationPayload
-    let corroborationPayload: CorroborationPayload
+    let corroborationPayload: CredentialAndKindPayload
 
     if (credentialKindOptions.enableSignUpInvitations) {
       try {
@@ -58,10 +58,10 @@ export default class SignUpDynamic {
 
       if (credentialKindOptions.enableConfirmation) {
         if (!authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind })) {
-          await authentication.performDynamic('send-confirmation-request', { authenticatable, credentialKind })
+          await authentication.performDynamic('request-confirmation', { authenticatable, credentialKind })
 
           if (credentialKindOptions.enforceConfirmation) {
-            return { status: 'warning', message: 'confirmation-inbound' }
+            return { status: 'warning', message: 'confirmation-inbound', metadata: { credential: authenticatable[credentialKind], credentialKind } }
           } else {
             return { status: 'success', authenticatable }
           }

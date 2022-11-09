@@ -152,7 +152,7 @@ describe('Authentication', (): void => {
 
                         const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-unconfirmed`, password: 'password' })
 
-                        expect(result).toEqual({ status: 'warning', message: 'confirmation-required' })
+                        expect(result).toEqual({ status: 'warning', message: 'confirmation-required', metadata: { credential: `${credentialKind}-unconfirmed`, credentialKind } })
                       })
                     })
 
@@ -190,7 +190,11 @@ describe('Authentication', (): void => {
 
                             const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-unconfirmed`, password: 'password' })
 
-                            expect(result).toEqual({ status: 'warning', message: 'confirmation-required' })
+                            expect(result).toEqual({
+                              status: 'warning',
+                              message: 'confirmation-required',
+                              metadata: { credential: `${credentialKind}-unconfirmed`, credentialKind }
+                            })
                           })
                         })
 
@@ -244,9 +248,6 @@ describe('Authentication', (): void => {
                         authenticatable: expect.any(TestAuthenticatable),
                         metadata: { [credentialKind]: obfuscatedCredentialPerCase[credentialKind] }
                       })
-                      expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
-                      expect(TestAuthenticatable.lastInstance.multiFactorCurrentOneTimePassword).toMatch(/\d{6}/)
-                      expect(TestAuthenticatable.lastInstance.multiFactorCurrentOneTimePasswordSetAt).not.toBeNull()
                     })
 
                     describe('and multi-factor is set to be sent in place', (): void => {
@@ -268,9 +269,6 @@ describe('Authentication', (): void => {
                         const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'password' })
 
                         expect(result).toEqual({ status: 'warning', message: 'multi-factor-inbound', authenticatable: expect.any(TestAuthenticatable) })
-                        expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
-                        expect(TestAuthenticatable.lastInstance.multiFactorCurrentOneTimePassword).toMatch(/\d{6}/)
-                        expect(TestAuthenticatable.lastInstance.multiFactorCurrentOneTimePasswordSetAt).not.toBeNull()
                       })
                     })
                   })
@@ -297,9 +295,6 @@ describe('Authentication', (): void => {
                         authenticatable: expect.any(TestAuthenticatable),
                         metadata: { [credentialKind]: expect.any(String) }
                       })
-                      expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
-                      expect(TestAuthenticatable.lastInstance.multiFactorCurrentOneTimePassword).toMatch(/\d{6}/)
-                      expect(TestAuthenticatable.lastInstance.multiFactorCurrentOneTimePasswordSetAt).not.toBeNull()
                     })
                   })
                 })

@@ -69,8 +69,7 @@ export interface Authenticatable {
   logInCount?: number
 
   multiFactorEnabled?: boolean
-  multiFactorCurrentOneTimePassword?: string
-  multiFactorCurrentOneTimePasswordSetAt?: Date
+  multiFactorActive?: boolean
 
   password?: string
   encryptedPassword?: string
@@ -114,47 +113,51 @@ export interface AuthenticationResult<M = Record<string, any>> {
 }
 
 export interface SimplifiedAuthDynamicNames {
+  invite: { payload: InvitationPayload; result: AuthenticationResult }
   'log-in': { payload: LogInPayload; result: AuthenticationResult }
+  'request-confirmation': { payload: CredentialAndKindAuthenticatablePayload; result: AuthenticationResult }
+  'request-corroboration': { payload: CredentialAndKindPayload; result: AuthenticationResult }
+  'request-multi-factor': { payload: CredentialAndKindAuthenticatablePayload; result: AuthenticationResult }
   'sign-up': { payload: SignUpPayload; result: AuthenticationResult }
+  'verify-corroboration': { payload: OneTimePasswordPayload; result: AuthenticationResult }
+  'verify-multi-factor': { payload: OneTimePasswordPayload; result: AuthenticationResult }
   // zz__ignore: { payload: Record<string, any>; result: any }
 }
 
 export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
-  'authenticatable-from-credential': { payload: AuthenticatableFromCredentialPayload; result: Authenticatable }
+  'authenticatable-from-credential': { payload: CredentialPayload; result: Authenticatable }
   'authenticatable-from-sign-up': { payload: AuthenticatableFromSignUpPayload; result: Authenticatable }
   'credential-kind-from-credential-authenticatable': { payload: CredentialAuthenticatablePayload; result: CredentialKind }
-  'decrypt-corroboration-token': { payload: TokenPayload; result: CorroborationPayload }
+  'decrypt-corroboration-token': { payload: TokenPayload; result: CredentialAndKindPayload }
   'decrypt-invitation-token': { payload: TokenPayload; result: InvitationPayload }
   'does-authenticatable-requires-multi-factor?': { payload: AuthenticatablePayload; result: boolean }
-  'encrypt-corroboration-payload': { payload: CorroborationPayload; result: string }
+  'encrypt-corroboration-payload': { payload: CredentialAndKindPayload; result: string }
   'encrypt-invitation-payload': { payload: InvitationPayload; result: string }
-  'generate-multi-factor-order-metadata': { payload: AuthenticatablePayload; result: MultiFactorOrderMetadata }
+  'generate-multi-factor-metadata': { payload: AuthenticatablePayload; result: MultiFactorOrderMetadata }
   'has-authenticatable-confirmation-passed-grace-period?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
   'is-authenticatable-confirmed?': { payload: CredentialKindAuthenticatablePayload; result: boolean }
   'is-authenticatable-lockable?': { payload: AuthenticatablePayload; result: boolean }
   'is-authenticatable-locked?': { payload: AuthenticatablePayload; result: boolean }
+  'is-authenticatable-multi-factor-active?': { payload: AuthenticatablePayload; result: boolean }
   'is-authenticatable-password?': { payload: PasswordAuthenticatablePayload; result: boolean }
   'is-authenticatable-ready-to-unlock?': { payload: AuthenticatablePayload; result: boolean }
   'refine-sign-up-payload': { payload: SignUpPayloadRefinementPayload; result: void }
   'save-authenticatable': { payload: AuthenticatablePayload; result: void }
-  'send-confirmation-request': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'send-corroboration-request': { payload: CredentialKindAuthenticatablePayload; result: void }
-  'send-multi-factor-request': { payload: AuthenticatablePayload; result: void }
+  'send-confirmation-request': { payload: OneTimePasswordPayload; result: void }
+  'send-corroboration-request': { payload: OneTimePasswordPayload; result: void }
+  'send-multi-factor-request': { payload: OneTimePasswordPayload; result: void }
   'send-unlock-request': { payload: AuthenticatablePayload; result: void }
   'set-authenticatable-fail-attempt': { payload: AuthenticatablePayload; result: void }
   'set-authenticatable-locked': { payload: AuthenticatablePayload; result: void }
   'set-authenticatable-log-in-count': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-multi-factor': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-multi-factor-active': { payload: AuthenticatablePayload; result: void }
+  'set-authenticatable-multi-factor-inactive': { payload: AuthenticatablePayload; result: void }
   'set-authenticatable-unlocked': { payload: AuthenticatablePayload; result: void }
   'validate-sign-up-payload': { payload: SignUpPayload; result: ValidationResult }
 }
 
-export interface AuthenticatableFromCredentialPayload {
-  credential: string
-}
-
 export interface AuthenticatableFromSignUpPayload {
-  corroborationPayload?: CorroborationPayload
+  corroborationPayload?: CredentialAndKindPayload
   invitationPayload?: InvitationPayload
   signUpPayload: SignUpPayload
 }
@@ -163,9 +166,19 @@ export interface AuthenticatablePayload {
   authenticatable: Authenticatable
 }
 
-export interface CorroborationPayload {
+export interface CredentialAndKindPayload {
   credential: string
   credentialKind: CredentialKind
+}
+
+export interface CredentialAndKindAuthenticatablePayload {
+  authenticatable?: Authenticatable
+  credential?: string
+  credentialKind: CredentialKind
+}
+
+export interface CredentialPayload {
+  credential: string
 }
 
 export interface CredentialKindAuthenticatablePayload {
@@ -194,6 +207,12 @@ export interface MultiFactorOrderMetadata {
   phone?: string
 }
 
+export interface OneTimePasswordPayload {
+  credential: string
+  credentialKind: CredentialKind
+  password: string
+}
+
 export interface PasswordAuthenticatablePayload {
   authenticatable: Authenticatable
   password: string
@@ -215,7 +234,7 @@ export interface SignUpPayload {
 }
 
 export interface SignUpPayloadRefinementPayload {
-  corroborationPayload?: CorroborationPayload
+  corroborationPayload?: CredentialAndKindPayload
   invitationPayload?: InvitationPayload
   signUpPayload: SignUpPayload
 }

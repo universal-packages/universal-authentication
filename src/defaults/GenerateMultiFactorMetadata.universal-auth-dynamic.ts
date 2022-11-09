@@ -1,8 +1,8 @@
 import { AuthDynamicNames, AuthDynamicPayload, AuthenticatablePayload, MultiFactorOrderMetadata } from '../Authentication.types'
 import { AuthDynamic } from '../decorators'
 
-@AuthDynamic<AuthDynamicNames>('generate-multi-factor-order-metadata', true)
-export default class GenerateMultiFactorOneTimePasswordDynamic {
+@AuthDynamic<AuthDynamicNames>('generate-multi-factor-metadata', true)
+export default class GenerateMultiFactorMetadataDynamic {
   public perform(payload: AuthDynamicPayload<AuthenticatablePayload>): MultiFactorOrderMetadata {
     const { authenticatable } = payload.body
     const metadata: MultiFactorOrderMetadata = {}
