@@ -24,13 +24,15 @@ describe('Authentication', (): void => {
               await authentication.loadDynamics()
 
               const result = await authentication.performDynamic('sign-up', {
-                credentialKind,
-                [credentialKind]: credentialValues[credentialKind],
-                username: 'david',
-                password: '12345678',
-                firstName: 'David',
-                lastName: 'De Anda',
-                name: 'David De Anda'
+                attributes: {
+                  [credentialKind]: credentialValues[credentialKind],
+                  username: 'david',
+                  password: '12345678',
+                  firstName: 'David',
+                  lastName: 'De Anda',
+                  name: 'David De Anda'
+                },
+                credentialKind
               })
 
               expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
@@ -39,7 +41,6 @@ describe('Authentication', (): void => {
                 [credentialKind]: credentialValues[credentialKind].toLocaleLowerCase(),
                 [`${credentialKind}ConfirmedAt`]: null,
                 username: 'david',
-                encryptedPassword: expect.any(String),
                 firstName: 'David',
                 lastName: 'De Anda',
                 name: 'David De Anda'
@@ -59,20 +60,22 @@ describe('Authentication', (): void => {
                 authentication.options['namespace'] = 'universal-auth'
                 await authentication.loadDynamics()
 
-                const invitationToken = authentication.performDynamicSync('encrypt-invitation-payload', {
-                  inviterId: 2,
+                const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
                   credential: credentialValues[credentialKind],
-                  credentialKind
+                  credentialKind,
+                  invitation: { credential: credentialValues[credentialKind], credentialKind, inviterId: 2 }
                 })
 
                 const result = await authentication.performDynamic('sign-up', {
+                  attributes: {
+                    [credentialKind]: credentialValues[credentialKind],
+                    username: 'david',
+                    password: '12345678',
+                    firstName: 'David',
+                    lastName: 'De Anda',
+                    name: 'David De Anda'
+                  },
                   credentialKind,
-                  [credentialKind]: credentialValues[credentialKind],
-                  username: 'david',
-                  password: '12345678',
-                  firstName: 'David',
-                  lastName: 'De Anda',
-                  name: 'David De Anda',
                   invitationToken
                 })
 
@@ -81,7 +84,7 @@ describe('Authentication', (): void => {
                 expect(TestAuthenticatable.lastInstance).toMatchObject({
                   [credentialKind]: credentialValues[credentialKind].toLocaleLowerCase(),
                   [`${credentialKind}ConfirmedAt`]: null,
-                  inviterId: '2'
+                  inviterId: 2
                 })
               })
 
@@ -99,13 +102,15 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const result = await authentication.performDynamic('sign-up', {
-                    credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda'
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
+                    credentialKind
                   })
 
                   expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
@@ -131,13 +136,15 @@ describe('Authentication', (): void => {
                     await authentication.loadDynamics()
 
                     const result = await authentication.performDynamic('sign-up', {
-                      credentialKind,
-                      [credentialKind]: credentialValues[credentialKind],
-                      username: 'david',
-                      password: '12345678',
-                      firstName: 'David',
-                      lastName: 'De Anda',
-                      name: 'David De Anda'
+                      attributes: {
+                        [credentialKind]: credentialValues[credentialKind],
+                        username: 'david',
+                        password: '12345678',
+                        firstName: 'David',
+                        lastName: 'De Anda',
+                        name: 'David De Anda'
+                      },
+                      credentialKind
                     })
 
                     expect(result).toEqual({ status: 'failure', message: 'invitation-required' })
@@ -158,20 +165,22 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const invitationToken = authentication.performDynamicSync('encrypt-invitation-payload', {
-                    inviterId: 2,
+                  const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
+                    invitation: { credential: credentialValues[credentialKind], credentialKind: 'another' as any, inviterId: 2 },
                     credential: credentialValues[credentialKind],
                     credentialKind: 'another' as any
                   })
 
                   const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
                     credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda',
                     invitationToken
                   })
 
@@ -193,13 +202,15 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
                     credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda',
                     invitationToken: 'this-is-wrong'
                   })
 
@@ -221,19 +232,22 @@ describe('Authentication', (): void => {
                 authentication.options['namespace'] = 'universal-auth'
                 await authentication.loadDynamics()
 
-                const corroborationToken = authentication.performDynamicSync('encrypt-corroboration-payload', {
+                const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
+                  corroboration: { credential: credentialValues[credentialKind], credentialKind },
                   credential: credentialValues[credentialKind],
                   credentialKind
                 })
 
                 const result = await authentication.performDynamic('sign-up', {
+                  attributes: {
+                    [credentialKind]: credentialValues[credentialKind],
+                    username: 'david',
+                    password: '12345678',
+                    firstName: 'David',
+                    lastName: 'De Anda',
+                    name: 'David De Anda'
+                  },
                   credentialKind,
-                  [credentialKind]: credentialValues[credentialKind],
-                  username: 'david',
-                  password: '12345678',
-                  firstName: 'David',
-                  lastName: 'De Anda',
-                  name: 'David De Anda',
                   corroborationToken
                 })
 
@@ -259,13 +273,15 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const result = await authentication.performDynamic('sign-up', {
-                    credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda'
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
+                    credentialKind
                   })
 
                   expect(result).toEqual({ status: 'failure', message: 'corroboration-required' })
@@ -285,19 +301,22 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const corroborationToken = authentication.performDynamicSync('encrypt-corroboration-payload', {
+                  const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
+                    corroboration: { credential: credentialValues[credentialKind], credentialKind: 'another' as any },
                     credential: credentialValues[credentialKind],
                     credentialKind: 'another' as any
                   })
 
                   const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
                     credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda',
                     corroborationToken
                   })
 
@@ -319,13 +338,15 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
                     credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda',
                     corroborationToken: 'this-is-wrong'
                   })
 
@@ -348,13 +369,15 @@ describe('Authentication', (): void => {
                 await authentication.loadDynamics()
 
                 const result = await authentication.performDynamic('sign-up', {
-                  credentialKind,
-                  [credentialKind]: credentialValues[credentialKind],
-                  username: 'david',
-                  password: '12345678',
-                  firstName: 'David',
-                  lastName: 'De Anda',
-                  name: 'David De Anda'
+                  attributes: {
+                    [credentialKind]: credentialValues[credentialKind],
+                    username: 'david',
+                    password: '12345678',
+                    firstName: 'David',
+                    lastName: 'De Anda',
+                    name: 'David De Anda'
+                  },
+                  credentialKind
                 })
 
                 expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
@@ -374,20 +397,22 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const invitationToken = authentication.performDynamicSync('encrypt-invitation-payload', {
-                    inviterId: 2,
+                  const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
+                    invitation: { inviterId: 2, credential: credentialValues[credentialKind], credentialKind },
                     credential: credentialValues[credentialKind],
                     credentialKind
                   })
 
                   const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
                     credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda',
                     invitationToken
                   })
 
@@ -410,19 +435,22 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const corroborationToken = authentication.performDynamicSync('encrypt-corroboration-payload', {
+                  const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
+                    corroboration: { credential: credentialValues[credentialKind], credentialKind },
                     credential: credentialValues[credentialKind],
                     credentialKind
                   })
 
                   const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
                     credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda',
                     corroborationToken
                   })
 
@@ -446,13 +474,15 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const result = await authentication.performDynamic('sign-up', {
-                    credentialKind,
-                    [credentialKind]: credentialValues[credentialKind],
-                    username: 'david',
-                    password: '12345678',
-                    firstName: 'David',
-                    lastName: 'De Anda',
-                    name: 'David De Anda'
+                    attributes: {
+                      [credentialKind]: credentialValues[credentialKind],
+                      username: 'david',
+                      password: '12345678',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
+                    credentialKind
                   })
 
                   expect(result).toEqual({
@@ -473,13 +503,15 @@ describe('Authentication', (): void => {
               await authentication.loadDynamics()
 
               const result = await authentication.performDynamic('sign-up', {
-                credentialKind,
-                [credentialKind]: 'nop',
-                username: '',
-                password: '1',
-                firstName: 'David',
-                lastName: 'De Anda',
-                name: 'David De Anda'
+                attributes: {
+                  [credentialKind]: 'nop',
+                  username: '',
+                  password: '1',
+                  firstName: 'David',
+                  lastName: 'De Anda',
+                  name: 'David De Anda'
+                },
+                credentialKind
               })
 
               expect(result).toEqual({

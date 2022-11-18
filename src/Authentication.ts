@@ -1,5 +1,5 @@
 import { DynamicApi } from '@universal-packages/dynamic-api'
-import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, AuthDynamicPayload, ExtensibleUnion } from './Authentication.types'
+import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, ExtensibleUnion } from './Authentication.types'
 
 export default class Authentication<D extends Record<string, any> = AuthDynamicNames> extends DynamicApi<D> {
   public readonly options: AuthenticationOptions
@@ -11,28 +11,14 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
       ...options,
       email: {
         enablePasswordCheck: true,
-        ...options.email,
-        signUpValidations: {
-          email: options.email?.signUpValidations?.email || {},
-          firstName: options.email?.signUpValidations?.firstName || false,
-          lastName: options.email?.signUpValidations?.lastName || false,
-          name: options.email?.signUpValidations?.name || false,
-          password: options.email?.signUpValidations?.password || { size: { min: 8, max: 256 } },
-          phone: options.email?.signUpValidations?.phone || false,
-          username: options.email?.signUpValidations?.username || { matcher: /^[a-zA-Z.0-9_\-&]+$/i }
-        }
+        ...options.email
       },
-      phone: {
-        ...options.phone,
-        signUpValidations: {
-          email: options.phone?.signUpValidations?.email || false,
-          firstName: options.phone?.signUpValidations?.firstName || false,
-          lastName: options.phone?.signUpValidations?.lastName || false,
-          name: options.phone?.signUpValidations?.name || false,
-          password: options.phone?.signUpValidations?.password || { size: { min: 8, max: 256 } },
-          phone: options.phone?.signUpValidations?.phone || {},
-          username: options.phone?.signUpValidations?.username || { matcher: /^[a-zA-Z.0-9_\-&]+$/i }
-        }
+      validations: {
+        password: { size: { min: 8, max: 256 } },
+        username: { matcher: /^[a-zA-Z.0-9_\-&]+$/i },
+        email: {},
+        phone: {},
+        ...options.validations
       }
     }
 
@@ -45,15 +31,11 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
     this.Authenticatable = Authenticatable
   }
 
-  public async performDynamic<N extends keyof D>(name: ExtensibleUnion<N>, body?: D[N]['payload']): Promise<D[N]['result']> {
-    const payload: AuthDynamicPayload = { body, authOptions: this.options, Authenticatable: this.Authenticatable }
-
+  public async performDynamic<N extends keyof D>(name: ExtensibleUnion<N>, payload?: D[N]['payload']): Promise<D[N]['result']> {
     return await super.performDynamic(name as string, payload)
   }
 
-  public performDynamicSync<N extends keyof D>(name: ExtensibleUnion<N>, body?: D[N]['payload']): D[N]['result'] {
-    const payload: AuthDynamicPayload = { body, authOptions: this.options, Authenticatable: this.Authenticatable }
-
+  public performDynamicSync<N extends keyof D>(name: ExtensibleUnion<N>, payload?: D[N]['payload']): D[N]['result'] {
     return super.performDynamicSync(name as string, payload)
   }
 }

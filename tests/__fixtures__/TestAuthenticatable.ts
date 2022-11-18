@@ -48,8 +48,8 @@ export default class TestAuthenticatable implements Authenticatable {
     return instance
   })
 
-  public static readonly existsWithEmail = jest.fn().mockImplementation((email: string): boolean => {
-    switch (email) {
+  public static readonly existsWithCredential = jest.fn().mockImplementation((credentialKind: string, credential: string): boolean => {
+    switch (credentialKind) {
       default:
     }
 
@@ -57,14 +57,6 @@ export default class TestAuthenticatable implements Authenticatable {
   })
 
   public static readonly existsWithUsername = jest.fn().mockImplementation((username: string): boolean => {
-    switch (username) {
-      default:
-    }
-
-    return false
-  })
-
-  public static readonly existsWithPhone = jest.fn().mockImplementation((username: string): boolean => {
     switch (username) {
       default:
     }
@@ -91,8 +83,7 @@ export default class TestAuthenticatable implements Authenticatable {
   logInCount?: number = 0
 
   multiFactorEnabled?: boolean = null
-  multiFactorCurrentOneTimePassword?: string = null
-  multiFactorCurrentOneTimePasswordSetAt?: Date = null
+  multiFactorActive?: boolean = null
 
   @Encrypt()
   password?: string

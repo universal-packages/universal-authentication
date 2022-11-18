@@ -22,7 +22,7 @@ export function hashSubject(subject: string): string {
   return Buffer.concat([salt, hash]).toString(FINAL_FORMAT)
 }
 
-export function encryptSubject(subject: Record<string, any>, secret: string, expiresAt?: number): string {
+export function encryptSubject(subject: Record<string, any>, secret: string, expiresAt = Date.now() + 1000 * 60 * 60): string {
   const payload = { subject, expiresAt }
   const serializedPayload = JSON.stringify(payload)
 
@@ -48,8 +48,11 @@ export function decryptSubject(encryptedSubject: string, secret: string): any {
 
   try {
     const serializedPayload = Buffer.concat([decipher.update(encryptedPayload), decipher.final()]).toString()
+    const payload = JSON.parse(serializedPayload)
 
-    return JSON.parse(serializedPayload).subject
+    if (payload.expiresAt && payload.expiresAt < Date.now()) return
+
+    return payload.subject
   } catch {}
 }
 
