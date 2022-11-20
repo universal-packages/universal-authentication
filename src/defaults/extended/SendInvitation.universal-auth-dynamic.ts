@@ -2,7 +2,7 @@ import Authentication from '../../Authentication'
 import { AuthDynamicNames, SendInvitationPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
 
-@AuthDynamic<AuthDynamicNames>('send-corroboration', true)
+@AuthDynamic<AuthDynamicNames>('send-invitation', true)
 export default class SendInvitationDynamic {
   public async perform(payload: SendInvitationPayload, authentication: Authentication): Promise<void> {
     const { credential, credentialKind, invitationToken } = payload

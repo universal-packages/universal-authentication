@@ -8,7 +8,7 @@ export default class InviteAuthenticatableDynamic {
     const { credential, credentialKind, inviterId } = payload
     const credentialKindOptions = authentication.options[credentialKind]
 
-    if (credentialKindOptions.enableConfirmation) {
+    if (credentialKindOptions.enableSignUpInvitations) {
       const invitationToken = authentication.performDynamicSync('encrypt-invitation', { credential, credentialKind, invitation: { credential, credentialKind, inviterId } })
 
       authentication.performDynamic('send-invitation', { credential, credentialKind, invitationToken })
