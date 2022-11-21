@@ -424,6 +424,7 @@ export interface ValidateAttributesPayload {
   attributes: AssignableAttributes
   include?: (keyof AttributesValidationOptions)[]
   exclude?: (keyof AttributesValidationOptions)[]
+  allOptional?: boolean
 }
 
 export interface VerifyOneTimePasswordPayload {

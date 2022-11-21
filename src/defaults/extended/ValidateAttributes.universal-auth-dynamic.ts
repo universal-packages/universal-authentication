@@ -7,7 +7,7 @@ import AttributesValidation from '../../validations/AttributesValidation'
 @AuthDynamic<AuthDynamicNames>('validate-attributes', true)
 export default class ValidateAttributesDynamic {
   public async perform(payload: ValidateAttributesPayload, authentication: Authentication): Promise<ValidationResult> {
-    const { attributes, include, exclude } = payload
+    const { attributes, include, exclude, allOptional } = payload
     const attributeKeys: (keyof AttributesValidationOptions)[] = ['email', 'username', 'phone', 'password', 'firstName', 'lastName', 'name']
     const finalOptions = { ...authentication.options.validations }
 
@@ -25,6 +25,6 @@ export default class ValidateAttributesDynamic {
       }
     }
 
-    return await new AttributesValidation(authentication, finalOptions).validate(attributes)
+    return await new AttributesValidation(authentication, finalOptions, allOptional).validate(attributes)
   }
 }

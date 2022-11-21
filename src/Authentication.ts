@@ -13,6 +13,9 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
         enablePasswordCheck: true,
         ...options.email
       },
+      phone: {
+        ...options.phone
+      },
       validations: {
         password: { size: { min: 8, max: 256 } },
         username: { matcher: /^[a-zA-Z.0-9_\-&]+$/i },

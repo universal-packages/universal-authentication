@@ -15,6 +15,6 @@ export default class RequestUnlockDynamic {
 
     await authentication.performDynamic('send-unlock', { credential: authenticatable[credentialKind], credentialKind, oneTimePassword })
 
-    return { status: 'success' }
+    return { status: 'success', metadata: { oneTimePassword } }
   }
 }
