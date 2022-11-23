@@ -13,7 +13,7 @@ describe('Authentication', (): void => {
 
         enforceSignUpInvitations: false
       }
-      const credentialValues = { email: 'DAVID@UNIVERSAL.com', phone: '+524491234567' }
+      const credentialValues = { email: 'DAVID@UNIVERSAL.com', phone: '+524497654321' }
 
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
         describe(`when specifying ${credentialKind} to signup in`, (): void => {

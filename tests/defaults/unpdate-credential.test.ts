@@ -5,7 +5,7 @@ describe('Authentication', (): void => {
   describe('default-dynamics', (): void => {
     describe('update-credential', (): void => {
       const credentialKinds: CredentialKind[] = ['email', 'phone']
-      const credentialValues = { email: 'DAVID@UNIVERSAL.com', phone: '+524491234567' }
+      const credentialValues = { email: 'DAVID@UNIVERSAL.com', phone: '+524497654321' }
 
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
         describe(`when updating ${credentialKind}`, (): void => {

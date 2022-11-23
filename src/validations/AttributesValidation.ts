@@ -19,15 +19,15 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.email) return true
     if ((this.options.email.optional || this.allOptional) && (email === undefined || email === null)) return true
     if (this.options.email.validator) return this.options.email.validator(email)
-    if (this.options.email.matcher) return validator.matches(email, this.options.email.matcher)
-    return validator.isEmail(email)
+    if (this.options.email.matcher) return validator.matches(email || '', this.options.email.matcher)
+    return validator.isEmail(email || '')
   }
 
   @Validator('email', { message: 'email-out-of-size' })
   public emailSize(email: string): boolean {
     if (!this.options.email) return true
     if ((this.options.email.optional || this.allOptional) && (email === undefined || email === null)) return true
-    if (this.options.email.size) return validator.isLength(email, this.options.email.size)
+    if (this.options.email.size) return validator.isLength(email || '', this.options.email.size)
     return true
   }
 
@@ -43,7 +43,7 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.firstName) return true
     if ((this.options.firstName.optional || this.allOptional) && (firstName === undefined || firstName === null)) return true
     if (this.options.firstName.validator) return this.options.firstName.validator(firstName)
-    if (this.options.firstName.matcher) return validator.matches(firstName, this.options.firstName.matcher)
+    if (this.options.firstName.matcher) return validator.matches(firstName || '', this.options.firstName.matcher)
     return true
   }
 
@@ -51,7 +51,7 @@ export default class AttributesValidation extends BaseValidation {
   public firstNameLength(firstName: string): boolean {
     if (!this.options.firstName) return true
     if ((this.options.firstName.optional || this.allOptional) && (firstName === undefined || firstName === null)) return true
-    if (this.options.firstName.size) return validator.isLength(firstName, this.options.firstName.size)
+    if (this.options.firstName.size) return validator.isLength(firstName || '', this.options.firstName.size)
     return true
   }
 
@@ -60,7 +60,7 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.lastName) return true
     if ((this.options.lastName.optional || this.allOptional) && (lastName === undefined || lastName === null)) return true
     if (this.options.lastName.validator) return this.options.lastName.validator(lastName)
-    if (this.options.lastName.matcher) return validator.matches(lastName, this.options.lastName.matcher)
+    if (this.options.lastName.matcher) return validator.matches(lastName || '', this.options.lastName.matcher)
     return true
   }
 
@@ -68,7 +68,7 @@ export default class AttributesValidation extends BaseValidation {
   public lastNameLength(lastName: string): boolean {
     if (!this.options.lastName) return true
     if ((this.options.lastName.optional || this.allOptional) && (lastName === undefined || lastName === null)) return true
-    if (this.options.lastName.size) return validator.isLength(lastName, this.options.lastName.size)
+    if (this.options.lastName.size) return validator.isLength(lastName || '', this.options.lastName.size)
     return true
   }
 
@@ -77,7 +77,7 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.name) return true
     if ((this.options.name.optional || this.allOptional) && (name === undefined || name === null)) return true
     if (this.options.name.validator) return this.options.name.validator(name)
-    if (this.options.name.matcher) return validator.matches(name, this.options.name.matcher)
+    if (this.options.name.matcher) return validator.matches(name || '', this.options.name.matcher)
     return true
   }
 
@@ -85,7 +85,7 @@ export default class AttributesValidation extends BaseValidation {
   public nameLength(name: string): boolean {
     if (!this.options.name) return true
     if ((this.options.name.optional || this.allOptional) && (name === undefined || name === null)) return true
-    if (this.options.name.size) return validator.isLength(name, this.options.name.size)
+    if (this.options.name.size) return validator.isLength(name || '', this.options.name.size)
     return true
   }
 
@@ -94,7 +94,7 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.password) return true
     if ((this.options.password.optional || this.allOptional) && (password === undefined || password === null)) return true
     if (this.options.password.validator) return this.options.password.validator(password)
-    if (this.options.password.matcher) return validator.matches(password, this.options.password.matcher)
+    if (this.options.password.matcher) return validator.matches(password || '', this.options.password.matcher)
     return true
   }
 
@@ -102,7 +102,7 @@ export default class AttributesValidation extends BaseValidation {
   public passwordLength(password: string): boolean {
     if (!this.options.password) return true
     if ((this.options.password.optional || this.allOptional) && (password === undefined || password === null)) return true
-    if (this.options.password.size) return validator.isLength(password, this.options.password.size)
+    if (this.options.password.size) return validator.isLength(password || '', this.options.password.size)
     return true
   }
 
@@ -111,15 +111,15 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.phone) return true
     if ((this.options.phone.optional || this.allOptional) && (phone === undefined || phone === null)) return true
     if (this.options.phone.validator) return this.options.phone.validator(phone)
-    if (this.options.phone.matcher) return validator.matches(phone, this.options.phone.matcher)
-    return validator.isMobilePhone(phone)
+    if (this.options.phone.matcher) return validator.matches(phone || '', this.options.phone.matcher)
+    return validator.isMobilePhone(phone || '')
   }
 
   @Validator('phone', { message: 'phone-out-of-size' })
   public phoneSize(phone: string): boolean {
     if (!this.options.phone) return true
     if ((this.options.phone.optional || this.allOptional) && (phone === undefined || phone === null)) return true
-    if (this.options.phone.size) return validator.isLength(phone, this.options.phone.size)
+    if (this.options.phone.size) return validator.isLength(phone || '', this.options.phone.size)
     return true
   }
 
@@ -135,7 +135,7 @@ export default class AttributesValidation extends BaseValidation {
     if (!this.options.username) return true
     if ((this.options.username.optional || this.allOptional) && (username === undefined || username === null)) return true
     if (this.options.username.validator) return this.options.username.validator(username)
-    if (this.options.username.matcher) return validator.matches(username, this.options.username.matcher)
+    if (this.options.username.matcher) return validator.matches(username || '', this.options.username.matcher)
     return true
   }
 
@@ -143,7 +143,7 @@ export default class AttributesValidation extends BaseValidation {
   public usernameSize(username: string): boolean {
     if (!this.options.username) return true
     if ((this.options.username.optional || this.allOptional) && (username === undefined || username === null)) return true
-    if (this.options.username.size) return validator.isLength(username, this.options.username.size)
+    if (this.options.username.size) return validator.isLength(username || '', this.options.username.size)
     return true
   }
 
