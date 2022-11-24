@@ -23,6 +23,8 @@ export default class SetAuthenticatableAttributesDynamic {
     if (finalToUse.includes('lastName') && attributes.lastName !== undefined) authenticatable.lastName = attributes.lastName
     if (finalToUse.includes('name') && attributes.name !== undefined) authenticatable.name = attributes.name
     if (finalToUse.includes('phone') && attributes.phone !== undefined) authenticatable.phone = attributes.phone
+    if (finalToUse.includes('profilePictureUrl') && attributes.profilePictureUrl !== undefined)
+      authentication.performDynamicSync('set-authenticatable-profile-picture', { authenticatable, pictureUrl: attributes.profilePictureUrl })
     if (finalToUse.includes('password') && attributes.password !== undefined)
       authentication.performDynamicSync('set-authenticatable-password', { authenticatable, password: attributes.password })
   }

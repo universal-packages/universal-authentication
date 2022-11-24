@@ -1,5 +1,4 @@
-// export type ExtensibleUnion<T extends U, U = string | number | symbol> = T | (U & { __any?: never })
-export type ExtensibleUnion<T> = T
+export type ExtensibleUnion<T extends U, U = string | number | symbol> = T | (U & { zz__ignore?: never })
 export type CredentialKind = 'email' | 'phone'
 export type AuthConcern = 'confirmation' | 'corroboration' | 'invitation' | 'log-in' | 'multi-factor' | 'reset-password' | 'sign-up' | 'unlock'
 export interface AuthenticationOptions {
@@ -21,6 +20,8 @@ export interface AuthenticationOptions {
   unlockAfter?: string
 
   validations?: AttributesValidationOptions
+
+  providerKeys?: { [provider: string]: Record<string, string> }
 }
 
 export interface AuthenticationCredentialOptions {
@@ -56,6 +57,8 @@ export interface ValidationOptions {
 
 export interface Authenticatable {
   id: number | bigint | string
+
+  profilePictureUrl?: string
 
   email?: string
   emailConfirmedAt?: Date
@@ -95,6 +98,7 @@ export interface AssignableAttributes {
   firstName?: string
   lastName?: string
   name?: string
+  profilePictureUrl?: string
 }
 
 export interface AuthenticatableClass<A = Authenticatable> {
@@ -102,6 +106,7 @@ export interface AuthenticatableClass<A = Authenticatable> {
   existsWithCredential: (credentialKind: CredentialKind, credential: string) => Promise<boolean>
   existsWithUsername: (username: string) => Promise<boolean>
   findByCredential: (credential: string) => Promise<Authenticatable>
+  findByProviderId: (provider: string, id: string | number | bigint) => Promise<Authenticatable>
 }
 
 export interface ValidationResult {
@@ -117,7 +122,20 @@ export interface AuthenticationResult<M = Record<string, any>> {
   validation?: ValidationResult
 }
 
+export interface ProviderUserData {
+  id: string | number | bigint
+  username?: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  name?: string
+  profilePictureUrl?: string
+  error?: Error
+}
+
 export interface SimplifiedAuthDynamicNames {
+  'connect-provider': { payload: ConnectProviderPayload; result: AuthenticationResult }
+  'continue-with-provider': { payload: ContinueWithProviderPayload; result: AuthenticationResult }
   'invite-authenticatable': { payload: InviteAuthenticatablePayload; result: AuthenticationResult }
   'log-in': { payload: LogInPayload; result: AuthenticationResult }
   'request-confirmation': { payload: RequestConfirmationPayload; result: AuthenticationResult }
@@ -128,12 +146,23 @@ export interface SimplifiedAuthDynamicNames {
   'sign-up': { payload: SignUpPayload; result: AuthenticationResult }
   'update-authenticatable': { payload: UpdateAuthenticatablePayload; result: AuthenticationResult }
   'update-credential': { payload: UpdateCredentialPayload; result: AuthenticationResult }
+  'verify-confirmation': { payload: VerifyConfirmationPayload; result: AuthenticationResult }
   'verify-corroboration': { payload: VerifyCorroborationPayload; result: AuthenticationResult }
   'verify-multi-factor': { payload: VerifyMultiFactorPayload; result: AuthenticationResult }
   'verify-reset-password': { payload: VerifyResetPasswordPayload; result: AuthenticationResult }
   'verify-unlock': { payload: VerifyUnlockPayload; result: AuthenticationResult }
+  zz__ignore: { payload: Record<string, any>; result: any }
+}
 
-  // zz__ignore: { payload: Record<string, any>; result: any }
+export interface ConnectProviderPayload {
+  authenticatable: Authenticatable
+  provider: string
+  token: string
+}
+
+export interface ContinueWithProviderPayload {
+  provider: string
+  token: string
 }
 
 export interface InviteAuthenticatablePayload {
@@ -192,6 +221,12 @@ export interface UpdateCredentialPayload {
   credentialKind: CredentialKind
 }
 
+export interface VerifyConfirmationPayload {
+  credential: string
+  credentialKind: CredentialKind
+  oneTimePassword: string
+}
+
 export interface VerifyCorroborationPayload {
   credential: string
   credentialKind: CredentialKind
@@ -219,6 +254,8 @@ export interface VerifyUnlockPayload {
 
 export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'authenticatable-from-credential': { payload: AuthenticatableFromCredentialPayload; result: Authenticatable }
+  'authenticatable-from-provider-id': { payload: AuthenticatableFromProviderIdPayload; result: Authenticatable }
+  'authenticatable-from-provider-user-data': { payload: AuthenticatableFromProviderUserDataPayload; result: Authenticatable }
   'authenticatable-from-sign-up': { payload: AuthenticatableFromSignUpPayload; result: Authenticatable }
   'credential-kind-from-credential-authenticatable': { payload: CredentialKindFromCredentialAuthenticatablePayload; result: CredentialKind }
   'decrypt-corroboration-token': { payload: DecryptCorroborationTokenPayload; result: Invitation }
@@ -245,12 +282,15 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'send-reset-password': { payload: SendResetPasswordPayload; result: void }
   'send-unlock': { payload: SendUnlockPayload; result: void }
   'set-authenticatable-attributes': { payload: SetAuthenticatableAttributesPayload; result: void }
+  'set-authenticatable-confirmed': { payload: SetAuthenticatableConfirmedPayload; result: void }
   'set-authenticatable-fail-attempt': { payload: SetAuthenticatableFailAttemptPayload; result: void }
   'set-authenticatable-locked': { payload: SetAuthenticatableLockedPayload; result: void }
   'set-authenticatable-log-in-count': { payload: SetAuthenticatableLogInCountPayload; result: void }
   'set-authenticatable-multi-factor-active': { payload: SetAuthenticatableMultiFactorActivePayload; result: void }
   'set-authenticatable-multi-factor-inactive': { payload: SetAuthenticatableMultiFactorInactivePayload; result: void }
   'set-authenticatable-password': { payload: SetAuthenticatablePasswordPayload; result: void }
+  'set-authenticatable-profile-picture': { payload: SetAuthenticatableProfilePicturePayload; result: void }
+  'set-authenticatable-provider-id': { payload: SetAuthenticatableProviderIdPayload; result: void }
   'set-authenticatable-unlocked': { payload: SetAuthenticatableUnlockedPayload; result: void }
   'validate-attributes': { payload: ValidateAttributesPayload; result: ValidationResult }
   'verify-one-time-password': { payload: VerifyOneTimePasswordPayload; result: boolean }
@@ -258,6 +298,16 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
 
 export interface AuthenticatableFromCredentialPayload {
   credential: string
+}
+
+export interface AuthenticatableFromProviderIdPayload {
+  provider: string
+  id: string | number | bigint
+}
+
+export interface AuthenticatableFromProviderUserDataPayload {
+  provider: string
+  userData: ProviderUserData
 }
 
 export interface AuthenticatableFromSignUpPayload {
@@ -397,6 +447,12 @@ export interface SetAuthenticatableAttributesPayload {
   include?: (keyof AssignableAttributes)[]
   exclude?: (keyof AssignableAttributes)[]
 }
+
+export interface SetAuthenticatableConfirmedPayload {
+  authenticatable: Authenticatable
+  credentialKind: CredentialKind
+}
+
 export interface SetAuthenticatableFailAttemptPayload {
   authenticatable: Authenticatable
 }
@@ -420,6 +476,17 @@ export interface SetAuthenticatableMultiFactorInactivePayload {
 export interface SetAuthenticatablePasswordPayload {
   authenticatable: Authenticatable
   password: string
+}
+
+export interface SetAuthenticatableProfilePicturePayload {
+  authenticatable: Authenticatable
+  pictureUrl: string
+}
+
+export interface SetAuthenticatableProviderIdPayload {
+  authenticatable: Authenticatable
+  provider: string
+  id: string | number | bigint
 }
 
 export interface SetAuthenticatableUnlockedPayload {

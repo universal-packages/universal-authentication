@@ -21,7 +21,9 @@ export default class AuthenticatableFromSignUpDynamic {
     if (invitation) authenticatable.inviterId = invitation.inviterId
 
     if (invitation || corroboration) {
-      if (credentialKindOptions.enableConfirmation) authenticatable[`${credentialKind}ConfirmedAt`] = new Date()
+      if (credentialKindOptions.enableConfirmation) {
+        authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind })
+      }
     }
 
     return authenticatable

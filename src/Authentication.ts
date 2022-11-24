@@ -22,7 +22,8 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
         email: {},
         phone: {},
         ...options.validations
-      }
+      },
+      providerKeys: { ...options.providerKeys }
     }
 
     super({ ...newOptions, namespace: 'auth' })
