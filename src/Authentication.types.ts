@@ -33,6 +33,7 @@ export interface AuthenticationCredentialOptions {
   enableSignUpInvitations?: boolean
 
   enforceConfirmation?: boolean
+  enforcePasswordCheck?: boolean
   enforceSignUpInvitations?: boolean
 }
 
@@ -222,6 +223,7 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'credential-kind-from-credential-authenticatable': { payload: CredentialKindFromCredentialAuthenticatablePayload; result: CredentialKind }
   'decrypt-corroboration-token': { payload: DecryptCorroborationTokenPayload; result: Invitation }
   'decrypt-invitation-token': { payload: DecryptInvitationTokenPayload; result: Invitation }
+  'does-authenticatable-have-password?': { payload: DoesAuthenticatableHavePasswordPayload; result: boolean }
   'does-authenticatable-requires-multi-factor?': { payload: DoesAuthenticatableRequiresMultiFactorPayload; result: boolean }
   'encrypt-corroboration': { payload: EncryptCorroborationPayload; result: string }
   'encrypt-invitation': { payload: EncryptInvitationPayload; result: string }
@@ -280,6 +282,10 @@ export interface DecryptInvitationTokenPayload {
   credential: string
   credentialKind: CredentialKind
   token: string
+}
+
+export interface DoesAuthenticatableHavePasswordPayload {
+  authenticatable: Authenticatable
 }
 
 export interface DoesAuthenticatableRequiresMultiFactorPayload {

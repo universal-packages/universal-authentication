@@ -45,6 +45,10 @@ export default class SignUpDynamic {
     }
 
     const exclude: (keyof AttributesValidationOptions)[] = credentialKind === 'email' ? ['phone'] : ['email']
+
+    const shouldValidatePassword = (!!attributes.password && credentialKindOptions.enablePasswordCheck) || credentialKindOptions.enforcePasswordCheck
+    if (!shouldValidatePassword) exclude.push('password')
+
     const validation = await authentication.performDynamic('validate-attributes', { attributes, exclude })
 
     if (validation.valid) {

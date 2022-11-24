@@ -38,12 +38,39 @@ describe('Authentication', (): void => {
               expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
               expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
               expect(TestAuthenticatable.lastInstance).toMatchObject({
-                [credentialKind]: credentialValues[credentialKind].toLocaleLowerCase(),
+                [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                 [`${credentialKind}ConfirmedAt`]: null,
                 username: 'david',
                 firstName: 'David',
                 lastName: 'De Anda',
-                name: 'David De Anda'
+                name: 'David De Anda',
+                encryptedPassword: null
+              })
+            })
+
+            describe(`and ${credentialKind} password check is enabled`, (): void => {
+              it('returns success and sets the password as well', async (): Promise<void> => {
+                const authentication = new Authentication(
+                  { [credentialKind]: { ...allDisabledOptions, enablePasswordCheck: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                  TestAuthenticatable
+                )
+                authentication.options['namespace'] = 'universal-auth'
+                await authentication.loadDynamics()
+
+                const result = await authentication.performDynamic('sign-up', {
+                  attributes: {
+                    [credentialKind]: credentialValues[credentialKind],
+                    username: 'david',
+                    password: '12345678',
+                    firstName: 'David',
+                    lastName: 'De Anda',
+                    name: 'David De Anda'
+                  },
+                  credentialKind
+                })
+
+                expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
+                expect(TestAuthenticatable.lastInstance).toMatchObject({ encryptedPassword: expect.any(String) })
               })
             })
 
@@ -82,7 +109,7 @@ describe('Authentication', (): void => {
                 expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
                 expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                 expect(TestAuthenticatable.lastInstance).toMatchObject({
-                  [credentialKind]: credentialValues[credentialKind].toLocaleLowerCase(),
+                  [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                   [`${credentialKind}ConfirmedAt`]: null,
                   inviterId: 2
                 })
@@ -116,7 +143,7 @@ describe('Authentication', (): void => {
                   expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
                   expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                   expect(TestAuthenticatable.lastInstance).toMatchObject({
-                    [credentialKind]: credentialValues[credentialKind].toLocaleLowerCase(),
+                    [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                     [`${credentialKind}ConfirmedAt`]: null,
                     inviterId: null
                   })
@@ -254,7 +281,7 @@ describe('Authentication', (): void => {
                 expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
                 expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                 expect(TestAuthenticatable.lastInstance).toMatchObject({
-                  [credentialKind]: credentialValues[credentialKind].toLocaleLowerCase(),
+                  [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                   [`${credentialKind}ConfirmedAt`]: null
                 })
               })
@@ -519,11 +546,112 @@ describe('Authentication', (): void => {
                 validation: {
                   errors: {
                     [credentialKind]: [`invalid-${credentialKind}`],
-                    password: ['password-out-of-size'],
                     username: ['invalid-username']
                   },
                   valid: false
                 }
+              })
+            })
+
+            describe(`and ${credentialKind} password check is enabled`, (): void => {
+              it('returns failure and validates the password as well', async (): Promise<void> => {
+                const authentication = new Authentication(
+                  { [credentialKind]: { ...allDisabledOptions, enablePasswordCheck: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                  TestAuthenticatable
+                )
+                authentication.options['namespace'] = 'universal-auth'
+                await authentication.loadDynamics()
+
+                const result = await authentication.performDynamic('sign-up', {
+                  attributes: {
+                    [credentialKind]: 'nop',
+                    username: '',
+                    password: '1',
+                    firstName: 'David',
+                    lastName: 'De Anda',
+                    name: 'David De Anda'
+                  },
+                  credentialKind
+                })
+
+                expect(result).toEqual({
+                  status: 'failure',
+                  validation: {
+                    errors: {
+                      [credentialKind]: [`invalid-${credentialKind}`],
+                      username: ['invalid-username'],
+                      password: ['password-out-of-size']
+                    },
+                    valid: false
+                  }
+                })
+              })
+
+              describe('but password is not provided', (): void => {
+                it('ignores password validation', async (): Promise<void> => {
+                  const authentication = new Authentication(
+                    { [credentialKind]: { ...allDisabledOptions, enablePasswordCheck: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                    TestAuthenticatable
+                  )
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  const result = await authentication.performDynamic('sign-up', {
+                    attributes: {
+                      [credentialKind]: 'nop',
+                      username: '',
+                      firstName: 'David',
+                      lastName: 'De Anda',
+                      name: 'David De Anda'
+                    },
+                    credentialKind
+                  })
+
+                  expect(result).toEqual({
+                    status: 'failure',
+                    validation: {
+                      errors: {
+                        [credentialKind]: [`invalid-${credentialKind}`],
+                        username: ['invalid-username']
+                      },
+                      valid: false
+                    }
+                  })
+                })
+
+                describe(`but ${credentialKind} password check is enforced`, (): void => {
+                  it('validates password as well', async (): Promise<void> => {
+                    const authentication = new Authentication(
+                      { [credentialKind]: { ...allDisabledOptions, enablePasswordCheck: true, enforcePasswordCheck: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                      TestAuthenticatable
+                    )
+                    authentication.options['namespace'] = 'universal-auth'
+                    await authentication.loadDynamics()
+
+                    const result = await authentication.performDynamic('sign-up', {
+                      attributes: {
+                        [credentialKind]: 'nop',
+                        username: '',
+                        firstName: 'David',
+                        lastName: 'De Anda',
+                        name: 'David De Anda'
+                      },
+                      credentialKind
+                    })
+
+                    expect(result).toEqual({
+                      status: 'failure',
+                      validation: {
+                        errors: {
+                          [credentialKind]: [`invalid-${credentialKind}`],
+                          username: ['invalid-username'],
+                          password: ['password-out-of-size']
+                        },
+                        valid: false
+                      }
+                    })
+                  })
+                })
               })
             })
           })

@@ -94,6 +94,24 @@ describe('Authentication', (): void => {
 
           expect(result).toEqual({ errors: {}, valid: true })
         })
+
+        it('validates only if the value is not null', async (): Promise<void> => {
+          const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+          const options: AttributesValidationOptions = {
+            email: { optional: true, validator: jest.fn().mockReturnValue(false) },
+            firstName: { optional: true, validator: jest.fn().mockReturnValue(false) },
+            lastName: { optional: true, validator: jest.fn().mockReturnValue(false) },
+            name: { optional: true, validator: jest.fn().mockReturnValue(false) },
+            password: { optional: true, validator: jest.fn().mockReturnValue(false) },
+            phone: { optional: true, validator: jest.fn().mockReturnValue(false) },
+            username: { optional: true, validator: jest.fn().mockReturnValue(false) }
+          }
+          const validation = new AttributesValidation(authentication, options)
+
+          const result = await validation.validate({ email: null, firstName: null, lastName: null, name: null, password: null, phone: null, username: null })
+
+          expect(result).toEqual({ errors: {}, valid: true })
+        })
       })
 
       describe('providing a matcher', (): void => {

@@ -1,26 +1,29 @@
+import Authentication from '../../Authentication'
 import { AssignableAttributes, AuthDynamicNames, SetAuthenticatableAttributesPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-attributes', true)
 export default class SetAuthenticatableAttributesDynamic {
-  public perform(payload: SetAuthenticatableAttributesPayload): void {
+  public perform(payload: SetAuthenticatableAttributesPayload, authentication: Authentication): void {
     const { authenticatable, attributes, include, exclude } = payload
     const attributeKeys: (keyof AssignableAttributes)[] = ['email', 'username', 'phone', 'password', 'firstName', 'lastName', 'name']
+    let finalToUse: (keyof AssignableAttributes)[] = []
 
     if (include) {
-      for (let i = 0; i < include.length; i++) {
-        authenticatable[include[i]] = attributes[include[i]]
-      }
+      finalToUse = include
     } else if (exclude) {
-      const filtered = attributeKeys.filter((key: keyof AssignableAttributes): boolean => exclude.includes(key))
-
-      for (let i = 0; i < filtered.length; i++) {
-        authenticatable[filtered[i]] = attributes[filtered[i]]
-      }
+      finalToUse = attributeKeys.filter((key: keyof AssignableAttributes): boolean => exclude.includes(key))
     } else {
-      for (let i = 0; i < attributeKeys.length; i++) {
-        authenticatable[attributeKeys[i]] = attributes[attributeKeys[i]]
-      }
+      finalToUse = attributeKeys
     }
+
+    if (finalToUse.includes('email') && attributes.email !== undefined) authenticatable.email = attributes.email.toLowerCase()
+    if (finalToUse.includes('username') && attributes.username !== undefined) authenticatable.username = attributes.username
+    if (finalToUse.includes('firstName') && attributes.firstName !== undefined) authenticatable.firstName = attributes.firstName
+    if (finalToUse.includes('lastName') && attributes.lastName !== undefined) authenticatable.lastName = attributes.lastName
+    if (finalToUse.includes('name') && attributes.name !== undefined) authenticatable.name = attributes.name
+    if (finalToUse.includes('phone') && attributes.phone !== undefined) authenticatable.phone = attributes.phone
+    if (finalToUse.includes('password') && attributes.password !== undefined)
+      authentication.performDynamicSync('set-authenticatable-password', { authenticatable, password: attributes.password })
   }
 }

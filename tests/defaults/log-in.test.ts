@@ -322,29 +322,11 @@ describe('Authentication', (): void => {
               })
 
               describe('and the wrong password is provided', (): void => {
-                it('returns failure', async (): Promise<void> => {
-                  const authentication = new Authentication(
-                    {
-                      [credentialKind]: { enablePasswordCheck: true },
-                      secret: '123',
-                      dynamicsLocation: './src/defaults'
-                    },
-                    TestAuthenticatable
-                  )
-                  authentication.options['namespace'] = 'universal-auth'
-                  await authentication.loadDynamics()
-
-                  const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'nop' })
-
-                  expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
-                })
-
-                describe('and locking is enabled and max attempts until lock is set', (): void => {
-                  it('increments the number of failed attempts', async (): Promise<void> => {
+                describe('and the authenticatable has a password set', (): void => {
+                  it('returns failure', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
                         [credentialKind]: { enablePasswordCheck: true },
-                        enableLocking: true,
                         secret: '123',
                         dynamicsLocation: './src/defaults'
                       },
@@ -353,19 +335,17 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
-                    await authentication.performDynamic('log-in', { credential: credentialKind, password: 'nop' })
+                    const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'nop' })
 
-                    expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(1)
-                    expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                    expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
                   })
 
-                  describe('and authenticatable is about to lock', (): void => {
-                    it('locks it', async (): Promise<void> => {
+                  describe('and locking is enabled and max attempts until lock is set', (): void => {
+                    it('increments the number of failed attempts', async (): Promise<void> => {
                       const authentication = new Authentication(
                         {
                           [credentialKind]: { enablePasswordCheck: true },
                           enableLocking: true,
-                          maxAttemptsUntilLock: 3,
                           secret: '123',
                           dynamicsLocation: './src/defaults'
                         },
@@ -374,12 +354,72 @@ describe('Authentication', (): void => {
                       authentication.options['namespace'] = 'universal-auth'
                       await authentication.loadDynamics()
 
-                      await authentication.performDynamic('log-in', { credential: `${credentialKind}-about-to-lock`, password: 'nop' })
+                      await authentication.performDynamic('log-in', { credential: credentialKind, password: 'nop' })
 
-                      expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(3)
-                      expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(expect.any(Date))
+                      expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(1)
                       expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                     })
+
+                    describe('and authenticatable is about to lock', (): void => {
+                      it('locks it', async (): Promise<void> => {
+                        const authentication = new Authentication(
+                          {
+                            [credentialKind]: { enablePasswordCheck: true },
+                            enableLocking: true,
+                            maxAttemptsUntilLock: 3,
+                            secret: '123',
+                            dynamicsLocation: './src/defaults'
+                          },
+                          TestAuthenticatable
+                        )
+                        authentication.options['namespace'] = 'universal-auth'
+                        await authentication.loadDynamics()
+
+                        await authentication.performDynamic('log-in', { credential: `${credentialKind}-about-to-lock`, password: 'nop' })
+
+                        expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(3)
+                        expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(expect.any(Date))
+                        expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                      })
+                    })
+                  })
+                })
+
+                describe('and the authenticatable does not have a password set', (): void => {
+                  it('returns success (no password check for it)', async (): Promise<void> => {
+                    const authentication = new Authentication(
+                      {
+                        [credentialKind]: { enablePasswordCheck: true },
+                        secret: '123',
+                        dynamicsLocation: './src/defaults'
+                      },
+                      TestAuthenticatable
+                    )
+                    authentication.options['namespace'] = 'universal-auth'
+                    await authentication.loadDynamics()
+
+                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-no-password` })
+
+                    expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
+                  })
+                })
+
+                describe(`but ${credentialKind} password check is enforced)`, (): void => {
+                  it('returns failure', async (): Promise<void> => {
+                    const authentication = new Authentication(
+                      {
+                        [credentialKind]: { enablePasswordCheck: true, enforcePasswordCheck: true },
+                        secret: '123',
+                        dynamicsLocation: './src/defaults'
+                      },
+                      TestAuthenticatable
+                    )
+                    authentication.options['namespace'] = 'universal-auth'
+                    await authentication.loadDynamics()
+
+                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-no-password` })
+
+                    expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
                   })
                 })
               })

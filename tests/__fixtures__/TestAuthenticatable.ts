@@ -43,6 +43,10 @@ export default class TestAuthenticatable implements Authenticatable {
         instance.multiFactorActive = false
         break
 
+      case 'no-password':
+        instance.encryptedPassword = null
+        break
+
       case 'ready-to-unlock':
         instance.failedLogInAttempts = 5
         instance.lockedAt = new Date(new Date().getTime() - 10000)

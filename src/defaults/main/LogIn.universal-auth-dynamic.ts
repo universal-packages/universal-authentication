@@ -22,7 +22,15 @@ export default class LogInDynamic {
       }
 
       if (!authentication.performDynamicSync('is-authenticatable-locked?', { authenticatable })) {
-        const passwordCheck = credentialKindOptions.enablePasswordCheck ? authentication.performDynamicSync('is-authenticatable-password?', { authenticatable, password }) : true
+        let passwordCheck = true
+
+        if (credentialKindOptions.enablePasswordCheck) {
+          if (authentication.performDynamicSync('does-authenticatable-have-password?', { authenticatable })) {
+            passwordCheck = !!password && authentication.performDynamicSync('is-authenticatable-password?', { authenticatable, password })
+          } else if (credentialKindOptions.enforcePasswordCheck) {
+            passwordCheck = false
+          }
+        }
 
         if (passwordCheck) {
           if (credentialKindOptions.enableConfirmation) {
