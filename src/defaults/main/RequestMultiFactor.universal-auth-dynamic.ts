@@ -6,8 +6,9 @@ import { AuthDynamic } from '../../decorators'
 export default class RequestMultiFactorDynamic {
   public async perform(payload: RequestMultiFactorPayload, authentication: Authentication): Promise<AuthenticationResult> {
     const { authenticatable, credential, credentialKind } = payload
+    const credentialKindOptions = authentication.options[credentialKind]
 
-    if (authentication.options.enableMultiFactor) {
+    if (credentialKindOptions.enableMultiFactor) {
       let finalAuthenticatable = authenticatable || (await authentication.performDynamic('authenticatable-from-credential', { credential }))
       let finalCredential = credential || finalAuthenticatable[credentialKind]
 

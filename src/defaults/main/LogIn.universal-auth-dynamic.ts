@@ -47,9 +47,9 @@ export default class LogInDynamic {
             }
           }
 
-          if (authentication.options.enableMultiFactor) {
-            if (authentication.options.enforceMultiFactor || authentication.performDynamicSync('does-authenticatable-requires-multi-factor?', { authenticatable })) {
-              if (authentication.options.sendMultiFactorInPlace) {
+          if (credentialKindOptions.enableMultiFactor) {
+            if (credentialKindOptions.enforceMultiFactor || authentication.performDynamicSync('does-authenticatable-requires-multi-factor?', { authenticatable })) {
+              if (credentialKindOptions.sendMultiFactorInPlace) {
                 authentication.performDynamicSync('set-authenticatable-multi-factor-active', { authenticatable })
                 await authentication.performDynamic('save-authenticatable', { authenticatable })
 

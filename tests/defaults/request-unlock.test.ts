@@ -9,7 +9,7 @@ describe('Authentication', (): void => {
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
         describe(`when using ${credentialKind} to request unlock`, (): void => {
           it('returns success', async (): Promise<void> => {
-            const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+            const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
             authentication.options['namespace'] = 'universal-auth'
             await authentication.loadDynamics()
 

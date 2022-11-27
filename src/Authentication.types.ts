@@ -2,6 +2,7 @@ export type ExtensibleUnion<T extends U, U = string | number | symbol> = T | (U 
 export type CredentialKind = 'email' | 'phone'
 export type AuthConcern = 'confirmation' | 'corroboration' | 'invitation' | 'log-in' | 'multi-factor' | 'reset-password' | 'sign-up' | 'unlock'
 export interface AuthenticationOptions {
+  debug?: boolean
   dynamicsLocation: string
   secret: string
 
@@ -10,11 +11,6 @@ export interface AuthenticationOptions {
 
   enableLocking?: boolean
   enableLogInCount?: boolean
-  enableMultiFactor?: boolean
-
-  enforceMultiFactor?: boolean
-
-  sendMultiFactorInPlace?: boolean
 
   maxAttemptsUntilLock?: number
   unlockAfter?: string
@@ -29,13 +25,17 @@ export interface AuthenticationCredentialOptions {
 
   enableConfirmation?: boolean
 
+  enableMultiFactor?: boolean
   enablePasswordCheck?: boolean
   enableSignUpCorroboration?: boolean
   enableSignUpInvitations?: boolean
 
+  enforceMultiFactor?: boolean
   enforceConfirmation?: boolean
   enforcePasswordCheck?: boolean
   enforceSignUpInvitations?: boolean
+
+  sendMultiFactorInPlace?: boolean
 }
 
 export interface AttributesValidationOptions {

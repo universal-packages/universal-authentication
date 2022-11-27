@@ -12,7 +12,7 @@ describe('Authentication', (): void => {
             it('returns success', async (): Promise<void> => {
               const authentication = new Authentication(
                 {
-                  [credentialKind]: { enablePasswordCheck: false },
+                  [credentialKind]: { enablePasswordCheck: false, enableMultiFactor: false },
                   secret: '123',
                   dynamicsLocation: './src/defaults'
                 },
@@ -33,7 +33,7 @@ describe('Authentication', (): void => {
                   it('unlocks the authenticatable', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
-                        [credentialKind]: { enablePasswordCheck: false },
+                        [credentialKind]: { enablePasswordCheck: false, enableMultiFactor: false },
                         enableLocking: true,
                         unlockAfter: '1 second',
                         secret: '123',
@@ -55,7 +55,7 @@ describe('Authentication', (): void => {
                   it('returns failure does nothing else', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
-                        [credentialKind]: { enablePasswordCheck: false },
+                        [credentialKind]: { enablePasswordCheck: false, enableMultiFactor: false },
                         enableLocking: true,
                         unlockAfter: '1 second',
                         secret: '123',
@@ -79,7 +79,7 @@ describe('Authentication', (): void => {
                 it('does nothing', async (): Promise<void> => {
                   const authentication = new Authentication(
                     {
-                      [credentialKind]: { enablePasswordCheck: false },
+                      [credentialKind]: { enablePasswordCheck: false, enableMultiFactor: false },
                       enableLocking: true,
                       unlockAfter: '1 second',
                       secret: '123',
@@ -102,7 +102,7 @@ describe('Authentication', (): void => {
                 it('returns success', async (): Promise<void> => {
                   const authentication = new Authentication(
                     {
-                      [credentialKind]: { passwordCheck: true },
+                      [credentialKind]: { passwordCheck: true, enableMultiFactor: false },
                       secret: '123',
                       dynamicsLocation: './src/defaults'
                     },
@@ -121,7 +121,7 @@ describe('Authentication', (): void => {
                     it('returns success', async (): Promise<void> => {
                       const authentication = new Authentication(
                         {
-                          [credentialKind]: { enablePasswordCheck: true, enableConfirmation: true },
+                          [credentialKind]: { enablePasswordCheck: true, enableConfirmation: true, enableMultiFactor: false },
                           secret: '123',
                           dynamicsLocation: './src/defaults'
                         },
@@ -141,7 +141,7 @@ describe('Authentication', (): void => {
                       it('returns warning', async (): Promise<void> => {
                         const authentication = new Authentication(
                           {
-                            [credentialKind]: { enablePasswordCheck: true, enableConfirmation: true, enforceConfirmation: true },
+                            [credentialKind]: { enablePasswordCheck: true, enableConfirmation: true, enforceConfirmation: true, enableMultiFactor: false },
                             secret: '123',
                             dynamicsLocation: './src/defaults'
                           },
@@ -160,7 +160,7 @@ describe('Authentication', (): void => {
                       it('returns success', async (): Promise<void> => {
                         const authentication = new Authentication(
                           {
-                            [credentialKind]: { enablePasswordCheck: true, enableConfirmation: true },
+                            [credentialKind]: { enablePasswordCheck: true, enableConfirmation: true, enableMultiFactor: false },
                             secret: '123',
                             dynamicsLocation: './src/defaults'
                           },
@@ -179,7 +179,7 @@ describe('Authentication', (): void => {
                           it('returns warning', async (): Promise<void> => {
                             const authentication = new Authentication(
                               {
-                                [credentialKind]: { confirmationGracePeriod: '2 second', enablePasswordCheck: true, enableConfirmation: true },
+                                [credentialKind]: { confirmationGracePeriod: '2 second', enablePasswordCheck: true, enableConfirmation: true, enableMultiFactor: false },
                                 secret: '123',
                                 dynamicsLocation: './src/defaults'
                               },
@@ -202,7 +202,7 @@ describe('Authentication', (): void => {
                           it('returns success', async (): Promise<void> => {
                             const authentication = new Authentication(
                               {
-                                [credentialKind]: { confirmationGracePeriod: '1 hour', enablePasswordCheck: true, enableConfirmation: true },
+                                [credentialKind]: { confirmationGracePeriod: '1 hour', enablePasswordCheck: true, enableConfirmation: true, enableMultiFactor: false },
                                 secret: '123',
                                 dynamicsLocation: './src/defaults'
                               },
@@ -226,9 +226,12 @@ describe('Authentication', (): void => {
                     it('returns warning and sets authenticatable multi-factor', async (): Promise<void> => {
                       const authentication = new Authentication(
                         {
-                          [credentialKind]: { enablePasswordCheck: true },
-                          enableMultiFactor: true,
-                          enforceMultiFactor: true,
+                          [credentialKind]: {
+                            enablePasswordCheck: true,
+                            enableMultiFactor: true,
+                            enforceMultiFactor: true,
+                            sendMultiFactorInPlace: false
+                          },
                           secret: '123',
                           dynamicsLocation: './src/defaults'
                         },
@@ -254,10 +257,12 @@ describe('Authentication', (): void => {
                       it('returns warning and sets authenticatable multi-factor', async (): Promise<void> => {
                         const authentication = new Authentication(
                           {
-                            [credentialKind]: { enablePasswordCheck: true },
-                            enableMultiFactor: true,
-                            enforceMultiFactor: true,
-                            sendMultiFactorInPlace: true,
+                            [credentialKind]: {
+                              enablePasswordCheck: true,
+                              enableMultiFactor: true,
+                              enforceMultiFactor: true,
+                              sendMultiFactorInPlace: true
+                            },
                             secret: '123',
                             dynamicsLocation: './src/defaults'
                           },
@@ -277,8 +282,7 @@ describe('Authentication', (): void => {
                     it(`returns warning and sets authenticatable ${credentialKind} multi-factor`, async (): Promise<void> => {
                       const authentication = new Authentication(
                         {
-                          [credentialKind]: { enablePasswordCheck: true },
-                          enableMultiFactor: true,
+                          [credentialKind]: { enablePasswordCheck: true, enableMultiFactor: true, sendMultiFactorInPlace: false },
                           secret: '123',
                           dynamicsLocation: './src/defaults'
                         },
@@ -303,7 +307,7 @@ describe('Authentication', (): void => {
                   it('sets the authenticatable login count', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
-                        [credentialKind]: { enablePasswordCheck: true },
+                        [credentialKind]: { enablePasswordCheck: true, enableMultiFactor: false },
                         enableLogInCount: true,
                         secret: '123',
                         dynamicsLocation: './src/defaults'
@@ -326,7 +330,7 @@ describe('Authentication', (): void => {
                   it('returns failure', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
-                        [credentialKind]: { enablePasswordCheck: true },
+                        [credentialKind]: { enablePasswordCheck: true, enableMultiFactor: false },
                         secret: '123',
                         dynamicsLocation: './src/defaults'
                       },
@@ -344,7 +348,7 @@ describe('Authentication', (): void => {
                     it('increments the number of failed attempts', async (): Promise<void> => {
                       const authentication = new Authentication(
                         {
-                          [credentialKind]: { enablePasswordCheck: true },
+                          [credentialKind]: { enablePasswordCheck: true, enableMultiFactor: false },
                           enableLocking: true,
                           secret: '123',
                           dynamicsLocation: './src/defaults'
@@ -364,7 +368,7 @@ describe('Authentication', (): void => {
                       it('locks it', async (): Promise<void> => {
                         const authentication = new Authentication(
                           {
-                            [credentialKind]: { enablePasswordCheck: true },
+                            [credentialKind]: { enablePasswordCheck: true, enableMultiFactor: false },
                             enableLocking: true,
                             maxAttemptsUntilLock: 3,
                             secret: '123',
@@ -389,7 +393,7 @@ describe('Authentication', (): void => {
                   it('returns success (no password check for it)', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
-                        [credentialKind]: { enablePasswordCheck: true },
+                        [credentialKind]: { enablePasswordCheck: true, enableMultiFactor: false },
                         secret: '123',
                         dynamicsLocation: './src/defaults'
                       },
@@ -408,7 +412,7 @@ describe('Authentication', (): void => {
                   it('returns failure', async (): Promise<void> => {
                     const authentication = new Authentication(
                       {
-                        [credentialKind]: { enablePasswordCheck: true, enforcePasswordCheck: true },
+                        [credentialKind]: { enablePasswordCheck: true, enforcePasswordCheck: true, enableMultiFactor: false },
                         secret: '123',
                         dynamicsLocation: './src/defaults'
                       },
@@ -430,7 +434,7 @@ describe('Authentication', (): void => {
             it('returns failure', async (): Promise<void> => {
               const authentication = new Authentication(
                 {
-                  [credentialKind]: { enablePasswordCheck: false },
+                  [credentialKind]: { enablePasswordCheck: false, enableMultiFactor: false },
                   secret: '123',
                   dynamicsLocation: './src/defaults'
                 },

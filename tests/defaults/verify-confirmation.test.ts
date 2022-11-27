@@ -10,7 +10,7 @@ describe('Authentication', (): void => {
         describe(`when conforming a ${credentialKind}`, (): void => {
           describe('when the one time password is valid', (): void => {
             it('returns success', async (): Promise<void> => {
-              const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
@@ -30,7 +30,7 @@ describe('Authentication', (): void => {
 
           describe('when the one time password is not valid', (): void => {
             it('returns failure', async (): Promise<void> => {
-              const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 

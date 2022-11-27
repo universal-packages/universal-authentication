@@ -12,7 +12,10 @@ describe('Authentication', (): void => {
             describe('when using authenticatable as payload param', (): void => {
               describe('and authenticatable has multi-factor active (it has log in successfully)', (): void => {
                 it('returns success', async (): Promise<void> => {
-                  const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  const authentication = new Authentication(
+                    { [credentialKind]: { enableMultiFactor: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                    TestAuthenticatable
+                  )
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
@@ -26,7 +29,10 @@ describe('Authentication', (): void => {
 
               describe('and authenticatable has multi-factor inactive', (): void => {
                 it('returns waring', async (): Promise<void> => {
-                  const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  const authentication = new Authentication(
+                    { [credentialKind]: { enableMultiFactor: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                    TestAuthenticatable
+                  )
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
@@ -42,7 +48,10 @@ describe('Authentication', (): void => {
             describe('when using credential as payload param', (): void => {
               describe('and authenticatable has multi-factor active (it has log in successfully)', (): void => {
                 it('returns success', async (): Promise<void> => {
-                  const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  const authentication = new Authentication(
+                    { [credentialKind]: { enableMultiFactor: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                    TestAuthenticatable
+                  )
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
@@ -54,7 +63,10 @@ describe('Authentication', (): void => {
 
               describe('and authenticatable has multi-factor inactive', (): void => {
                 it('returns waring', async (): Promise<void> => {
-                  const authentication = new Authentication({ enableMultiFactor: true, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  const authentication = new Authentication(
+                    { [credentialKind]: { enableMultiFactor: true }, secret: '123', dynamicsLocation: './src/defaults' },
+                    TestAuthenticatable
+                  )
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
@@ -68,7 +80,7 @@ describe('Authentication', (): void => {
 
           describe('and multi-factor is not enabled', (): void => {
             it('returns failure', async (): Promise<void> => {
-              const authentication = new Authentication({ enableMultiFactor: false, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication({ [credentialKind]: { enableMultiFactor: false }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
