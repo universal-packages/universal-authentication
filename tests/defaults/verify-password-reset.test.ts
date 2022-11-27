@@ -3,7 +3,7 @@ import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
   describe('default-dynamics', (): void => {
-    describe('verify-reset-password', (): void => {
+    describe('verify-password-reset', (): void => {
       const credentialKinds: CredentialKind[] = ['email', 'phone']
 
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
@@ -14,9 +14,9 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'reset-password', credential: credentialKind, credentialKind })
+              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'password-reset', credential: credentialKind, credentialKind })
 
-              const result = await authentication.performDynamic('verify-reset-password', { credential: credentialKind, credentialKind, oneTimePassword, password: 'new-password' })
+              const result = await authentication.performDynamic('verify-password-reset', { credential: credentialKind, credentialKind, oneTimePassword, password: 'new-password' })
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(TestAuthenticatable.lastInstance.password).toEqual('new-password')
@@ -29,9 +29,9 @@ describe('Authentication', (): void => {
                 authentication.options['namespace'] = 'universal-auth'
                 await authentication.loadDynamics()
 
-                const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'reset-password', credential: credentialKind, credentialKind })
+                const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'password-reset', credential: credentialKind, credentialKind })
 
-                const result = await authentication.performDynamic('verify-reset-password', {
+                const result = await authentication.performDynamic('verify-password-reset', {
                   credential: credentialKind,
                   credentialKind,
                   oneTimePassword,
@@ -51,7 +51,7 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const result = await authentication.performDynamic('verify-reset-password', { credential: credentialKind, credentialKind, oneTimePassword: 'nop', password: 'new' })
+              const result = await authentication.performDynamic('verify-password-reset', { credential: credentialKind, credentialKind, oneTimePassword: 'nop', password: 'new' })
 
               expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
             })

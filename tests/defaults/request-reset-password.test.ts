@@ -3,7 +3,7 @@ import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
   describe('default-dynamics', (): void => {
-    describe('request-reset-password', (): void => {
+    describe('request-password-reset', (): void => {
       const credentialKinds: CredentialKind[] = ['email', 'phone']
 
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
@@ -14,7 +14,7 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const result = await authentication.performDynamic('request-reset-password', { credential: credentialKind, credentialKind })
+              const result = await authentication.performDynamic('request-password-reset', { credential: credentialKind, credentialKind })
 
               expect(result).toEqual({ status: 'success', metadata: { oneTimePassword: expect.any(String) } })
             })
@@ -26,7 +26,7 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const result = await authentication.performDynamic('request-reset-password', { credential: `${credentialKind}-nop`, credentialKind })
+              const result = await authentication.performDynamic('request-password-reset', { credential: `${credentialKind}-nop`, credentialKind })
 
               expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
             })

@@ -1,6 +1,6 @@
 export type ExtensibleUnion<T extends U, U = string | number | symbol> = T | (U & { zz__ignore?: never })
 export type CredentialKind = 'email' | 'phone'
-export type AuthConcern = 'confirmation' | 'corroboration' | 'invitation' | 'log-in' | 'multi-factor' | 'reset-password' | 'sign-up' | 'unlock'
+export type AuthConcern = 'confirmation' | 'corroboration' | 'invitation' | 'log-in' | 'multi-factor' | 'password-reset' | 'sign-up' | 'unlock'
 export interface AuthenticationOptions {
   debug?: boolean
   dynamicsLocation: string
@@ -153,7 +153,7 @@ export interface SimplifiedAuthDynamicNames {
   'request-confirmation': { payload: RequestConfirmationPayload; result: AuthenticationResult }
   'request-corroboration': { payload: RequestCorroborationPayload; result: AuthenticationResult }
   'request-multi-factor': { payload: RequestMultiFactorPayload; result: AuthenticationResult }
-  'request-reset-password': { payload: RequestResetPasswordPayload; result: AuthenticationResult }
+  'request-password-reset': { payload: RequestPasswordResetPayload; result: AuthenticationResult }
   'request-unlock': { payload: RequestUnlockPayload; result: AuthenticationResult }
   'sign-up': { payload: SignUpPayload; result: AuthenticationResult }
   'update-authenticatable': { payload: UpdateAuthenticatablePayload; result: AuthenticationResult }
@@ -161,7 +161,7 @@ export interface SimplifiedAuthDynamicNames {
   'verify-confirmation': { payload: VerifyConfirmationPayload; result: AuthenticationResult }
   'verify-corroboration': { payload: VerifyCorroborationPayload; result: AuthenticationResult }
   'verify-multi-factor': { payload: VerifyMultiFactorPayload; result: AuthenticationResult }
-  'verify-reset-password': { payload: VerifyResetPasswordPayload; result: AuthenticationResult }
+  'verify-password-reset': { payload: VerifyPasswordResetPayload; result: AuthenticationResult }
   'verify-unlock': { payload: VerifyUnlockPayload; result: AuthenticationResult }
   zz__ignore: { payload: Record<string, any>; result: any }
 }
@@ -205,7 +205,7 @@ export interface RequestMultiFactorPayload {
   credentialKind: CredentialKind
 }
 
-export interface RequestResetPasswordPayload {
+export interface RequestPasswordResetPayload {
   credential: string
   credentialKind: CredentialKind
 }
@@ -251,7 +251,7 @@ export interface VerifyMultiFactorPayload {
   oneTimePassword: string
 }
 
-export interface VerifyResetPasswordPayload {
+export interface VerifyPasswordResetPayload {
   credential: string
   credentialKind: CredentialKind
   oneTimePassword: string
@@ -292,7 +292,7 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'send-corroboration': { payload: SendCorroborationPayload; result: void }
   'send-invitation': { payload: SendInvitationPayload; result: void }
   'send-multi-factor': { payload: SendMultiFactorPayload; result: void }
-  'send-reset-password': { payload: SendResetPasswordPayload; result: void }
+  'send-password-reset': { payload: SendPasswordResetPayload; result: void }
   'send-unlock': { payload: SendUnlockPayload; result: void }
   'set-authenticatable-attributes': { payload: SetAuthenticatableAttributesPayload; result: void }
   'set-authenticatable-confirmed': { payload: SetAuthenticatableConfirmedPayload; result: void }
@@ -447,7 +447,7 @@ export interface SendMultiFactorPayload {
   oneTimePassword: string
 }
 
-export interface SendResetPasswordPayload {
+export interface SendPasswordResetPayload {
   credential: string
   credentialKind: CredentialKind
   oneTimePassword: string
