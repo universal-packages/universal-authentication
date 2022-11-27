@@ -7,17 +7,19 @@ export interface AuthenticationOptions {
   secret: string
 
   email?: AuthenticationCredentialOptions
-  phone?: AuthenticationCredentialOptions
 
   enableLocking?: boolean
   enableLogInCount?: boolean
 
   maxAttemptsUntilLock?: number
+
+  phone?: AuthenticationCredentialOptions
+
+  providerKeys?: { [provider: string]: Record<string, string> }
+
   unlockAfter?: string
 
   validations?: AttributesValidationOptions
-
-  providerKeys?: { [provider: string]: Record<string, string> }
 }
 
 export interface AuthenticationCredentialOptions {
@@ -99,6 +101,7 @@ export interface AssignableAttributes {
   lastName?: string
   name?: string
   profilePictureUrl?: string
+  multiFactorEnabled?: boolean
 }
 
 export interface AuthenticatableClass<A = Authenticatable> {

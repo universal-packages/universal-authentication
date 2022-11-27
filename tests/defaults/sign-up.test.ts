@@ -11,6 +11,8 @@ describe('Authentication', (): void => {
         enableSignUpCorroboration: false,
         enableSignUpInvitations: false,
 
+        enforceConfirmation: false,
+        enforcePasswordCheck: false,
         enforceSignUpInvitations: false
       }
       const credentialValues = { email: 'DAVID@UNIVERSAL.com', phone: '+524497654321' }

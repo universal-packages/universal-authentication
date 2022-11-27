@@ -6,7 +6,7 @@ import { AuthDynamic } from '../../decorators'
 export default class SetAuthenticatableAttributesDynamic {
   public perform(payload: SetAuthenticatableAttributesPayload, authentication: Authentication): void {
     const { authenticatable, attributes, include, exclude } = payload
-    const attributeKeys: (keyof AssignableAttributes)[] = ['email', 'username', 'phone', 'password', 'firstName', 'lastName', 'name', 'profilePictureUrl']
+    const attributeKeys: (keyof AssignableAttributes)[] = ['email', 'username', 'phone', 'password', 'firstName', 'lastName', 'name', 'profilePictureUrl', 'multiFactorEnabled']
     let finalToUse: (keyof AssignableAttributes)[] = []
 
     if (include) {
@@ -23,9 +23,10 @@ export default class SetAuthenticatableAttributesDynamic {
     if (finalToUse.includes('lastName') && attributes.lastName !== undefined) authenticatable.lastName = attributes.lastName
     if (finalToUse.includes('name') && attributes.name !== undefined) authenticatable.name = attributes.name
     if (finalToUse.includes('phone') && attributes.phone !== undefined) authenticatable.phone = attributes.phone
-    if (finalToUse.includes('profilePictureUrl') && attributes.profilePictureUrl !== undefined)
-      authentication.performDynamicSync('set-authenticatable-profile-picture', { authenticatable, pictureUrl: attributes.profilePictureUrl })
     if (finalToUse.includes('password') && attributes.password !== undefined)
       authentication.performDynamicSync('set-authenticatable-password', { authenticatable, password: attributes.password })
+    if (finalToUse.includes('profilePictureUrl') && attributes.profilePictureUrl !== undefined)
+      authentication.performDynamicSync('set-authenticatable-profile-picture', { authenticatable, pictureUrl: attributes.profilePictureUrl })
+    if (finalToUse.includes('multiFactorEnabled') && attributes.phone !== undefined) authenticatable.multiFactorEnabled = !!attributes.multiFactorEnabled
   }
 }
