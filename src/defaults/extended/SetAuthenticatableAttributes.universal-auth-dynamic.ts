@@ -6,7 +6,7 @@ import { AuthDynamic } from '../../decorators'
 export default class SetAuthenticatableAttributesDynamic {
   public perform(payload: SetAuthenticatableAttributesPayload, authentication: Authentication): void {
     const { authenticatable, attributes, include, exclude } = payload
-    const attributeKeys: (keyof AssignableAttributes)[] = ['email', 'username', 'phone', 'password', 'firstName', 'lastName', 'name']
+    const attributeKeys: (keyof AssignableAttributes)[] = ['email', 'username', 'phone', 'password', 'firstName', 'lastName', 'name', 'profilePictureUrl']
     let finalToUse: (keyof AssignableAttributes)[] = []
 
     if (include) {

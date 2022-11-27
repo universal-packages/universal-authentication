@@ -4,13 +4,13 @@ import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('authenticatable-from-provider-user-data', true)
 export default class AuthenticatableFromProviderIUserDataDynamic {
-  public async perform(payload: AuthenticatableFromProviderUserDataPayload, authentication: Authentication): Promise<Authenticatable> {
+  public perform(payload: AuthenticatableFromProviderUserDataPayload, authentication: Authentication): Authenticatable {
     const Authenticatable = authentication.Authenticatable
-    const { provider, userData } = payload
+    const { provider, attributes } = payload
     const authenticatable = new Authenticatable()
 
-    authentication.performDynamicSync('set-authenticatable-attributes', { authenticatable, attributes: userData })
-    authentication.performDynamicSync('set-authenticatable-provider-id', { authenticatable, provider, id: userData.id })
+    authentication.performDynamicSync('set-authenticatable-attributes', { authenticatable, attributes })
+    authentication.performDynamicSync('set-authenticatable-provider-id', { authenticatable, provider, id: attributes.id })
 
     return authenticatable
   }

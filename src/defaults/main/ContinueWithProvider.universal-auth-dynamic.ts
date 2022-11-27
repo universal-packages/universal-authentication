@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, ContinueWithProviderPayload, ProviderUserData } from '../../Authentication.types'
+import { AuthDynamicNames, AuthenticationResult, ContinueWithProviderPayload, ProviderDataResult } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('continue-with-provider', true)
@@ -10,15 +10,16 @@ export default class ContinueWithProviderDynamic {
     const dynamicName = `get-${provider}-user-data`
     const providerKeys = authentication.options.providerKeys[provider]
 
-    const providerUserData: ProviderUserData = await authentication.performDynamic(dynamicName, { token, keys: providerKeys })
+    const providerDataResult: ProviderDataResult = await authentication.performDynamic(dynamicName, { token, keys: providerKeys })
 
-    if (!providerUserData.error) {
-      const authenticatable = await authentication.performDynamic('authenticatable-from-provider-id', { provider, id: providerUserData.id })
+    if (!providerDataResult.error) {
+      const { attributes } = providerDataResult
+      const authenticatable = await authentication.performDynamic('authenticatable-from-provider-id', { provider, id: attributes.id })
 
       if (authenticatable) {
         let shouldSave = false
 
-        if (authentication.options.email?.enableConfirmation) {
+        if (authentication.options.email?.enableConfirmation && !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind: 'email' })) {
           authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind: 'email' })
           shouldSave = true
         }
@@ -32,7 +33,7 @@ export default class ContinueWithProviderDynamic {
 
         return { status: 'success', authenticatable }
       } else {
-        const authenticatable = authentication.performDynamicSync('authenticatable-provider-user-data', { provider, userData: providerUserData })
+        const authenticatable = authentication.performDynamicSync('authenticatable-from-provider-user-data', { provider, attributes })
         await authentication.performDynamic('save-authenticatable', { authenticatable })
 
         return { status: 'success', authenticatable }

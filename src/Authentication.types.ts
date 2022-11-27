@@ -122,7 +122,7 @@ export interface AuthenticationResult<M = Record<string, any>> {
   validation?: ValidationResult
 }
 
-export interface ProviderUserData {
+export interface ProviderDataAttributes {
   id: string | number | bigint
   username?: string
   email?: string
@@ -130,7 +130,16 @@ export interface ProviderUserData {
   lastName?: string
   name?: string
   profilePictureUrl?: string
+}
+
+export interface ProviderDataResult {
+  attributes?: ProviderDataAttributes
   error?: Error
+}
+
+export interface GetProviderUserDataPayload {
+  token: string
+  keys: Record<string, string>
 }
 
 export interface SimplifiedAuthDynamicNames {
@@ -269,6 +278,7 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'generate-one-time-password': { payload: GenerateOneTimePasswordPayload; result: string }
   'has-authenticatable-confirmation-passed-grace-period?': { payload: HasAuthenticatableConfirmationPassedGracePeriodPayload; result: boolean }
   'is-authenticatable-confirmed?': { payload: IsAuthenticatableConfirmedPayload; result: boolean }
+  'is-authenticatable-connected?': { payload: IsAuthenticatableConnectedPayload; result: boolean }
   'is-authenticatable-lockable?': { payload: IsAuthenticatableLockablePayload; result: boolean }
   'is-authenticatable-locked?': { payload: IsAuthenticatableLockedPayload; result: boolean }
   'is-authenticatable-multi-factor-active?': { payload: IsAuthenticatableMultiFactorActivePayload; result: boolean }
@@ -307,7 +317,7 @@ export interface AuthenticatableFromProviderIdPayload {
 
 export interface AuthenticatableFromProviderUserDataPayload {
   provider: string
-  userData: ProviderUserData
+  attributes: ProviderDataAttributes
 }
 
 export interface AuthenticatableFromSignUpPayload {
@@ -378,6 +388,11 @@ export interface HasAuthenticatableConfirmationPassedGracePeriodPayload {
 export interface IsAuthenticatableConfirmedPayload {
   authenticatable: Authenticatable
   credentialKind: CredentialKind
+}
+
+export interface IsAuthenticatableConnectedPayload {
+  authenticatable: Authenticatable
+  provider: string
 }
 
 export interface IsAuthenticatableLockablePayload {

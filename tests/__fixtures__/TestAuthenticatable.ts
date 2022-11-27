@@ -61,13 +61,16 @@ export default class TestAuthenticatable implements Authenticatable {
   })
 
   public static readonly findByProviderId = jest.fn().mockImplementation((provider: string, id: string | number | bigint): TestAuthenticatable => {
-    const instance = new TestAuthenticatable()
+    if (id === 80085) {
+      const instance = new TestAuthenticatable()
+      instance.password = 'password'
+      instance.createdAt = new Date(new Date().getTime() - 10000)
+      instance[`${provider}Id`] = id
 
-    instance.password = 'password'
-    instance.createdAt = new Date(new Date().getTime() - 10000)
-    instance[`${provider}Id`] = id
-
-    return instance
+      return instance
+    } else {
+      return
+    }
   })
 
   public static readonly existsWithCredential = jest.fn().mockImplementation((_credentialKind: CredentialKind, credential: string): boolean => {
