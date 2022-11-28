@@ -30,7 +30,7 @@ console.log(result)
 // > { status: 'success', authenticatable: { id: 69, username: 'username', createdAt: [Date] } }
 ```
 
-By default authentication comes packed with a whole default auth system, but you can override all or part of the system by creating non default dynamics in your dynamics location with the extension prefix `auth-dynamic`, ex: `LogIn.auth-dynamic.js` and export ad default dynamic class there. More about all the dynamics that can be override below.
+By default authentication comes packed with a whole default auth system, but we can override all or part of the system by creating non default dynamics in your dynamics location with the extension prefix `auth-dynamic`, ex: `LogIn.auth-dynamic.js` and export ad default dynamic class there. More about all the dynamics that can be override below.
 
 ### Options
 
@@ -81,7 +81,7 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
   Options related to phone authentication
 
   - **`confirmationGracePeriod`** `String` `ex: 2 days`
-    If provided an authenticatable will need to confirm its phone before this time or log in will not work until confirmed (for phone usually you corroborate at sign up so this is not a dynamic commonly used).
+    If provided an authenticatable will need to confirm its phone before this time or log in will not work until confirmed (for phone usually we corroborate at sign up so this is not a dynamic commonly used).
   - **`enableConfirmation`** `Boolean`
     If true all confirmation behavior will take place, like verifying grace period or if an authenticatable needs to be confirmed to continue log-in.
   - **`enableMultiFactor`** `Boolean` `default: true`
@@ -139,6 +139,94 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
       If provided teh value length should be between `min` and/or `max`.
     - **`validator`** `Regex`
       A validator function for a custom coded validation.
+
+## Authenticatable
+
+Internally this auth system will handle an abstract `Authenticatable` class, we need to provided it in order for the whole thing to work.
+
+```js
+import User from './User'
+
+authentication.setAuthenticatable(User)
+```
+
+```js
+import { Encrypt } from '@universal-packages/authentication'
+
+export default class User {
+  id
+
+  profilePictureUrl
+  email
+  emailConfirmedAt
+
+  phone
+  phoneConfirmedAt
+
+  username
+
+  failedLogInAttempts
+  lockedAt
+
+  logInCount
+
+  multiFactorEnabled
+  multiFactorActive
+
+  @Encrypt()
+  password
+  encryptedPassword
+
+  firstName
+  lastName
+  name
+
+  inviterId
+
+  createdAt
+
+  save() {}
+
+  static existsWithCredential(credentialKind, credential) {}
+  static existsWithUsername(username) {}
+  static findByCredential(credential) {}
+  static findByProviderId(provider, id) {}
+}
+```
+
+### Encrypt decorator
+
+Use this decorator to automatically encrypt attributes in a class. For example for the `password` attribute, when decorated, every time is set, the `encryptedPassword` attribute is going to set with a hashed and salted string based on the password. It sets depending on the base attribute name `encrypted<Attribute>`.
+
+```js
+import { Encrypt } from '@universal-packages/authentication'
+
+export default class User {
+  @Encrypt()
+  secret
+  encryptedSecret
+}
+
+const user = new User()
+
+user.secret = 'my password'
+
+console.log(user.secret, user.encryptedSecret)
+
+// > undefined C49HSl4okw8yoCKfoNRnsqD4T0T6SJZkdpTgU1o478Mk4GT995KV5HUKzvsnN1fShOo9sdDQq3Rjiz+Brj9bCIeJfWrt7tMl936wWyBARkPCdDlj9OfLNNDnhGo7dkmbU8YBfpgcmoMUmCuIftupOik+Nk/Eu83J4epW5y2w0fM=
+```
+
+You can also specify the attribute name to store the hashed password.
+
+```js
+import { Encrypt } from '@universal-packages/authentication'
+
+export default class User {
+  @Encrypt('hashedSecret')
+  secret
+  hashedSecret
+}
+```
 
 ## Default main dynamics
 
@@ -503,6 +591,358 @@ const result = authentication.perform('verify-unlock', { credential: 'email', cr
   - **`authenticatable`** `Authenticatable`
   - **`message?`**
     - `invalid-one-time-password` `failure`
+
+## Default extended dynamics
+
+The extended dynamics are meant to be override in case your Authenticatable behaves differently of what this authentication defaults expect, for example if we set the password of an authenticatable in a custom manner of if we save it differently than expected.
+
+### authenticatable-from-credential
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+- **`RESULT`** `Authenticatable`
+
+### authenticatable-from-provider-id
+
+- **`PAYLOAD`** `Object`
+  - **`provider`** `String`
+  - **`id`** `String | Number | BigInt`
+- **`RESULT`** `Authenticatable`
+
+### authenticatable-from-provider-user-data
+
+- **`PAYLOAD`** `Object`
+  - **`provider`** `String`
+  - **`attributes`** `ProviderDataAttributes`
+    - **`id`**`String | Number | BigInt`
+    - **`email`** `String`
+    - **`firstName`** `String`
+    - **`lastName`** `String`
+    - **`name`** `String`
+    - **`profilePictureUrl`** `String`
+    - **`username`** `String`
+- **`RESULT`** `Authenticatable`
+
+### authenticatable-from-sign-up
+
+- **`PAYLOAD`** `Object`
+  - **`attributes`** `AssignableAttributes`
+    - **`email`** `String`
+    - **`firstName`** `String`
+    - **`lastName`** `String`
+    - **`name`** `String`
+    - **`password`** `String`
+    - **`phone`** `String`
+    - **`username`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`corroboration`** `Corroboration`
+    - **`credential`** `String`
+    - **`credentialKind`** `email | phone`
+  - **`invitation`** `Invitation`
+    - **`credential`** `String`
+    - **`credentialKind`** `email | phone`
+    - **`inviterId`**`String | Number | BigInt`
+- **`RESULT`** `Authenticatable`
+
+### credential-kind-from-credential-authenticatable
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credential`** `String`
+- **`RESULT`** `email | phone`
+
+### decrypt-corroboration-token
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`token`** `String`
+- **`RESULT`** `Corroboration`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+
+### decrypt-invitation-token
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`token`** `String`
+- **`RESULT`** `Invitation`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`inviterId`**`String | Number | BigInt`
+
+### does-authenticatable-have-password?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `Boolean`
+
+### does-authenticatable-requires-multi-factor?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `Boolean`
+
+### encrypt-corroboration
+
+- **`PAYLOAD`** `Object`
+  - **`corroboration`** `Corroboration`
+    - **`credential`** `String`
+    - **`credentialKind`** `email | phone`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `String`
+
+### encrypt-invitation
+
+- **`PAYLOAD`** `Object`
+  - **`invitation`** `Invitation`
+    - **`credential`** `String`
+    - **`credentialKind`** `email | phone`
+    - **`inviterId`**`String | Number | BigInt`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `String`
+
+### generate-concern-secret
+
+- **`PAYLOAD`** `Object`
+  - **`concern`** `confirmation | corroboration | invitation | log-in | multi-factor | password-reset | sign-up | unlock`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `String`
+
+### generate-multi-factor-metadata
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `MultiFactorMetadata`
+  - **`email`** `String`
+  - **`phone`** `String`
+
+### generate-one-time-password
+
+- **`PAYLOAD`** `Object`
+  - **`concern`** `confirmation | corroboration | invitation | log-in | multi-factor | password-reset | sign-up | unlock`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `String`
+
+### has-authenticatable-confirmation-passed-grace-period?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-confirmed?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-connected?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`provider`** `String`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-lockable?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-locked?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-multi-factor-active?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-password?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`password`** `String`
+- **`RESULT`** `Boolean`
+
+### is-authenticatable-ready-to-unlock?
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `Boolean`
+
+### save-authenticatable
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### send-confirmation
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `void`
+
+### send-corroboration
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `void`
+
+### send-invitation
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`invitationToken`** `String`
+- **`RESULT`** `void`
+
+### send-multi-factor
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `void`
+
+### send-password-reset
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `void`
+
+### send-unlock
+
+- **`PAYLOAD`** `Object`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `void`
+
+### set-authenticatable-attributes
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`attributes`** `AssignableAttributes`
+    - **`firstName`** `String`
+    - **`lastName`** `String`
+    - **`multiFactorEnabled`** `String`
+    - **`name`** `String`
+    - **`password`** `String`
+    - **`profilePictureUrl`** `String`
+    - **`username`** `String`
+  - **`include`** `AttributeName[]`
+  - **`exclude`** `AttributeName[]`
+- **`RESULT`** `void`
+
+### set-authenticatable-confirmed
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `void`
+
+### set-authenticatable-fail-attempt
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### set-authenticatable-locked
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### set-authenticatable-log-in-count
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### set-authenticatable-multi-factor-active
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### set-authenticatable-multi-factor-inactive
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### set-authenticatable-password
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`password`** `String`
+- **`RESULT`** `void`
+
+### set-authenticatable-profile-picture
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`pictureUrl`** `String`
+- **`RESULT`** `void`
+
+### set-authenticatable-provider-id
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`provider`** `String`
+  - **`id`** `String | Number | BigInt`
+- **`RESULT`** `void`
+
+### set-authenticatable-unlocked
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### validate-attributes
+
+- **`PAYLOAD`** `Object`
+  - **`attributes`** `AssignableAttributes`
+    - **`email`** `String`
+    - **`firstName`** `String`
+    - **`lastName`** `String`
+    - **`name`** `String`
+    - **`password`** `String`
+    - **`phone`** `String`
+    - **`username`** `String`
+  - **`include`** `AttributeName[]`
+  - **`exclude`** `AttributeName[]`
+  - **`allOptional`** `Boolean`
+- **`RESULT`** `ValidationResult`
+  - **`valid`** `Boolean`
+  - **`errors`** `Object`
+    - **`<attribute>`** `String[]`
+
+### verify-one-time-password
+
+- **`PAYLOAD`** `Object`
+  - **`concern`** `confirmation | corroboration | invitation | log-in | multi-factor | password-reset | sign-up | unlock`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`oneTimePassword`** `email | phone`
+- **`RESULT`** `Boolean`
 
 ## Typescript
 

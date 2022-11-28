@@ -145,6 +145,22 @@ export interface GetProviderUserDataPayload {
   keys: Record<string, string>
 }
 
+export interface Corroboration {
+  credential: string
+  credentialKind: CredentialKind
+}
+
+export interface Invitation {
+  credential: string
+  credentialKind: CredentialKind
+  inviterId: string | number | bigint
+}
+
+export interface MultiFactorMetadata {
+  email?: string
+  phone?: string
+}
+
 export interface SimplifiedAuthDynamicNames {
   'connect-provider': { payload: ConnectProviderPayload; result: AuthenticationResult }
   'continue-with-provider': { payload: ContinueWithProviderPayload; result: AuthenticationResult }
@@ -523,20 +539,4 @@ export interface VerifyOneTimePasswordPayload {
   credential: string
   credentialKind: CredentialKind
   oneTimePassword: string
-}
-
-export interface Corroboration {
-  credential: string
-  credentialKind: CredentialKind
-}
-
-export interface Invitation {
-  credential: string
-  credentialKind: CredentialKind
-  inviterId: string | number | bigint
-}
-
-export interface MultiFactorMetadata {
-  email?: string
-  phone?: string
 }
