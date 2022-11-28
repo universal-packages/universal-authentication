@@ -6,6 +6,6 @@ export default class SetAuthenticatableMultiFactorInactiveDynamic {
   public perform(payload: SetAuthenticatableMultiFactorInactivePayload): void {
     const { authenticatable } = payload
 
-    authenticatable.multiFactorActive = false
+    authenticatable.multiFactorActiveAt = null
   }
 }

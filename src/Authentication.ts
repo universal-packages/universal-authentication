@@ -8,6 +8,7 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
   public constructor(options: AuthenticationOptions, Authenticatable?: AuthenticatableClass) {
     const newOptions: AuthenticationOptions = {
       maxAttemptsUntilLock: 5,
+      multiFactorActivityLimit: '5 minutes',
       ...options,
       email: {
         enablePasswordCheck: true,

@@ -7,7 +7,7 @@ export default class TestAuthenticatable implements Authenticatable {
     const instance = new TestAuthenticatable()
 
     instance.password = 'password'
-    instance.createdAt = new Date(new Date().getTime() - 10000)
+    instance.createdAt = new Date(Date.now() - 10000)
 
     const credentialKind: CredentialKind = credential.split('-')[0] as any
     instance[credentialKind] = credential
@@ -36,11 +36,21 @@ export default class TestAuthenticatable implements Authenticatable {
         break
 
       case 'multi-factor-active':
-        instance.multiFactorActive = true
+        instance.multiFactorActiveAt = new Date(Date.now() - 10000)
+        break
+
+      case 'multi-factor-active-confirmed':
+        instance[`${credentialKind}ConfirmedAt`] = new Date()
+        instance.multiFactorActiveAt = new Date(Date.now() - 10000)
+        break
+
+      case 'multi-factor-active-unconfirmed':
+        instance[`${credentialKind}ConfirmedAt`] = null
+        instance.multiFactorActiveAt = new Date(Date.now() - 10000)
         break
 
       case 'multi-factor-inactive':
-        instance.multiFactorActive = false
+        instance.multiFactorActiveAt = null
         break
 
       case 'no-password':
@@ -49,7 +59,7 @@ export default class TestAuthenticatable implements Authenticatable {
 
       case 'ready-to-unlock':
         instance.failedLogInAttempts = 5
-        instance.lockedAt = new Date(new Date().getTime() - 10000)
+        instance.lockedAt = new Date(Date.now() - 10000)
         break
 
       case 'unconfirmed':
@@ -64,7 +74,7 @@ export default class TestAuthenticatable implements Authenticatable {
     if (id === 80085) {
       const instance = new TestAuthenticatable()
       instance.password = 'password'
-      instance.createdAt = new Date(new Date().getTime() - 10000)
+      instance.createdAt = new Date(Date.now() - 10000)
       instance[`${provider}Id`] = id
 
       return instance
@@ -108,10 +118,11 @@ export default class TestAuthenticatable implements Authenticatable {
 
   failedLogInAttempts?: number = 0
   lockedAt?: Date = null
+
   logInCount?: number = 0
 
   multiFactorEnabled?: boolean = null
-  multiFactorActive?: boolean = null
+  multiFactorActiveAt?: Date = null
 
   @Encrypt()
   password?: string

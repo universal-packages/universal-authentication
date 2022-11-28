@@ -12,6 +12,6 @@ export default class HasAuthenticatableConfirmationPassedGracePeriodDynamic {
     const graceTimeMs = ms(credentialKindOptions.confirmationGracePeriod)
     const timeAfterCreation = authenticatable.createdAt.getTime() + graceTimeMs
 
-    return timeAfterCreation <= new Date().getTime()
+    return timeAfterCreation <= Date.now()
   }
 }

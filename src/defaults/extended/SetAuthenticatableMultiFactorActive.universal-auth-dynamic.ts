@@ -6,6 +6,6 @@ export default class SetAuthenticatableMultiFactorActiveDynamic {
   public perform(payload: SetAuthenticatableMultiFactorActivePayload): void {
     const { authenticatable } = payload
 
-    authenticatable.multiFactorActive = true
+    authenticatable.multiFactorActiveAt = new Date()
   }
 }

@@ -4,7 +4,6 @@ export type AuthConcern = 'confirmation' | 'corroboration' | 'invitation' | 'log
 export interface AuthenticationOptions {
   debug?: boolean
   dynamicsLocation: string
-  secret: string
 
   email?: AuthenticationCredentialOptions
 
@@ -13,9 +12,13 @@ export interface AuthenticationOptions {
 
   maxAttemptsUntilLock?: number
 
+  multiFactorActivityLimit?: string
+
   phone?: AuthenticationCredentialOptions
 
   providerKeys?: { [provider: string]: Record<string, string> }
+
+  secret: string
 
   unlockAfter?: string
 
@@ -76,7 +79,7 @@ export interface Authenticatable {
   logInCount?: number
 
   multiFactorEnabled?: boolean
-  multiFactorActive?: boolean
+  multiFactorActiveAt?: Date
 
   password?: string
   encryptedPassword?: string

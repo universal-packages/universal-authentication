@@ -77,6 +77,12 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
 - **`enableLogInCount`** `Boolean`
   if true, every time an authenticatable login successfully the count will be up and saved.
 
+- **`maxAttemptsUntilLock`** `Number` `default: 5`
+  After how many failed log in attempts an authenticatable should be locked.
+
+- **`multiFactorActivityLimit`** `String` `default: 5 minutes`
+  After a successful login first step, for how much time should we consider the multi factor as active?, if the time has passed the user should do the first step again.
+
 - **`phone`** `AuthenticationCredentialOptions`
   Options related to phone authentication
 
@@ -171,7 +177,7 @@ export default class User {
   logInCount
 
   multiFactorEnabled
-  multiFactorActive
+  multiFactorActiveAt
 
   @Encrypt()
   password
