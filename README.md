@@ -14,7 +14,7 @@ npm install @universal-packages/authentication
 
 ## Authentication
 
-The `Authentication` class is a defendant of `DynamicApi` class, it is the entry interface to load and perform all our authentication related dynamics.
+The `Authentication` class is a descendant of `DynamicApi` class, it is the entry interface to load and perform all our authentication related dynamics.
 
 ```js
 import { Authentication } from '@universal-packages/authentication'
