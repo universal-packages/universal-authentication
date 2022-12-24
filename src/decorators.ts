@@ -1,4 +1,4 @@
-import { hashSubject } from './crypto'
+import { hashSubject } from '@universal-packages/crypto-utils'
 
 export { Dynamic as AuthDynamic } from '@universal-packages/dynamic-api'
 export { DynamicHook as AuthDynamicHook } from '@universal-packages/dynamic-api'

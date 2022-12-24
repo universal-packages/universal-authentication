@@ -1,6 +1,6 @@
+import { encryptSubject } from '@universal-packages/crypto-utils'
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, EncryptCorroborationPayload } from '../../Authentication.types'
-import { encryptSubject } from '../../crypto'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('encrypt-corroboration', true)
@@ -10,6 +10,6 @@ export default class EncryptCorroborationPayloadDynamic {
 
     const secret = authentication.performDynamicSync('generate-concern-secret', { concern: 'corroboration', credential, credentialKind })
 
-    return encryptSubject(corroboration, secret)
+    return encryptSubject(corroboration, secret, { concern: 'corroboration' })
   }
 }
