@@ -10,9 +10,10 @@ export default class RequestPasswordResetDynamic {
     const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
     if (authenticatable) {
-      const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'password-reset', identifier: String(authenticatable.id) })
+      const identifier = String(authenticatable.id)
+      const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'password-reset', identifier })
 
-      await authentication.performDynamic('send-password-reset', { credential, credentialKind, oneTimePassword })
+      await authentication.performDynamic('send-password-reset', { identifier, credential, credentialKind, oneTimePassword })
 
       return { status: 'success' }
     }

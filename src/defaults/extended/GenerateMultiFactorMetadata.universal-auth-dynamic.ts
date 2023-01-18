@@ -5,7 +5,7 @@ import { AuthDynamic } from '../../decorators'
 export default class GenerateMultiFactorMetadataDynamic {
   public perform(payload: GenerateMultiFactorMetadataPayload): MultiFactorMetadata {
     const { authenticatable } = payload
-    const metadata: MultiFactorMetadata = {}
+    const metadata: MultiFactorMetadata = { identifier: String(authenticatable.id) }
 
     if (authenticatable.email) {
       metadata.email = authenticatable.email

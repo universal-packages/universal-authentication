@@ -703,6 +703,7 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 - **`PAYLOAD`** `Object`
   - **`authenticatable`** `Authenticatable`
 - **`RESULT`** `MultiFactorMetadata`
+  - **`identifier`** `String`
   - **`email`** `String`
   - **`phone`** `String`
 
@@ -798,6 +799,7 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 ### send-multi-factor
 
 - **`PAYLOAD`** `Object`
+  - **`identifier`** `String`
   - **`credential`** `String`
   - **`credentialKind`** `email | phone`
   - **`oneTimePassword`** `String`
@@ -806,6 +808,7 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 ### send-password-reset
 
 - **`PAYLOAD`** `Object`
+  - **`identifier`** `String`
   - **`credential`** `String`
   - **`credentialKind`** `email | phone`
   - **`oneTimePassword`** `String`

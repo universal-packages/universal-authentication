@@ -249,7 +249,7 @@ describe('Authentication', (): void => {
 
                       const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'password' })
 
-                      expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { [credentialKind]: credentialKind } })
+                      expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { identifier: '69', [credentialKind]: credentialKind } })
                     })
 
                     describe('and multi-factor is set to be sent in place', (): void => {
@@ -293,7 +293,7 @@ describe('Authentication', (): void => {
 
                       const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.multi-factor-enabled`, password: 'password' })
 
-                      expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { [credentialKind]: expect.any(String) } })
+                      expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { identifier: '69', [credentialKind]: expect.any(String) } })
                     })
                   })
                 })

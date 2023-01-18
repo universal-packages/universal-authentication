@@ -14,7 +14,7 @@ export default class RequestMultiFactorDynamic {
         const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', identifier })
         const credential = authenticatable[credentialKind]
 
-        await authentication.performDynamic('send-multi-factor', { credential, credentialKind, oneTimePassword })
+        await authentication.performDynamic('send-multi-factor', { identifier, credential, credentialKind, oneTimePassword })
 
         return { status: 'success' }
       }

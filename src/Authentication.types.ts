@@ -162,6 +162,7 @@ export interface Invitation {
 }
 
 export interface MultiFactorMetadata {
+  identifier: string
   email?: string
   phone?: string
 }
@@ -456,12 +457,14 @@ export interface SendInvitationPayload {
 export interface SendMultiFactorPayload {
   credential: string
   credentialKind: CredentialKind
+  identifier: string
   oneTimePassword: string
 }
 
 export interface SendPasswordResetPayload {
   credential: string
   credentialKind: CredentialKind
+  identifier: string
   oneTimePassword: string
 }
 
