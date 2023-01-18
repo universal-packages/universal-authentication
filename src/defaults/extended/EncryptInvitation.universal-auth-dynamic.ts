@@ -4,12 +4,10 @@ import { AuthDynamicNames, EncryptInvitationPayload } from '../../Authentication
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('encrypt-invitation', true)
-export default class EncryptInvitationPayloadDynamic {
+export default class EncryptInvitationDynamic {
   public perform(payload: EncryptInvitationPayload, authentication: Authentication): string {
-    const { credential, credentialKind, invitation } = payload
+    const { invitation } = payload
 
-    const secret = authentication.performDynamicSync('generate-concern-secret', { concern: 'invitation', credential, credentialKind })
-
-    return encryptSubject(invitation, secret, { concern: 'invitation' })
+    return encryptSubject(invitation, authentication.options.secret, { concern: 'invitation' })
   }
 }

@@ -19,11 +19,9 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}-multi-factor-active`)
+                  const result = await authentication.performDynamic('request-multi-factor', { identifier: 'any.multi-factor-active', credentialKind })
 
-                  const result = await authentication.performDynamic('request-multi-factor', { authenticatable, credentialKind })
-
-                  expect(result).toEqual({ status: 'success', metadata: { oneTimePassword: expect.any(String) } })
+                  expect(result).toEqual({ status: 'success' })
                 })
               })
 
@@ -36,41 +34,7 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}-multi-factor-inactive`)
-
-                  const result = await authentication.performDynamic('request-multi-factor', { authenticatable, credentialKind })
-
-                  expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
-                })
-              })
-            })
-
-            describe('when using credential as payload param', (): void => {
-              describe('and authenticatable has multi-factor active (it has log in successfully)', (): void => {
-                it('returns success', async (): Promise<void> => {
-                  const authentication = new Authentication(
-                    { [credentialKind]: { enableMultiFactor: true }, secret: '123', dynamicsLocation: './src/defaults' },
-                    TestAuthenticatable
-                  )
-                  authentication.options['namespace'] = 'universal-auth'
-                  await authentication.loadDynamics()
-
-                  const result = await authentication.performDynamic('request-multi-factor', { credential: `${credentialKind}-multi-factor-active`, credentialKind })
-
-                  expect(result).toEqual({ status: 'success', metadata: { oneTimePassword: expect.any(String) } })
-                })
-              })
-
-              describe('and authenticatable has multi-factor inactive', (): void => {
-                it('returns waring', async (): Promise<void> => {
-                  const authentication = new Authentication(
-                    { [credentialKind]: { enableMultiFactor: true }, secret: '123', dynamicsLocation: './src/defaults' },
-                    TestAuthenticatable
-                  )
-                  authentication.options['namespace'] = 'universal-auth'
-                  await authentication.loadDynamics()
-
-                  const result = await authentication.performDynamic('request-multi-factor', { credential: `${credentialKind}-multi-factor-inactive`, credentialKind })
+                  const result = await authentication.performDynamic('request-multi-factor', { identifier: 'any.multi-factor-inactive', credentialKind })
 
                   expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
                 })
@@ -78,15 +42,15 @@ describe('Authentication', (): void => {
             })
           })
 
-          describe('and multi-factor is not enabled', (): void => {
+          describe('and authenticatable', (): void => {
             it('returns failure', async (): Promise<void> => {
               const authentication = new Authentication({ [credentialKind]: { enableMultiFactor: false }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const result = await authentication.performDynamic('request-multi-factor', { credential: '', credentialKind })
+              const result = await authentication.performDynamic('request-multi-factor', { identifier: 'any.nothing', credentialKind })
 
-              expect(result).toEqual({ status: 'failure', message: 'multi-factor-disabled' })
+              expect(result).toEqual({ status: 'failure', message: 'nothing-to-do' })
             })
           })
         })

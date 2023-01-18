@@ -9,11 +9,11 @@ export default class RequestCorroborationDynamic {
     const credentialKindOptions = authentication.options[credentialKind]
 
     if (credentialKindOptions.enableSignUpCorroboration) {
-      const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'corroboration', credential, credentialKind })
+      const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'corroboration', identifier: `${credential}.${credentialKind}` })
 
       await authentication.performDynamic('send-corroboration', { credential, credentialKind, oneTimePassword })
 
-      return { status: 'success', metadata: { oneTimePassword } }
+      return { status: 'success' }
     } else {
       return { status: 'failure', message: 'corroboration-disabled' }
     }

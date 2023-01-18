@@ -1,3 +1,4 @@
+import { digestSubject } from '@universal-packages/crypto-utils'
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, GenerateConcernSecretPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
@@ -5,8 +6,8 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('generate-concern-secret', true)
 export default class GenerateAuthConcernSecretDynamic {
   public perform(payload: GenerateConcernSecretPayload, authentication: Authentication): string {
-    const { concern, credential, credentialKind } = payload
+    const { concern, identifier } = payload
 
-    return `${authentication.options.secret}.${concern}.${credentialKind}.${credential}`
+    return digestSubject(`${concern}.${identifier}`, authentication.options.secret)
   }
 }

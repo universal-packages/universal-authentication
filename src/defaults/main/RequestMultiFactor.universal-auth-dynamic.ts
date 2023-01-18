@@ -5,24 +5,23 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('request-multi-factor', true)
 export default class RequestMultiFactorDynamic {
   public async perform(payload: RequestMultiFactorPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { authenticatable, credential, credentialKind } = payload
-    const credentialKindOptions = authentication.options[credentialKind]
+    const { identifier, credentialKind } = payload
 
-    if (credentialKindOptions.enableMultiFactor) {
-      let finalAuthenticatable = authenticatable || (await authentication.performDynamic('authenticatable-from-credential', { credential }))
-      let finalCredential = credential || finalAuthenticatable[credentialKind]
+    const authenticatable = await authentication.performDynamic('authenticatable-from-id', { id: identifier })
 
-      if (finalAuthenticatable && authentication.performDynamicSync('is-authenticatable-multi-factor-active?', { authenticatable: finalAuthenticatable })) {
-        const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', credential, credentialKind })
+    if (authenticatable) {
+      if (authentication.performDynamicSync('is-authenticatable-multi-factor-active?', { authenticatable })) {
+        const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', identifier })
+        const credential = authenticatable[credentialKind]
 
-        await authentication.performDynamic('send-multi-factor', { credential: finalCredential, credentialKind, oneTimePassword })
+        await authentication.performDynamic('send-multi-factor', { credential, credentialKind, oneTimePassword })
 
-        return { status: 'success', metadata: { oneTimePassword } }
+        return { status: 'success' }
       }
 
       return { status: 'warning', message: 'nothing-to-do' }
     } else {
-      return { status: 'failure', message: 'multi-factor-disabled' }
+      return { status: 'failure', message: 'nothing-to-do' }
     }
   }
 }

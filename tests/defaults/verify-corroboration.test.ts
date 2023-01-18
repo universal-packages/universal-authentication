@@ -14,7 +14,10 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'corroboration', credential: credentialKind, credentialKind })
+              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', {
+                concern: 'corroboration',
+                identifier: `${credentialKind}.${credentialKind}`
+              })
 
               const result = await authentication.performDynamic('verify-corroboration', { credential: credentialKind, credentialKind, oneTimePassword })
 

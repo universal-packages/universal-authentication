@@ -10,7 +10,7 @@ describe('Authentication', (): void => {
         enablePasswordCheck: false,
         enforceMultiFactor: false,
         enforcePasswordCheck: false,
-        sendMultiFactorInPlace: false,
+        sendMultiFactorInPlace: false
       }
 
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
@@ -51,7 +51,7 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
-                    await authentication.performDynamic('log-in', { credential: `${credentialKind}-ready-to-unlock` })
+                    await authentication.performDynamic('log-in', { credential: `${credentialKind}.ready-to-unlock` })
 
                     expect(TestAuthenticatable.lastInstance.lockedAt).toBeNull()
                     expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
@@ -73,7 +73,7 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
-                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-locked` })
+                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.locked` })
 
                     expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
                     expect(TestAuthenticatable.lastInstance.lockedAt).not.toBeNull()
@@ -137,7 +137,7 @@ describe('Authentication', (): void => {
                       authentication.options['namespace'] = 'universal-auth'
                       await authentication.loadDynamics()
 
-                      const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-confirmed`, password: 'password' })
+                      const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.confirmed`, password: 'password' })
 
                       expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                     })
@@ -157,9 +157,9 @@ describe('Authentication', (): void => {
                         authentication.options['namespace'] = 'universal-auth'
                         await authentication.loadDynamics()
 
-                        const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-unconfirmed`, password: 'password' })
+                        const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.unconfirmed`, password: 'password' })
 
-                        expect(result).toEqual({ status: 'warning', message: 'confirmation-required', metadata: { credential: `${credentialKind}-unconfirmed`, credentialKind } })
+                        expect(result).toEqual({ status: 'warning', message: 'confirmation-required', metadata: { credential: `${credentialKind}.unconfirmed`, credentialKind } })
                       })
                     })
 
@@ -176,7 +176,7 @@ describe('Authentication', (): void => {
                         authentication.options['namespace'] = 'universal-auth'
                         await authentication.loadDynamics()
 
-                        const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-unconfirmed`, password: 'password' })
+                        const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.unconfirmed`, password: 'password' })
 
                         expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                       })
@@ -195,12 +195,12 @@ describe('Authentication', (): void => {
                             authentication.options['namespace'] = 'universal-auth'
                             await authentication.loadDynamics()
 
-                            const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-unconfirmed`, password: 'password' })
+                            const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.unconfirmed`, password: 'password' })
 
                             expect(result).toEqual({
                               status: 'warning',
                               message: 'confirmation-required',
-                              metadata: { credential: `${credentialKind}-unconfirmed`, credentialKind }
+                              metadata: { credential: `${credentialKind}.unconfirmed`, credentialKind }
                             })
                           })
                         })
@@ -218,7 +218,7 @@ describe('Authentication', (): void => {
                             authentication.options['namespace'] = 'universal-auth'
                             await authentication.loadDynamics()
 
-                            const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-unconfirmed`, password: 'password' })
+                            const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.unconfirmed`, password: 'password' })
 
                             expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                           })
@@ -247,17 +247,9 @@ describe('Authentication', (): void => {
                       authentication.options['namespace'] = 'universal-auth'
                       await authentication.loadDynamics()
 
-                      const credentialPerCase = { email: 'email-david@universal.com', phone: 'phone-+524401234567' }
-                      const obfuscatedCredentialPerCase = { email: 'e*********d@universal.com', phone: '*****************67' }
+                      const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'password' })
 
-                      const result = await authentication.performDynamic('log-in', { credential: credentialPerCase[credentialKind], password: 'password' })
-
-                      expect(result).toEqual({
-                        status: 'warning',
-                        message: 'multi-factor-waiting',
-                        authenticatable: expect.any(TestAuthenticatable),
-                        metadata: { [credentialKind]: obfuscatedCredentialPerCase[credentialKind] }
-                      })
+                      expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { [credentialKind]: credentialKind } })
                     })
 
                     describe('and multi-factor is set to be sent in place', (): void => {
@@ -281,7 +273,7 @@ describe('Authentication', (): void => {
 
                         const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'password' })
 
-                        expect(result).toEqual({ status: 'warning', message: 'multi-factor-inbound', authenticatable: expect.any(TestAuthenticatable) })
+                        expect(result).toEqual({ status: 'warning', message: 'multi-factor-inbound' })
                       })
                     })
                   })
@@ -299,14 +291,9 @@ describe('Authentication', (): void => {
                       authentication.options['namespace'] = 'universal-auth'
                       await authentication.loadDynamics()
 
-                      const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-multi-factor-enabled`, password: 'password' })
+                      const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.multi-factor-enabled`, password: 'password' })
 
-                      expect(result).toEqual({
-                        status: 'warning',
-                        message: 'multi-factor-waiting',
-                        authenticatable: expect.any(TestAuthenticatable),
-                        metadata: { [credentialKind]: expect.any(String) }
-                      })
+                      expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { [credentialKind]: expect.any(String) } })
                     })
                   })
                 })
@@ -387,7 +374,7 @@ describe('Authentication', (): void => {
                         authentication.options['namespace'] = 'universal-auth'
                         await authentication.loadDynamics()
 
-                        await authentication.performDynamic('log-in', { credential: `${credentialKind}-about-to-lock`, password: 'nop' })
+                        await authentication.performDynamic('log-in', { credential: `${credentialKind}.about-to-lock`, password: 'nop' })
 
                         expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(3)
                         expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(expect.any(Date))
@@ -410,7 +397,7 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
-                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-no-password` })
+                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.no-password` })
 
                     expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                   })
@@ -429,7 +416,7 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
-                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-no-password` })
+                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.no-password` })
 
                     expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
                   })
@@ -451,7 +438,7 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}-nop` })
+              const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.nothing` })
 
               expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
             })

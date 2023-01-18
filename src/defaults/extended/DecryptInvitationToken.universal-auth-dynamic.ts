@@ -6,12 +6,10 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('decrypt-invitation-token', true)
 export default class DecryptInvitationTokenDynamic {
   public perform(payload: DecryptInvitationTokenPayload, authentication: Authentication): Invitation {
-    const { credential, credentialKind, token } = payload
+    const { token } = payload
 
     if (!token) return
 
-    const secret = authentication.performDynamicSync('generate-concern-secret', { concern: 'invitation', credential, credentialKind })
-
-    return decryptSubject(token, secret, { concern: 'invitation' })
+    return decryptSubject(token, authentication.options.secret, { concern: 'invitation' })
   }
 }

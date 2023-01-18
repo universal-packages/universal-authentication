@@ -5,27 +5,12 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('verify-multi-factor', true)
 export default class VerifyMultiFactorDynamic {
   public async perform(payload: VerifyMultiFactorPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { credential, credentialKind, oneTimePassword } = payload
-    const credentialKindOptions = authentication.options[credentialKind]
+    const { identifier, oneTimePassword } = payload
 
-    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'multi-factor', credential, credentialKind, oneTimePassword })) {
-      const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
+    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'multi-factor', identifier, oneTimePassword })) {
+      const authenticatable = await authentication.performDynamic('authenticatable-from-id', { id: identifier })
 
       if (authentication.performDynamicSync('is-authenticatable-multi-factor-active?', { authenticatable })) {
-        if (credentialKindOptions.enableConfirmation) {
-          if (!authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind })) {
-            if (credentialKindOptions.enforceConfirmation) {
-              return { status: 'warning', message: 'confirmation-required', metadata: { credential: authenticatable[credentialKind], credentialKind } }
-            }
-
-            if (credentialKindOptions.confirmationGracePeriod) {
-              if (authentication.performDynamicSync('has-authenticatable-confirmation-passed-grace-period?', { authenticatable, credentialKind })) {
-                return { status: 'warning', message: 'confirmation-required', metadata: { credential: authenticatable[credentialKind], credentialKind } }
-              }
-            }
-          }
-        }
-
         if (authentication.options.enableLogInCount) {
           authentication.performDynamicSync('set-authenticatable-log-in-count', { authenticatable })
         }

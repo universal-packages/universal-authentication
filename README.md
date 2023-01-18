@@ -190,11 +190,13 @@ export default class User {
   inviterId
 
   createdAt
+  updatedAt
 
   save() {}
 
   static existsWithCredential(credentialKind, credential) {}
   static existsWithUsername(username) {}
+  static findById() {}
   static findByCredential(credential) {}
   static findByProviderId(provider, id) {}
 }
@@ -284,8 +286,6 @@ const result = authentication.perform('invite-authenticatable', { provider: 'git
   - **`credentialKind`** `email | phone`
   - **`inviterId`** `String | Number | BigInt`
 - **`RESULT`** `AuthenticationResult`
-  - **`metadata`** `Object`
-    - **`invitationToken`** `String`
   - **`message?`**
     - `invitations-disabled` `failure`
 
@@ -323,8 +323,6 @@ const result = authentication.perform('request-confirmation', { credential: 'ema
   - **`credential`** `String` `optional if authenticatable provided`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
-  - **`metadata`** `Object`
-    - **`oneTimePassword`** `String`
   - **`message?`**
     - `nothing-to-do` `warning`
     - `confirmation-disabled` `failure`
@@ -343,8 +341,6 @@ const result = authentication.perform('request-confirmation', { credential: 'pho
   - **`credential`** `String`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
-  - **`metadata`** `Object`
-    - **`oneTimePassword`** `String`
   - **`message?`**
     - `corroboration-disabled` `failure`
 
@@ -363,11 +359,7 @@ const result = authentication.perform('request-multi-factor', { credential: 'ema
   - **`credential`** `String` `optional if authenticatable provided`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
-
-  - **`metadata`** `Object`
-    - **`oneTimePassword`** `String`
   - **`message?`**
-
     - `nothing-to-do` `warning`
     - `confirmation-disabled` `failure`
 
@@ -383,8 +375,6 @@ const result = authentication.perform('request-password-reset', { credential: 'e
   - **`credential`** `String`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
-  - **`metadata`** `Object`
-    - **`oneTimePassword`** `String`
   - **`message?`**
     - `nothing-to-do` `warning`
 
@@ -402,8 +392,6 @@ const result = authentication.perform('request-unlock', { authenticatable, crede
   - **`authenticatable`** `Authenticatable`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
-  - **`metadata`** `Object`
-    - **`oneTimePassword`** `String`
 
 ### sign-up `Async`
 
@@ -548,14 +536,10 @@ const result = authentication.perform('verify-multi-factor', { credential: 'emai
 ```
 
 - **`PAYLOAD`** `Object`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
+  - **`identifier`** `String`
   - **`oneTimePassword`** `String`
 - **`RESULT`** `AuthenticationResult`
   - **`authenticatable`** `Authenticatable`
-  - **`metadata`** `Object`
-    - **`credential`** `String`
-    - **`credentialKind`** `email | phone`
   - **`message?`**
     - `invalid-one-time-password` `failure`
     - `confirmation-required` `warning`
@@ -569,8 +553,7 @@ const result = authentication.perform('verify-password-reset', { credential: 'em
 ```
 
 - **`PAYLOAD`** `Object`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
+  - **`identifier`** `String`
   - **`oneTimePassword`** `String`
   - **`password`** `String`
 - **`RESULT`** `AuthenticationResult`
@@ -590,8 +573,7 @@ const result = authentication.perform('verify-unlock', { credential: 'email', cr
 ```
 
 - **`PAYLOAD`** `Object`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
+  - **`identifier`** `String`
   - **`oneTimePassword`** `String`
 - **`RESULT`** `AuthenticationResult`
   - **`authenticatable`** `Authenticatable`
@@ -606,6 +588,12 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 
 - **`PAYLOAD`** `Object`
   - **`credential`** `String`
+- **`RESULT`** `Authenticatable`
+
+### authenticatable-from-id
+
+- **`PAYLOAD`** `Object`
+  - **`id`** `String | Number | BigInt`
 - **`RESULT`** `Authenticatable`
 
 ### authenticatable-from-provider-id
@@ -660,8 +648,6 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 ### decrypt-corroboration-token
 
 - **`PAYLOAD`** `Object`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
   - **`token`** `String`
 - **`RESULT`** `Corroboration`
   - **`credential`** `String`
@@ -670,8 +656,6 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 ### decrypt-invitation-token
 
 - **`PAYLOAD`** `Object`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
   - **`token`** `String`
 - **`RESULT`** `Invitation`
   - **`credential`** `String`
@@ -696,8 +680,6 @@ The extended dynamics are meant to be override in case your Authenticatable beha
   - **`corroboration`** `Corroboration`
     - **`credential`** `String`
     - **`credentialKind`** `email | phone`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
 - **`RESULT`** `String`
 
 ### encrypt-invitation
@@ -707,16 +689,13 @@ The extended dynamics are meant to be override in case your Authenticatable beha
     - **`credential`** `String`
     - **`credentialKind`** `email | phone`
     - **`inviterId`**`String | Number | BigInt`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
 - **`RESULT`** `String`
 
 ### generate-concern-secret
 
 - **`PAYLOAD`** `Object`
   - **`concern`** `confirmation | corroboration | invitation | log-in | multi-factor | password-reset | sign-up | unlock`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
+  - **`identifier`** `String`
 - **`RESULT`** `String`
 
 ### generate-multi-factor-metadata
@@ -731,8 +710,7 @@ The extended dynamics are meant to be override in case your Authenticatable beha
 
 - **`PAYLOAD`** `Object`
   - **`concern`** `confirmation | corroboration | invitation | log-in | multi-factor | password-reset | sign-up | unlock`
-  - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
+  - **`identifier`** `String`
 - **`RESULT`** `String`
 
 ### has-authenticatable-confirmation-passed-grace-period?

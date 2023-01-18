@@ -11,36 +11,28 @@ export default class SignUpDynamic {
     let corroboration: Corroboration
 
     if (credentialKindOptions.enableSignUpInvitations) {
-      try {
-        invitation = authentication.performDynamicSync('decrypt-invitation-token', { credential: attributes[credentialKind], credentialKind, token: invitationToken })
+      invitation = authentication.performDynamicSync('decrypt-invitation-token', { token: invitationToken })
 
-        if (!invitation) {
-          if (invitationToken) {
-            return { status: 'failure', message: 'invalid-invitation' }
-          }
-
-          if (credentialKindOptions.enforceSignUpInvitations) {
-            return { status: 'failure', message: 'invitation-required' }
-          }
+      if (!invitation) {
+        if (invitationToken) {
+          return { status: 'failure', message: 'invalid-invitation' }
         }
-      } catch {
-        return { status: 'failure', message: 'invalid-invitation' }
+
+        if (credentialKindOptions.enforceSignUpInvitations) {
+          return { status: 'failure', message: 'invitation-required' }
+        }
       }
     }
 
     if (!invitation && credentialKindOptions.enableSignUpCorroboration) {
-      try {
-        corroboration = authentication.performDynamicSync('decrypt-corroboration-token', { credential: attributes[credentialKind], credentialKind, token: corroborationToken })
+      corroboration = authentication.performDynamicSync('decrypt-corroboration-token', { token: corroborationToken })
 
-        if (!corroboration) {
-          if (corroborationToken) {
-            return { status: 'failure', message: 'invalid-corroboration' }
-          }
-
-          return { status: 'failure', message: 'corroboration-required' }
+      if (!corroboration) {
+        if (corroborationToken) {
+          return { status: 'failure', message: 'invalid-corroboration' }
         }
-      } catch {
-        return { status: 'failure', message: 'invalid-corroboration' }
+
+        return { status: 'failure', message: 'corroboration-required' }
       }
     }
 

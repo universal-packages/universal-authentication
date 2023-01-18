@@ -13,11 +13,11 @@ export default class RequestConfirmationDynamic {
       let finalCredential = credential || finalAuthenticatable[credentialKind]
 
       if (finalAuthenticatable && !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable: finalAuthenticatable, credentialKind })) {
-        const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'confirmation', credential, credentialKind })
+        const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'confirmation', identifier: `${credential}.${credentialKind}` })
 
         await authentication.performDynamic('send-confirmation', { credential: finalCredential, credentialKind, oneTimePassword })
 
-        return { status: 'success', metadata: { oneTimePassword } }
+        return { status: 'success' }
       }
 
       return { status: 'warning', message: 'nothing-to-do' }

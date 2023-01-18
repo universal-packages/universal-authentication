@@ -7,7 +7,7 @@ export default class VerifyConfirmationDynamic {
   public async perform(payload: VerifyCorroborationPayload, authentication: Authentication): Promise<AuthenticationResult> {
     const { credential, credentialKind, oneTimePassword } = payload
 
-    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'confirmation', credential, credentialKind, oneTimePassword })) {
+    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'confirmation', identifier: `${credential}.${credentialKind}`, oneTimePassword })) {
       const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
       authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind })

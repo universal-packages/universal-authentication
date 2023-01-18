@@ -23,7 +23,7 @@ describe('Authentication', (): void => {
 
               const result = await authentication.performDynamic('invite-authenticatable', { credential: 'credential', credentialKind, inviterId: 2 })
 
-              expect(result).toEqual({ status: 'success', metadata: { invitationToken: expect.any(String) } })
+              expect(result).toEqual({ status: 'success' })
             })
           })
 

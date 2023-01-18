@@ -9,11 +9,11 @@ export default class InviteAuthenticatableDynamic {
     const credentialKindOptions = authentication.options[credentialKind]
 
     if (credentialKindOptions.enableSignUpInvitations) {
-      const invitationToken = authentication.performDynamicSync('encrypt-invitation', { credential, credentialKind, invitation: { credential, credentialKind, inviterId } })
+      const invitationToken = authentication.performDynamicSync('encrypt-invitation', { invitation: { credential, credentialKind, inviterId } })
 
       authentication.performDynamic('send-invitation', { credential, credentialKind, invitationToken })
 
-      return { status: 'success', metadata: { invitationToken } }
+      return { status: 'success' }
     } else {
       return { status: 'failure', message: 'invitations-disabled' }
     }

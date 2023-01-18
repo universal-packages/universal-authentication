@@ -23,11 +23,11 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}-unconfirmed`)
+                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.unconfirmed`)
 
                   const result = await authentication.performDynamic('request-confirmation', { authenticatable, credentialKind })
 
-                  expect(result).toEqual({ status: 'success', metadata: { oneTimePassword: expect.any(String) } })
+                  expect(result).toEqual({ status: 'success' })
                 })
               })
 
@@ -44,7 +44,7 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}-confirmed`)
+                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.confirmed`)
 
                   const result = await authentication.performDynamic('request-confirmation', { authenticatable, credentialKind })
 
@@ -67,9 +67,9 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const result = await authentication.performDynamic('request-confirmation', { credential: `${credentialKind}-unconfirmed`, credentialKind })
+                  const result = await authentication.performDynamic('request-confirmation', { credential: `${credentialKind}.unconfirmed`, credentialKind })
 
-                  expect(result).toEqual({ status: 'success', metadata: { oneTimePassword: expect.any(String) } })
+                  expect(result).toEqual({ status: 'success' })
                 })
               })
 
@@ -86,7 +86,7 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
-                  const result = await authentication.performDynamic('request-confirmation', { credential: `${credentialKind}-confirmed`, credentialKind })
+                  const result = await authentication.performDynamic('request-confirmation', { credential: `${credentialKind}.confirmed`, credentialKind })
 
                   expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
                 })

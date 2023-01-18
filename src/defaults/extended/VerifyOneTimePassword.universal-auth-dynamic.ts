@@ -6,9 +6,9 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('verify-one-time-password', true)
 export default class VerifyOneTimePasswordDynamic {
   public perform(payload: VerifyOneTimePasswordPayload, authentication: Authentication): boolean {
-    const { concern, credential, credentialKind, oneTimePassword } = payload
+    const { concern, identifier, oneTimePassword } = payload
 
-    const secret = authentication.performDynamicSync('generate-concern-secret', { concern, credential, credentialKind })
+    const secret = authentication.performDynamicSync('generate-concern-secret', { concern, identifier })
 
     return verify(oneTimePassword, secret)
   }

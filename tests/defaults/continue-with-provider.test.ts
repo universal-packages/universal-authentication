@@ -103,11 +103,11 @@ describe('Authentication', (): void => {
                 default: GetUniversalUserDataDynamic
               }
 
-              const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'any' })
+              const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'not-connected' })
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(result.authenticatable).toMatchObject({
-                universalId: 123,
+                universalId: 'any.nothing',
                 username: 'david-universal',
                 email: 'user@universal.com',
                 firstName: 'david',

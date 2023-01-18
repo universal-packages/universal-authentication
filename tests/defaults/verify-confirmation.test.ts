@@ -14,13 +14,9 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', {
-                concern: 'confirmation',
-                credential: `${credentialKind}-unconfirmed`,
-                credentialKind
-              })
+              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'confirmation', identifier: `${credentialKind}.unconfirmed.${credentialKind}` })
 
-              const result = await authentication.performDynamic('verify-confirmation', { credential: `${credentialKind}-unconfirmed`, credentialKind, oneTimePassword })
+              const result = await authentication.performDynamic('verify-confirmation', { credential: `${credentialKind}.unconfirmed`, credentialKind, oneTimePassword })
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(TestAuthenticatable.lastInstance[`${credentialKind}ConfirmedAt`]).toEqual(expect.any(Date))

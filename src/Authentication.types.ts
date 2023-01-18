@@ -35,8 +35,8 @@ export interface AuthenticationCredentialOptions {
   enableSignUpCorroboration?: boolean
   enableSignUpInvitations?: boolean
 
-  enforceMultiFactor?: boolean
   enforceConfirmation?: boolean
+  enforceMultiFactor?: boolean
   enforcePasswordCheck?: boolean
   enforceSignUpInvitations?: boolean
 
@@ -91,6 +91,7 @@ export interface Authenticatable {
   inviterId?: number | bigint | string
 
   createdAt?: Date
+  updatedAt?: Date
 
   save: () => Promise<Authenticatable>
 }
@@ -111,6 +112,7 @@ export interface AuthenticatableClass<A = Authenticatable> {
   new (...args: any[]): A
   existsWithCredential: (credentialKind: CredentialKind, credential: string) => Promise<boolean>
   existsWithUsername: (username: string) => Promise<boolean>
+  findById: (id: string | number | bigint) => Promise<Authenticatable>
   findByCredential: (credential: string) => Promise<Authenticatable>
   findByProviderId: (provider: string, id: string | number | bigint) => Promise<Authenticatable>
 }
@@ -219,8 +221,7 @@ export interface RequestCorroborationPayload {
 }
 
 export interface RequestMultiFactorPayload {
-  authenticatable?: Authenticatable
-  credential?: string
+  identifier?: string
   credentialKind: CredentialKind
 }
 
@@ -265,26 +266,24 @@ export interface VerifyCorroborationPayload {
 }
 
 export interface VerifyMultiFactorPayload {
-  credential: string
-  credentialKind: CredentialKind
+  identifier: string
   oneTimePassword: string
 }
 
 export interface VerifyPasswordResetPayload {
-  credential: string
-  credentialKind: CredentialKind
+  identifier: string
   oneTimePassword: string
   password: string
 }
 
 export interface VerifyUnlockPayload {
-  credential: string
-  credentialKind: CredentialKind
+  identifier: string
   oneTimePassword: string
 }
 
 export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'authenticatable-from-credential': { payload: AuthenticatableFromCredentialPayload; result: Authenticatable }
+  'authenticatable-from-id': { payload: AuthenticatableFromIdPayload; result: Authenticatable }
   'authenticatable-from-provider-id': { payload: AuthenticatableFromProviderIdPayload; result: Authenticatable }
   'authenticatable-from-provider-user-data': { payload: AuthenticatableFromProviderUserDataPayload; result: Authenticatable }
   'authenticatable-from-sign-up': { payload: AuthenticatableFromSignUpPayload; result: Authenticatable }
@@ -332,6 +331,10 @@ export interface AuthenticatableFromCredentialPayload {
   credential: string
 }
 
+export interface AuthenticatableFromIdPayload {
+  id: string | number | bigint
+}
+
 export interface AuthenticatableFromProviderIdPayload {
   provider: string
   id: string | number | bigint
@@ -355,14 +358,10 @@ export interface CredentialKindFromCredentialAuthenticatablePayload {
 }
 
 export interface DecryptCorroborationTokenPayload {
-  credential: string
-  credentialKind: CredentialKind
   token: string
 }
 
 export interface DecryptInvitationTokenPayload {
-  credential: string
-  credentialKind: CredentialKind
   token: string
 }
 
@@ -376,20 +375,15 @@ export interface DoesAuthenticatableRequiresMultiFactorPayload {
 
 export interface EncryptCorroborationPayload {
   corroboration: Corroboration
-  credential: string
-  credentialKind: CredentialKind
 }
 
 export interface EncryptInvitationPayload {
-  credential: string
-  credentialKind: CredentialKind
   invitation: Invitation
 }
 
 export interface GenerateConcernSecretPayload {
   concern: AuthConcern
-  credential: string
-  credentialKind: CredentialKind
+  identifier: string
 }
 
 export interface GenerateMultiFactorMetadataPayload {
@@ -398,8 +392,7 @@ export interface GenerateMultiFactorMetadataPayload {
 
 export interface GenerateOneTimePasswordPayload {
   concern: AuthConcern
-  credential: string
-  credentialKind: CredentialKind
+  identifier: string
 }
 
 export interface HasAuthenticatableConfirmationPassedGracePeriodPayload {
@@ -539,7 +532,6 @@ export interface ValidateAttributesPayload {
 
 export interface VerifyOneTimePasswordPayload {
   concern: AuthConcern
-  credential: string
-  credentialKind: CredentialKind
+  identifier: string
   oneTimePassword: string
 }

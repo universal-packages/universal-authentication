@@ -90,9 +90,11 @@ describe('Authentication', (): void => {
                 await authentication.loadDynamics()
 
                 const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
-                  credential: credentialValues[credentialKind],
-                  credentialKind,
-                  invitation: { credential: credentialValues[credentialKind], credentialKind, inviterId: 2 }
+                  invitation: {
+                    credential: credentialValues[credentialKind],
+                    credentialKind,
+                    inviterId: 2
+                  }
                 })
 
                 const result = await authentication.performDynamic('sign-up', {
@@ -181,42 +183,6 @@ describe('Authentication', (): void => {
                 })
               })
 
-              describe('but the invitation is not for this kind of credential', (): void => {
-                it('returns failure', async (): Promise<void> => {
-                  const authentication = new Authentication(
-                    {
-                      [credentialKind]: { ...allDisabledOptions, enableSignUpInvitations: true },
-                      secret: '123',
-                      dynamicsLocation: './src/defaults'
-                    },
-                    TestAuthenticatable
-                  )
-                  authentication.options['namespace'] = 'universal-auth'
-                  await authentication.loadDynamics()
-
-                  const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
-                    invitation: { credential: credentialValues[credentialKind], credentialKind: 'another' as any, inviterId: 2 },
-                    credential: credentialValues[credentialKind],
-                    credentialKind: 'another' as any
-                  })
-
-                  const result = await authentication.performDynamic('sign-up', {
-                    attributes: {
-                      [credentialKind]: credentialValues[credentialKind],
-                      username: 'david',
-                      password: '12345678',
-                      firstName: 'David',
-                      lastName: 'De Anda',
-                      name: 'David De Anda'
-                    },
-                    credentialKind,
-                    invitationToken
-                  })
-
-                  expect(result).toEqual({ status: 'failure', message: 'invalid-invitation' })
-                })
-              })
-
               describe('but a invalid invitation is provided', (): void => {
                 it('returns failure', async (): Promise<void> => {
                   const authentication = new Authentication(
@@ -262,9 +228,10 @@ describe('Authentication', (): void => {
                 await authentication.loadDynamics()
 
                 const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
-                  corroboration: { credential: credentialValues[credentialKind], credentialKind },
-                  credential: credentialValues[credentialKind],
-                  credentialKind
+                  corroboration: {
+                    credential: credentialValues[credentialKind],
+                    credentialKind
+                  }
                 })
 
                 const result = await authentication.performDynamic('sign-up', {
@@ -314,42 +281,6 @@ describe('Authentication', (): void => {
                   })
 
                   expect(result).toEqual({ status: 'failure', message: 'corroboration-required' })
-                })
-              })
-
-              describe('but the corroboration is not for this kind of credential', (): void => {
-                it('returns failure', async (): Promise<void> => {
-                  const authentication = new Authentication(
-                    {
-                      [credentialKind]: { ...allDisabledOptions, enableSignUpCorroboration: true },
-                      secret: '123',
-                      dynamicsLocation: './src/defaults'
-                    },
-                    TestAuthenticatable
-                  )
-                  authentication.options['namespace'] = 'universal-auth'
-                  await authentication.loadDynamics()
-
-                  const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
-                    corroboration: { credential: credentialValues[credentialKind], credentialKind: 'another' as any },
-                    credential: credentialValues[credentialKind],
-                    credentialKind: 'another' as any
-                  })
-
-                  const result = await authentication.performDynamic('sign-up', {
-                    attributes: {
-                      [credentialKind]: credentialValues[credentialKind],
-                      username: 'david',
-                      password: '12345678',
-                      firstName: 'David',
-                      lastName: 'De Anda',
-                      name: 'David De Anda'
-                    },
-                    credentialKind,
-                    corroborationToken
-                  })
-
-                  expect(result).toEqual({ status: 'failure', message: 'invalid-corroboration' })
                 })
               })
 
@@ -427,9 +358,11 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
-                    invitation: { inviterId: 2, credential: credentialValues[credentialKind], credentialKind },
-                    credential: credentialValues[credentialKind],
-                    credentialKind
+                    invitation: {
+                      inviterId: 2,
+                      credential: credentialValues[credentialKind],
+                      credentialKind
+                    }
                   })
 
                   const result = await authentication.performDynamic('sign-up', {
@@ -465,9 +398,10 @@ describe('Authentication', (): void => {
                   await authentication.loadDynamics()
 
                   const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
-                    corroboration: { credential: credentialValues[credentialKind], credentialKind },
-                    credential: credentialValues[credentialKind],
-                    credentialKind
+                    corroboration: {
+                      credential: credentialValues[credentialKind],
+                      credentialKind
+                    }
                   })
 
                   const result = await authentication.performDynamic('sign-up', {

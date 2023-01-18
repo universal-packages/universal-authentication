@@ -8,11 +8,11 @@ export default class GenerateMultiFactorMetadataDynamic {
     const metadata: MultiFactorMetadata = {}
 
     if (authenticatable.email) {
-      metadata.email = authenticatable.email.replace(/(?!^).(?=[^@]+@)/g, '*')
+      metadata.email = authenticatable.email
     }
 
     if (authenticatable.phone) {
-      metadata.phone = authenticatable.phone.replace(/.(?=(?:.*.){2})/g, '*')
+      metadata.phone = authenticatable.phone
     }
 
     return metadata

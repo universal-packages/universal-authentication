@@ -53,13 +53,13 @@ export default class LogInDynamic {
                 authentication.performDynamicSync('set-authenticatable-multi-factor-active', { authenticatable })
                 await authentication.performDynamic('save-authenticatable', { authenticatable })
 
-                await authentication.performDynamic('request-multi-factor', { authenticatable, credentialKind })
+                await authentication.performDynamic('request-multi-factor', { identifier: String(authenticatable.id), credentialKind })
 
-                return { authenticatable, status: 'warning', message: 'multi-factor-inbound' }
+                return { status: 'warning', message: 'multi-factor-inbound' }
               } else {
                 const metadata = authentication.performDynamicSync('generate-multi-factor-metadata', { authenticatable })
 
-                return { authenticatable, status: 'warning', message: 'multi-factor-waiting', metadata }
+                return { status: 'warning', message: 'multi-factor-waiting', metadata }
               }
             }
           }

@@ -23,7 +23,7 @@ describe('Authentication', (): void => {
 
               const result = await authentication.performDynamic('request-corroboration', { credential: credentialKind, credentialKind })
 
-              expect(result).toEqual({ status: 'success', metadata: { oneTimePassword: expect.any(String) } })
+              expect(result).toEqual({ status: 'success' })
             })
           })
         })

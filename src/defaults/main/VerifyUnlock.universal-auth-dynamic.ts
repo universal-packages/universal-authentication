@@ -5,10 +5,10 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('verify-unlock', true)
 export default class VerifyUnlockDynamic {
   public async perform(payload: VerifyUnlockPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { credential, credentialKind, oneTimePassword } = payload
+    const { identifier, oneTimePassword } = payload
 
-    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'unlock', credential, credentialKind, oneTimePassword })) {
-      const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
+    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'unlock', identifier, oneTimePassword })) {
+      const authenticatable = await authentication.performDynamic('authenticatable-from-id', { id: identifier })
 
       authentication.performDynamicSync('set-authenticatable-unlocked', { authenticatable })
       await authentication.performDynamic('save-authenticatable', { authenticatable })
