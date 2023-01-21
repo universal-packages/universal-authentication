@@ -12,7 +12,7 @@ export default class SetAuthenticatableAttributesDynamic {
     if (include) {
       finalToUse = include
     } else if (exclude) {
-      finalToUse = attributeKeys.filter((key: keyof AssignableAttributes): boolean => exclude.includes(key))
+      finalToUse = attributeKeys.filter((key: keyof AssignableAttributes): boolean => !exclude.includes(key))
     } else {
       finalToUse = attributeKeys
     }

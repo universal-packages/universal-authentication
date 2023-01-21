@@ -15,6 +15,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('update-authenticatable', { authenticatable, attributes: { username: 'new', password: '123456789' } })
 
           expect(result).toEqual({ status: 'success', authenticatable })
+          expect(result.authenticatable.username).toEqual('new')
           expect(authenticatable.save).toHaveBeenCalled()
         })
 
