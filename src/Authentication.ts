@@ -20,7 +20,7 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
         enableMultiFactor: true,
         enforceMultiFactor: true,
         sendMultiFactorInPlace: true,
-        enableSignUpCorroboration: true,
+        enableCorroboration: true,
         ...options.phone
       },
       validations: {

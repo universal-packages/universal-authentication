@@ -10,6 +10,7 @@ export default class VerifyConfirmationDynamic {
     if (authentication.performDynamicSync('verify-one-time-password', { concern: 'confirmation', identifier: `${credential}.${credentialKind}`, oneTimePassword })) {
       const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
+      authentication.performDynamicSync('stablish-authenticatable-unconfirmed-credential', { authenticatable, credentialKind })
       authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind })
       await authentication.performDynamic('save-authenticatable', { authenticatable })
 

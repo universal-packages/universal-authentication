@@ -52,12 +52,12 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
     If provided an authenticatable will need to confirm its email before this time or log in will not work until confirmed.
   - **`enableConfirmation`** `Boolean`
     If true all confirmation behavior will take place, like verifying grace period or if an authenticatable needs to be confirmed to continue log-in.
+  - **`enableCorroboration`** `Boolean`
+    If true before signing up the email should be corroborated.
   - **`enableMultiFactor`** `Boolean`
     If true, and if the authenticatable has it configured,to complete a log in with email, the authenticatable needs to verify multi-factor.
   - **`enablePasswordCheck`** `Boolean` `default: true`
     If true a password will be required at login if the authenticatable has it set.
-  - **`enableSignUpCorroboration`** `Boolean`
-    If true before signing up the email should be corroborated.
   - **`enableSignUpInvitations`** `Boolean`
     If true an authenticatable can sign up using an invitation as well as sending them.
   - **`enforceMultiFactor`** `Boolean`
@@ -94,7 +94,7 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
     If true, and if the authenticatable has it configured,to complete a log in with phone, the authenticatable needs to verify multi-factor.
   - **`enablePasswordCheck`** `Boolean`
     If true a password will be required at login if the authenticatable has it set.
-  - **`enableSignUpCorroboration`** `Boolean` `default: true`
+  - **`enableCorroboration`** `Boolean` `default: true`
     If true before signing up the phone should be corroborated.
   - **`enableSignUpInvitations`** `Boolean`
     If true an authenticatable can sign up using an invitation as well as sending them.
@@ -163,11 +163,14 @@ export default class User {
   id
 
   profilePictureUrl
+
   email
   emailConfirmedAt
+  unconfirmedEmail
 
   phone
   phoneConfirmedAt
+  unconfirmedPhone
 
   username
 
@@ -458,13 +461,15 @@ const result = authentication.perform('update-authenticatable', { attributes: { 
 
 ### update-credential `Async`
 
-Validates and updates an authenticatable credential
+Validates and updates an authenticatable credential, taking corroboration and confirmation into account.
 
 ```js
 const result = authentication.perform('update-credential', { credential: 'phone-like', credentialKind: 'phone' })
 ```
 
 - **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`corroborationToken`** `String` `optional`
   - **`credential`** `String`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
@@ -897,10 +902,25 @@ The extended dynamics are meant to be override in case your Authenticatable beha
   - **`id`** `String | Number | BigInt`
 - **`RESULT`** `void`
 
+### set-authenticatable-unconfirmed-credential
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `void`
+
 ### set-authenticatable-unlocked
 
 - **`PAYLOAD`** `Object`
   - **`authenticatable`** `Authenticatable`
+- **`RESULT`** `void`
+
+### stablish-authenticatable-unconfirmed-credential
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credentialKind`** `email | phone`
 - **`RESULT`** `void`
 
 ### validate-attributes

@@ -8,7 +8,7 @@ describe('Authentication', (): void => {
       const allDisabledOptions: AuthenticationCredentialOptions = {
         enableConfirmation: false,
         enablePasswordCheck: false,
-        enableSignUpCorroboration: false,
+        enableCorroboration: false,
         enableSignUpInvitations: false,
 
         enforceConfirmation: false,
@@ -218,7 +218,7 @@ describe('Authentication', (): void => {
               it('returns success', async (): Promise<void> => {
                 const authentication = new Authentication(
                   {
-                    [credentialKind]: { ...allDisabledOptions, enableSignUpCorroboration: true },
+                    [credentialKind]: { ...allDisabledOptions, enableCorroboration: true },
                     secret: '123',
                     dynamicsLocation: './src/defaults'
                   },
@@ -259,7 +259,7 @@ describe('Authentication', (): void => {
                 it('returns failure', async (): Promise<void> => {
                   const authentication = new Authentication(
                     {
-                      [credentialKind]: { ...allDisabledOptions, enableSignUpCorroboration: true },
+                      [credentialKind]: { ...allDisabledOptions, enableCorroboration: true },
                       secret: '123',
                       dynamicsLocation: './src/defaults'
                     },
@@ -288,7 +288,7 @@ describe('Authentication', (): void => {
                 it('returns failure', async (): Promise<void> => {
                   const authentication = new Authentication(
                     {
-                      [credentialKind]: { ...allDisabledOptions, enableSignUpCorroboration: true },
+                      [credentialKind]: { ...allDisabledOptions, enableCorroboration: true },
                       secret: '123',
                       dynamicsLocation: './src/defaults'
                     },
@@ -388,7 +388,7 @@ describe('Authentication', (): void => {
                 it('returns success and set as confirmed directly', async (): Promise<void> => {
                   const authentication = new Authentication(
                     {
-                      [credentialKind]: { ...allDisabledOptions, enableConfirmation: true, enableSignUpCorroboration: true },
+                      [credentialKind]: { ...allDisabledOptions, enableConfirmation: true, enableCorroboration: true },
                       secret: '123',
                       dynamicsLocation: './src/defaults'
                     },

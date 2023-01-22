@@ -1,32 +1,187 @@
-import { Authentication, CredentialKind } from '../../src'
+import { Authentication, AuthenticationCredentialOptions, CredentialKind } from '../../src'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
   describe('default-dynamics', (): void => {
     describe('update-credential', (): void => {
       const credentialKinds: CredentialKind[] = ['email', 'phone']
+      const allDisabledOptions: AuthenticationCredentialOptions = {
+        enableConfirmation: false,
+        enablePasswordCheck: false,
+        enableCorroboration: false,
+        enableSignUpInvitations: false,
+
+        enforceConfirmation: false,
+        enforcePasswordCheck: false,
+        enforceSignUpInvitations: false
+      }
       const credentialValues = { email: 'DAVID@UNIVERSAL.com', phone: '+524497654321' }
 
       credentialKinds.forEach((credentialKind: CredentialKind): void => {
         describe(`when updating ${credentialKind}`, (): void => {
           describe('and providing a valid credential', (): void => {
             it('returns success', async (): Promise<void> => {
-              const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication({ [credentialKind]: { ...allDisabledOptions }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const authenticatable = TestAuthenticatable.findByCredential('any')
+              const authenticatable = TestAuthenticatable.findByCredential(credentialKind)
 
               const result = await authentication.performDynamic('update-credential', { authenticatable, credential: credentialValues[credentialKind], credentialKind })
 
               expect(result).toEqual({ status: 'success', authenticatable })
+              expect(result.authenticatable[credentialKind]).toEqual(credentialValues[credentialKind].toLowerCase())
               expect(authenticatable.save).toHaveBeenCalled()
+            })
+
+            describe(`and ${credentialKind} corroboration is enabled`, (): void => {
+              it('returns success', async (): Promise<void> => {
+                const authentication = new Authentication(
+                  {
+                    [credentialKind]: { ...allDisabledOptions, enableCorroboration: true },
+                    secret: '123',
+                    dynamicsLocation: './src/defaults'
+                  },
+                  TestAuthenticatable
+                )
+                authentication.options['namespace'] = 'universal-auth'
+                await authentication.loadDynamics()
+
+                const authenticatable = TestAuthenticatable.findByCredential(credentialKind)
+
+                const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
+                  corroboration: {
+                    credential: credentialValues[credentialKind],
+                    credentialKind
+                  }
+                })
+
+                const result = await authentication.performDynamic('update-credential', {
+                  authenticatable,
+                  credential: credentialValues[credentialKind],
+                  credentialKind,
+                  corroborationToken
+                })
+
+                expect(result).toEqual({ status: 'success', authenticatable })
+                expect(result.authenticatable[credentialKind]).toEqual(credentialValues[credentialKind].toLowerCase())
+                expect(authenticatable.save).toHaveBeenCalled()
+              })
+
+              describe('but the corroboration is not provided', (): void => {
+                it('returns failure', async (): Promise<void> => {
+                  const authentication = new Authentication(
+                    {
+                      [credentialKind]: { ...allDisabledOptions, enableCorroboration: true },
+                      secret: '123',
+                      dynamicsLocation: './src/defaults'
+                    },
+                    TestAuthenticatable
+                  )
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  const authenticatable = TestAuthenticatable.findByCredential(credentialKind)
+
+                  const result = await authentication.performDynamic('update-credential', { authenticatable, credential: credentialValues[credentialKind], credentialKind })
+
+                  expect(result).toEqual({ status: 'failure', message: 'corroboration-required' })
+                })
+              })
+
+              describe('but a invalid corroboration is provided', (): void => {
+                it('returns failure', async (): Promise<void> => {
+                  const authentication = new Authentication(
+                    {
+                      [credentialKind]: { ...allDisabledOptions, enableCorroboration: true },
+                      secret: '123',
+                      dynamicsLocation: './src/defaults'
+                    },
+                    TestAuthenticatable
+                  )
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  const authenticatable = TestAuthenticatable.findByCredential(credentialKind)
+
+                  const result = await authentication.performDynamic('update-credential', {
+                    authenticatable,
+                    credential: credentialValues[credentialKind],
+                    credentialKind,
+                    corroborationToken: 'this-is-wrong'
+                  })
+
+                  expect(result).toEqual({ status: 'failure', message: 'invalid-corroboration' })
+                })
+              })
+            })
+
+            describe(`and ${credentialKind} confirmation is enabled`, (): void => {
+              it('returns success and sends the confirmation request and sets the unconfirmed credential', async (): Promise<void> => {
+                const authentication = new Authentication(
+                  {
+                    [credentialKind]: { ...allDisabledOptions, enableConfirmation: true },
+                    secret: '123',
+                    dynamicsLocation: './src/defaults'
+                  },
+                  TestAuthenticatable
+                )
+                authentication.options['namespace'] = 'universal-auth'
+                await authentication.loadDynamics()
+
+                const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.confirmed`)
+
+                const result = await authentication.performDynamic('update-credential', { authenticatable, credential: credentialValues[credentialKind], credentialKind })
+
+                expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
+                expect(authenticatable.save).toHaveBeenCalled()
+                expect(authenticatable).toMatchObject({
+                  [`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`]: credentialValues[credentialKind].toLowerCase()
+                })
+              })
+
+              describe(`and ${credentialKind} corroboration is enabled`, (): void => {
+                it('returns success and set as confirmed directly', async (): Promise<void> => {
+                  const authentication = new Authentication(
+                    {
+                      [credentialKind]: { ...allDisabledOptions, enableConfirmation: true, enableCorroboration: true },
+                      secret: '123',
+                      dynamicsLocation: './src/defaults'
+                    },
+                    TestAuthenticatable
+                  )
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.unconfirmed`)
+
+                  const corroborationToken = authentication.performDynamicSync('encrypt-corroboration', {
+                    corroboration: {
+                      credential: credentialValues[credentialKind],
+                      credentialKind
+                    }
+                  })
+
+                  const result = await authentication.performDynamic('update-credential', {
+                    authenticatable,
+                    credential: credentialValues[credentialKind],
+                    credentialKind,
+                    corroborationToken
+                  })
+
+                  expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
+                  expect(authenticatable.save).toHaveBeenCalled()
+                  expect(authenticatable).toMatchObject({
+                    [`${credentialKind}ConfirmedAt`]: expect.any(Date)
+                  })
+                })
+              })
             })
           })
 
           describe('and providing an invalid credential', (): void => {
             it('returns success', async (): Promise<void> => {
-              const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+              const authentication = new Authentication({ [credentialKind]: { ...allDisabledOptions }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 

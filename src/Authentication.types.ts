@@ -29,10 +29,9 @@ export interface AuthenticationCredentialOptions {
   confirmationGracePeriod?: string
 
   enableConfirmation?: boolean
-
+  enableCorroboration?: boolean
   enableMultiFactor?: boolean
   enablePasswordCheck?: boolean
-  enableSignUpCorroboration?: boolean
   enableSignUpInvitations?: boolean
 
   enforceConfirmation?: boolean
@@ -67,9 +66,11 @@ export interface Authenticatable {
 
   email?: string
   emailConfirmedAt?: Date
+  unconfirmedEmail?: string
 
   phone?: string
   phoneConfirmedAt?: Date
+  unconfirmedPhone?: string
 
   username?: string
 
@@ -250,6 +251,7 @@ export interface UpdateAuthenticatablePayload {
 
 export interface UpdateCredentialPayload {
   authenticatable: Authenticatable
+  corroborationToken?: string
   credential: string
   credentialKind: CredentialKind
 }
@@ -323,7 +325,9 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'set-authenticatable-password': { payload: SetAuthenticatablePasswordPayload; result: void }
   'set-authenticatable-profile-picture': { payload: SetAuthenticatableProfilePicturePayload; result: void }
   'set-authenticatable-provider-id': { payload: SetAuthenticatableProviderIdPayload; result: void }
+  'set-authenticatable-unconfirmed-credential': { payload: SetAuthenticatableUnconfirmedCredentialPayload; result: void }
   'set-authenticatable-unlocked': { payload: SetAuthenticatableUnlockedPayload; result: void }
+  'stablish-authenticatable-unconfirmed-credential': { payload: StablishAuthenticatableUnconfirmedCredentialPayload; result: void }
   'validate-attributes': { payload: ValidateAttributesPayload; result: ValidationResult }
   'verify-one-time-password': { payload: VerifyOneTimePasswordPayload; result: boolean }
 }
@@ -522,8 +526,19 @@ export interface SetAuthenticatableProviderIdPayload {
   id: string | number | bigint
 }
 
+export interface SetAuthenticatableUnconfirmedCredentialPayload {
+  authenticatable: Authenticatable
+  credential: string
+  credentialKind: CredentialKind
+}
+
 export interface SetAuthenticatableUnlockedPayload {
   authenticatable: Authenticatable
+}
+
+export interface StablishAuthenticatableUnconfirmedCredentialPayload {
+  authenticatable: Authenticatable
+  credentialKind: CredentialKind
 }
 
 export interface ValidateAttributesPayload {

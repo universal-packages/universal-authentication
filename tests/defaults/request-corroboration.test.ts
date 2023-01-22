@@ -12,7 +12,7 @@ describe('Authentication', (): void => {
             it('returns success', async (): Promise<void> => {
               const authentication = new Authentication(
                 {
-                  [credentialKind]: { enableSignUpCorroboration: true },
+                  [credentialKind]: { enableCorroboration: true },
                   secret: '123',
                   dynamicsLocation: './src/defaults'
                 },
@@ -32,7 +32,7 @@ describe('Authentication', (): void => {
           it('returns failure', async (): Promise<void> => {
             const authentication = new Authentication(
               {
-                [credentialKind]: { enableSignUpCorroboration: false },
+                [credentialKind]: { enableCorroboration: false },
                 secret: '123',
                 dynamicsLocation: './src/defaults'
               },

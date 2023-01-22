@@ -24,7 +24,7 @@ export default class SignUpDynamic {
       }
     }
 
-    if (!invitation && credentialKindOptions.enableSignUpCorroboration) {
+    if (!invitation && credentialKindOptions.enableCorroboration) {
       corroboration = authentication.performDynamicSync('decrypt-corroboration-token', { token: corroborationToken })
 
       if (!corroboration) {

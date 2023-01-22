@@ -124,6 +124,9 @@ export default class TestAuthenticatable implements Authenticatable {
           instance.multiFactorActiveAt = null
           break
 
+        case 'new-unconfirmed':
+          instance[`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`] = 'new'
+
         case 'no-password':
           instance.encryptedPassword = null
           break

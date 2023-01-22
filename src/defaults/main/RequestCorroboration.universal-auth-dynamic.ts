@@ -8,7 +8,7 @@ export default class RequestCorroborationDynamic {
     const { credential, credentialKind } = payload
     const credentialKindOptions = authentication.options[credentialKind]
 
-    if (credentialKindOptions.enableSignUpCorroboration) {
+    if (credentialKindOptions.enableCorroboration) {
       const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'corroboration', identifier: `${credential}.${credentialKind}` })
 
       await authentication.performDynamic('send-corroboration', { credential, credentialKind, oneTimePassword })
