@@ -205,7 +205,8 @@ export default class User {
 }
 ```
 
-### Encrypt decorator
+## Decorators
+#### **`Encrypt([propertyToEncrypt: string])`**
 
 Use this decorator to automatically encrypt attributes in a class. For example for the `password` attribute, when decorated, every time is set, the `encryptedPassword` attribute is going to set with a hashed and salted string based on the password. It sets depending on the base attribute name `encrypted<Attribute>`.
 
