@@ -197,11 +197,11 @@ export default class User {
 
   save() {}
 
-  static existsWithCredential(credentialKind, credential) {}
-  static existsWithUsername(username) {}
-  static findById() {}
-  static findByCredential(credential) {}
-  static findByProviderId(provider, id) {}
+  static async existsWithCredential(credentialKind, credential) {}
+  static async existsWithUsername(username) {}
+  static async findById(id) {}
+  static async findByCredential(credential) {}
+  static async findByProviderId(provider, id) {}
 }
 ```
 
