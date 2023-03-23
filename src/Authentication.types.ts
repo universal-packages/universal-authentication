@@ -32,6 +32,7 @@ export interface AuthenticationCredentialOptions {
   enableCorroboration?: boolean
   enableMultiFactor?: boolean
   enablePasswordCheck?: boolean
+  enableSignUp?: boolean
   enableSignUpInvitations?: boolean
 
   enforceConfirmation?: boolean

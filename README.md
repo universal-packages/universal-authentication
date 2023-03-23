@@ -58,6 +58,8 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
     If true, and if the authenticatable has it configured,to complete a log in with email, the authenticatable needs to verify multi-factor.
   - **`enablePasswordCheck`** `Boolean` `default: true`
     If true a password will be required at login if the authenticatable has it set.
+  - **`enableSignUP`** `Boolean` `default: true`
+    If true an authenticatable can sign up using tis kind of credential.
   - **`enableSignUpInvitations`** `Boolean`
     If true an authenticatable can sign up using an invitation as well as sending them.
   - **`enforceMultiFactor`** `Boolean`
@@ -96,6 +98,8 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
     If true a password will be required at login if the authenticatable has it set.
   - **`enableCorroboration`** `Boolean` `default: true`
     If true before signing up the phone should be corroborated.
+  - **`enableSignUP`** `Boolean` `default: true`
+    If true an authenticatable can sign up using tis kind of credential.
   - **`enableSignUpInvitations`** `Boolean`
     If true an authenticatable can sign up using an invitation as well as sending them.
   - **`enforceMultiFactor`** `Boolean` `default: true`

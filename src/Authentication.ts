@@ -14,6 +14,7 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
         enablePasswordCheck: true,
         enforcePasswordCheck: true,
         sendMultiFactorInPlace: true,
+        enableSignUp: true,
         ...options.email
       },
       phone: {
@@ -21,6 +22,7 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
         enforceMultiFactor: true,
         sendMultiFactorInPlace: true,
         enableCorroboration: true,
+        enableSignUp: true,
         ...options.phone
       },
       validations: {

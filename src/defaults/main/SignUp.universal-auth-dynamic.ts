@@ -10,6 +10,8 @@ export default class SignUpDynamic {
     let invitation: Invitation
     let corroboration: Corroboration
 
+    if (!credentialKindOptions.enableSignUp) return { status: 'failure', message: 'sign-up-disabled' }
+
     if (credentialKindOptions.enableSignUpInvitations) {
       invitation = authentication.performDynamicSync('decrypt-invitation-token', { token: invitationToken })
 
