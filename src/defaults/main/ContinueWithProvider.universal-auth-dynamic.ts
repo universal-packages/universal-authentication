@@ -10,36 +10,43 @@ export default class ContinueWithProviderDynamic {
     const dynamicName = `get-${provider}-user-data`
     const providerKeys = authentication.options.providerKeys[provider]
 
-    const providerDataResult: ProviderDataResult = await authentication.performDynamic(dynamicName, { token, keys: providerKeys })
+    if (authentication.dynamics[dynamicName]) {
+      const providerDataResult: ProviderDataResult = await authentication.performDynamic(dynamicName, { token, keys: providerKeys })
 
-    if (!providerDataResult.error) {
-      const { attributes } = providerDataResult
-      const authenticatable = await authentication.performDynamic('authenticatable-from-provider-id', { provider, id: attributes.id })
+      if (!providerDataResult.error) {
+        const { attributes } = providerDataResult
+        const authenticatable = await authentication.performDynamic('authenticatable-from-provider-id', { provider, id: attributes.id })
 
-      if (authenticatable) {
-        let shouldSave = false
+        if (authenticatable) {
+          let shouldSave = false
 
-        if (authentication.options.email?.enableConfirmation && !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind: 'email' })) {
-          authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind: 'email' })
-          shouldSave = true
+          if (
+            authentication.options.email?.enableConfirmation &&
+            !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind: 'email' })
+          ) {
+            authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind: 'email' })
+            shouldSave = true
+          }
+
+          if (authentication.options.enableLogInCount) {
+            authentication.performDynamicSync('set-authenticatable-log-in-count', { authenticatable })
+            shouldSave = true
+          }
+
+          if (shouldSave) await authentication.performDynamic('save-authenticatable', { authenticatable })
+
+          return { status: 'success', authenticatable }
+        } else {
+          const authenticatable = authentication.performDynamicSync('authenticatable-from-provider-user-data', { provider, attributes })
+          await authentication.performDynamic('save-authenticatable', { authenticatable })
+
+          return { status: 'success', authenticatable }
         }
-
-        if (authentication.options.enableLogInCount) {
-          authentication.performDynamicSync('set-authenticatable-log-in-count', { authenticatable })
-          shouldSave = true
-        }
-
-        if (shouldSave) await authentication.performDynamic('save-authenticatable', { authenticatable })
-
-        return { status: 'success', authenticatable }
       } else {
-        const authenticatable = authentication.performDynamicSync('authenticatable-from-provider-user-data', { provider, attributes })
-        await authentication.performDynamic('save-authenticatable', { authenticatable })
-
-        return { status: 'success', authenticatable }
+        return { status: 'failure', message: 'provider-error' }
       }
     } else {
-      return { status: 'failure', message: 'provider-error' }
+      return { status: 'failure', message: 'unknown-provider' }
     }
   }
 }

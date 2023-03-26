@@ -6,19 +6,14 @@ describe('Authentication', (): void => {
   describe('default-dynamics', (): void => {
     describe('continue-with-provider', (): void => {
       describe('when the provider dynamic does not exist', (): void => {
-        it('throws the standard error', async (): Promise<void> => {
+        it('returns failure', async (): Promise<void> => {
           const authentication = new Authentication({ secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
           authentication.options['namespace'] = 'universal-auth'
           await authentication.loadDynamics()
-          let error: Error
 
-          try {
-            await authentication.performDynamic('continue-with-provider', { provider: 'unknown', token: 'token' })
-          } catch (err) {
-            error = err
-          }
+          const result = await authentication.performDynamic('continue-with-provider', { provider: 'unknown', token: 'token' })
 
-          expect(error.message).toEqual('"get-unknown-user-data" dynamic does not exist in this api')
+          expect(result).toEqual({ status: 'failure', message: 'unknown-provider' })
         })
       })
 
