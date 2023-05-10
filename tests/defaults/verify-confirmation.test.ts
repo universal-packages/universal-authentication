@@ -34,13 +34,14 @@ describe('Authentication', (): void => {
 
                 const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', {
                   concern: 'confirmation',
-                  identifier: `${credentialKind}.new-unconfirmed.${credentialKind}`
+                  identifier: `new.${credentialKind}`
                 })
 
                 const result = await authentication.performDynamic('verify-confirmation', { credential: `${credentialKind}.new-unconfirmed`, credentialKind, oneTimePassword })
 
                 expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                 expect(TestAuthenticatable.lastInstance[credentialKind]).toEqual('new')
+
                 expect(TestAuthenticatable.lastInstance[`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`]).toBeNull()
                 expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
               })

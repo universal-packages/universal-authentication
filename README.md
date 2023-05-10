@@ -210,6 +210,7 @@ export default class User {
 ```
 
 ## Decorators
+
 #### **`Encrypt([propertyToEncrypt: string])`**
 
 Use this decorator to automatically encrypt attributes in a class. For example for the `password` attribute, when decorated, every time is set, the `encryptedPassword` attribute is going to set with a hashed and salted string based on the password. It sets depending on the base attribute name `encrypted<Attribute>`.
@@ -519,7 +520,7 @@ const result = authentication.perform('verify-confirmation, { credential: 'email
 
 ### verify-corroboration `Async`
 
-Corroborates a credential if the one time password id valid.
+Corroborates a credential if the one time password id valid, credential must be the authenticatable credential not the unconfirmed one even if the the one meant to confirm is that one, it is going to be taken from the authenticatable itself.
 
 ```js
 const result = authentication.perform('verify-corroboration', { credential: 'email', credentialKind: 'email', oneTimePassword: '123456' })
