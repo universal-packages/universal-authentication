@@ -39,7 +39,7 @@ export default class UpdateCredentialDynamic {
       await authentication.performDynamic('save-authenticatable', { authenticatable })
 
       if (credentialKindOptions.enableConfirmation && !corroboration) {
-        await authentication.performDynamic('request-confirmation', { authenticatable, credentialKind })
+        await authentication.performDynamic('request-confirmation', { credential, credentialKind })
       }
 
       return { status: 'success', authenticatable }

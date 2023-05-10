@@ -320,19 +320,17 @@ const result = authentication.perform('log-in', { credential: 'username | email 
 
 Generates a confirmation and performs the `send-confirmation` dynamic passing the one time password.
 
-This happens when signing up and the conformation is pending, or when time has passed and a user request it manually.
+This happens when signing up and the confirmation is pending, or when time has passed and a user request it manually.
 
 ```js
 const result = authentication.perform('request-confirmation', { credential: 'email', credentialKind: 'email' })
 ```
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable` `optional`
-  - **`credential`** `String` `optional if authenticatable provided`
+  - **`credential`** `String`
   - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
   - **`message?`**
-    - `nothing-to-do` `warning`
     - `confirmation-disabled` `failure`
 
 ### request-corroboration `Async`

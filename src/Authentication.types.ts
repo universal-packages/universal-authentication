@@ -213,8 +213,7 @@ export interface LogInPayload {
 }
 
 export interface RequestConfirmationPayload {
-  authenticatable?: Authenticatable
-  credential?: string
+  credential: string
   credentialKind: CredentialKind
 }
 

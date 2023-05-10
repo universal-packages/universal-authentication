@@ -51,7 +51,7 @@ export default class SignUpDynamic {
 
       if (credentialKindOptions.enableConfirmation) {
         if (!authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind })) {
-          await authentication.performDynamic('request-confirmation', { authenticatable, credentialKind })
+          await authentication.performDynamic('request-confirmation', { credential: authenticatable[credentialKind], credentialKind })
 
           if (credentialKindOptions.enforceConfirmation) {
             return { status: 'warning', message: 'confirmation-inbound', metadata: { credential: authenticatable[credentialKind], credentialKind } }

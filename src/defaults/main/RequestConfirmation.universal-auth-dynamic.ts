@@ -5,22 +5,15 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('request-confirmation', true)
 export default class RequestConfirmationDynamic {
   public async perform(payload: RequestConfirmationPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { authenticatable, credential, credentialKind } = payload
+    const { credential, credentialKind } = payload
     const credentialKindOptions = authentication.options[credentialKind]
 
     if (credentialKindOptions.enableConfirmation) {
-      let finalAuthenticatable = authenticatable || (await authentication.performDynamic('authenticatable-from-credential', { credential }))
-      let finalCredential = credential || finalAuthenticatable[credentialKind]
+      const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'confirmation', identifier: `${credential}.${credentialKind}` })
 
-      if (finalAuthenticatable && !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable: finalAuthenticatable, credentialKind })) {
-        const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'confirmation', identifier: `${credential}.${credentialKind}` })
+      await authentication.performDynamic('send-confirmation', { credential, credentialKind, oneTimePassword })
 
-        await authentication.performDynamic('send-confirmation', { credential: finalCredential, credentialKind, oneTimePassword })
-
-        return { status: 'success' }
-      }
-
-      return { status: 'warning', message: 'nothing-to-do' }
+      return { status: 'success' }
     } else {
       return { status: 'failure', message: 'confirmation-disabled' }
     }
