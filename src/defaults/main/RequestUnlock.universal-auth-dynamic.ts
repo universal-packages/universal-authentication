@@ -17,10 +17,8 @@ export default class RequestUnlockDynamic {
 
         return { status: 'success' }
       }
-
-      return { status: 'warning', message: 'nothing-to-do' }
-    } else {
-      return { status: 'failure', message: 'nothing-to-do' }
     }
+
+    return { status: 'warning', message: 'nothing-to-do' }
   }
 }

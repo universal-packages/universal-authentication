@@ -36,7 +36,7 @@ describe('Authentication', (): void => {
 
           const result = await authentication.performDynamic('request-unlock', { credential: 'any.nothing' })
 
-          expect(result).toEqual({ status: 'failure', message: 'nothing-to-do' })
+          expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
         })
       })
     })

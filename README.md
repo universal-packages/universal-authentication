@@ -393,6 +393,8 @@ const result = authentication.perform('request-unlock', { authenticatable, crede
 - **`PAYLOAD`** `Object`
   - **`authenticatable`** `Authenticatable`
 - **`RESULT`** `AuthenticationResult`
+  - **`message?`**
+    - `nothing-to-do` `warning`
 
 ### sign-up `Async`
 
