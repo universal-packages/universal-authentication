@@ -12,7 +12,7 @@ describe('Authentication', (): void => {
 
           const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'unlock', identifier: '666' })
 
-          const result = await authentication.performDynamic('verify-unlock', { identifier: '666', oneTimePassword })
+          const result = await authentication.performDynamic('verify-unlock', { credential: '666', oneTimePassword })
 
           expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
           expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(null)
@@ -27,7 +27,7 @@ describe('Authentication', (): void => {
           authentication.options['namespace'] = 'universal-auth'
           await authentication.loadDynamics()
 
-          const result = await authentication.performDynamic('verify-unlock', { identifier: '666', oneTimePassword: 'nop' })
+          const result = await authentication.performDynamic('verify-unlock', { credential: '666', oneTimePassword: 'nop' })
 
           expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
         })

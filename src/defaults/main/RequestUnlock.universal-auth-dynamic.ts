@@ -5,12 +5,22 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('request-unlock', true)
 export default class RequestUnlockDynamic {
   public async perform(payload: RequestUnlockPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { authenticatable, credentialKind } = payload
+    const { credential } = payload
 
-    const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'unlock', identifier: String(authenticatable.id) })
+    const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
-    await authentication.performDynamic('send-unlock', { credential: authenticatable[credentialKind], credentialKind, oneTimePassword })
+    if (authenticatable) {
+      if (authentication.performDynamicSync('is-authenticatable-locked?', { authenticatable })) {
+        const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'unlock', identifier: credential })
 
-    return { status: 'success' }
+        await authentication.performDynamic('send-unlock', { credential, oneTimePassword })
+
+        return { status: 'success' }
+      }
+
+      return { status: 'warning', message: 'nothing-to-do' }
+    } else {
+      return { status: 'failure', message: 'nothing-to-do' }
+    }
   }
 }

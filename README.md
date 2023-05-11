@@ -316,6 +316,7 @@ const result = authentication.perform('log-in', { credential: 'username | email 
     - `multi-factor-inbound` `warning`
     - `multi-factor-waiting` `warning`
     - `invalid-credentials` `failure`
+    - `locked` `failure`
 
 ### request-confirmation `Async`
 
@@ -358,29 +359,25 @@ Generates a multi factor and performs the `send-multi-factor` dynamic passing th
 This happens when logging in and when the user request another one time password to continue logging in.
 
 ```js
-const result = authentication.perform('request-multi-factor', { credential: 'email', credentialKind: 'email' })
+const result = authentication.perform('request-multi-factor', { credential: 'email' })
 ```
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable` `optional`
-  - **`credential`** `String` `optional if authenticatable provided`
-  - **`credentialKind`** `email | phone`
+  - **`credential`** `String`
 - **`RESULT`** `AuthenticationResult`
   - **`message?`**
     - `nothing-to-do` `warning`
-    - `confirmation-disabled` `failure`
 
 ### request-password-reset `Async`
 
 Generates a password reset and performs the `send-password-reset` dynamic passing the one time password.
 
 ```js
-const result = authentication.perform('request-password-reset', { credential: 'email', credentialKind: 'email' })
+const result = authentication.perform('request-password-reset', { credential: 'email' })
 ```
 
 - **`PAYLOAD`** `Object`
   - **`credential`** `String`
-  - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
   - **`message?`**
     - `nothing-to-do` `warning`
@@ -389,15 +386,12 @@ const result = authentication.perform('request-password-reset', { credential: 'e
 
 Generates an unlock and performs the `send-multi-factor` dynamic passing the one time password.
 
-This ideally happens when logging ig locks the authenticatable and users can not request this manually.
-
 ```js
 const result = authentication.perform('request-unlock', { authenticatable, credentialKind: 'email' })
 ```
 
 - **`PAYLOAD`** `Object`
   - **`authenticatable`** `Authenticatable`
-  - **`credentialKind`** `email | phone`
 - **`RESULT`** `AuthenticationResult`
 
 ### sign-up `Async`

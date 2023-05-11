@@ -1,4 +1,4 @@
-import { Authentication, CredentialKind } from '../../src'
+import { Authentication } from '../../src'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -13,7 +13,7 @@ describe('Authentication', (): void => {
 
             const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', identifier: 'any.multi-factor-active' })
 
-            const result = await authentication.performDynamic('verify-multi-factor', { identifier: 'any.multi-factor-active', oneTimePassword })
+            const result = await authentication.performDynamic('verify-multi-factor', { credential: 'any.multi-factor-active', oneTimePassword })
 
             expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
             expect(TestAuthenticatable.lastInstance.multiFactorActiveAt).toBeNull()
@@ -28,7 +28,7 @@ describe('Authentication', (): void => {
 
               const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', identifier: 'any.multi-factor-active' })
 
-              const result = await authentication.performDynamic('verify-multi-factor', { identifier: 'any.multi-factor-active', oneTimePassword })
+              const result = await authentication.performDynamic('verify-multi-factor', { credential: 'any.multi-factor-active', oneTimePassword })
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(result.authenticatable.logInCount).toEqual(1)
@@ -44,7 +44,7 @@ describe('Authentication', (): void => {
 
             const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', identifier: 'any.multi-factor-active' })
 
-            const result = await authentication.performDynamic('verify-multi-factor', { identifier: 'any.multi-factor-active', oneTimePassword })
+            const result = await authentication.performDynamic('verify-multi-factor', { credential: 'any.multi-factor-active', oneTimePassword })
 
             expect(result).toEqual({ status: 'failure', message: 'multi-factor-inactive' })
           })
@@ -57,7 +57,7 @@ describe('Authentication', (): void => {
           authentication.options['namespace'] = 'universal-auth'
           await authentication.loadDynamics()
 
-          const result = await authentication.performDynamic('verify-multi-factor', { identifier: 'any', oneTimePassword: 'nop' })
+          const result = await authentication.performDynamic('verify-multi-factor', { credential: 'any', oneTimePassword: 'nop' })
 
           expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
         })

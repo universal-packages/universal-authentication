@@ -53,7 +53,8 @@ export default class LogInDynamic {
                 authentication.performDynamicSync('set-authenticatable-multi-factor-active', { authenticatable })
                 await authentication.performDynamic('save-authenticatable', { authenticatable })
 
-                await authentication.performDynamic('request-multi-factor', { identifier: String(authenticatable.id), credentialKind })
+                const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'multi-factor', identifier: authenticatable[credentialKind] })
+                await authentication.performDynamic('send-multi-factor', { credential, oneTimePassword })
 
                 return { status: 'warning', message: 'multi-factor-inbound' }
               } else {
@@ -78,12 +79,17 @@ export default class LogInDynamic {
               authentication.performDynamicSync('set-authenticatable-locked', { authenticatable })
               await authentication.performDynamic('save-authenticatable', { authenticatable })
 
-              await authentication.performDynamic('request-unlock', { authenticatable, credentialKind })
+              const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'unlock', identifier: authenticatable[credentialKind] })
+              await authentication.performDynamic('send-unlock', { credential, oneTimePassword })
+
+              return { status: 'failure', message: 'locked' }
             } else {
               await authentication.performDynamic('save-authenticatable', { authenticatable })
             }
           }
         }
+      } else {
+        return { status: 'failure', message: 'locked' }
       }
     }
 

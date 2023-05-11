@@ -51,8 +51,9 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
-                    await authentication.performDynamic('log-in', { credential: `${credentialKind}.ready-to-unlock` })
+                    const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.ready-to-unlock` })
 
+                    expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                     expect(TestAuthenticatable.lastInstance.lockedAt).toBeNull()
                     expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                   })
@@ -75,7 +76,7 @@ describe('Authentication', (): void => {
 
                     const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.locked` })
 
-                    expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
+                    expect(result).toEqual({ status: 'failure', message: 'locked' })
                     expect(TestAuthenticatable.lastInstance.lockedAt).not.toBeNull()
                     expect(TestAuthenticatable.lastInstance.save).not.toHaveBeenCalled()
                   })
@@ -83,7 +84,7 @@ describe('Authentication', (): void => {
               })
 
               describe('and authenticatable is not locked', (): void => {
-                it('does nothing', async (): Promise<void> => {
+                it('returns success and does nothing else', async (): Promise<void> => {
                   const authentication = new Authentication(
                     {
                       [credentialKind]: { ...allDisabledOptions },
@@ -353,8 +354,9 @@ describe('Authentication', (): void => {
                       authentication.options['namespace'] = 'universal-auth'
                       await authentication.loadDynamics()
 
-                      await authentication.performDynamic('log-in', { credential: credentialKind, password: 'nop' })
+                      const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'nop' })
 
+                      expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
                       expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(1)
                       expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                     })
@@ -374,8 +376,9 @@ describe('Authentication', (): void => {
                         authentication.options['namespace'] = 'universal-auth'
                         await authentication.loadDynamics()
 
-                        await authentication.performDynamic('log-in', { credential: `${credentialKind}.about-to-lock`, password: 'nop' })
+                        const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.about-to-lock`, password: 'nop' })
 
+                        expect(result).toEqual({ status: 'failure', message: 'locked' })
                         expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(3)
                         expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(expect.any(Date))
                         expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()

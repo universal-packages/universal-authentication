@@ -223,18 +223,15 @@ export interface RequestCorroborationPayload {
 }
 
 export interface RequestMultiFactorPayload {
-  identifier?: string
-  credentialKind: CredentialKind
+  credential: string
 }
 
 export interface RequestPasswordResetPayload {
   credential: string
-  credentialKind: CredentialKind
 }
 
 export interface RequestUnlockPayload {
-  authenticatable: Authenticatable
-  credentialKind: CredentialKind
+  credential: string
 }
 
 export interface SignUpPayload {
@@ -269,18 +266,18 @@ export interface VerifyCorroborationPayload {
 }
 
 export interface VerifyMultiFactorPayload {
-  identifier: string
+  credential: string
   oneTimePassword: string
 }
 
 export interface VerifyPasswordResetPayload {
-  identifier: string
+  credential: string
   oneTimePassword: string
   password: string
 }
 
 export interface VerifyUnlockPayload {
-  identifier: string
+  credential: string
   oneTimePassword: string
 }
 
@@ -460,21 +457,16 @@ export interface SendInvitationPayload {
 
 export interface SendMultiFactorPayload {
   credential: string
-  credentialKind: CredentialKind
-  identifier: string
   oneTimePassword: string
 }
 
 export interface SendPasswordResetPayload {
   credential: string
-  credentialKind: CredentialKind
-  identifier: string
   oneTimePassword: string
 }
 
 export interface SendUnlockPayload {
   credential: string
-  credentialKind: CredentialKind
   oneTimePassword: string
 }
 

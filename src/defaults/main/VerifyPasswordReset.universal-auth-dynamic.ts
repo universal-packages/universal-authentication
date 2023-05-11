@@ -5,10 +5,10 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('verify-password-reset', true)
 export default class VerifyPasswordResetDynamic {
   public async perform(payload: VerifyPasswordResetPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { identifier, oneTimePassword, password } = payload
+    const { credential, oneTimePassword, password } = payload
 
-    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'password-reset', identifier, oneTimePassword })) {
-      const authenticatable = await authentication.performDynamic('authenticatable-from-id', { id: identifier })
+    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'password-reset', identifier: credential, oneTimePassword })) {
+      const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
       if (authenticatable) {
         const validation = await authentication.performDynamic('validate-attributes', { attributes: { password }, include: ['password'] })

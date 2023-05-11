@@ -5,10 +5,10 @@ import { AuthDynamic } from '../../decorators'
 @AuthDynamic<AuthDynamicNames>('verify-multi-factor', true)
 export default class VerifyMultiFactorDynamic {
   public async perform(payload: VerifyMultiFactorPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { identifier, oneTimePassword } = payload
+    const { credential, oneTimePassword } = payload
 
-    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'multi-factor', identifier, oneTimePassword })) {
-      const authenticatable = await authentication.performDynamic('authenticatable-from-id', { id: identifier })
+    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'multi-factor', identifier: credential, oneTimePassword })) {
+      const authenticatable = await authentication.performDynamic('authenticatable-from-credential', { credential })
 
       if (authentication.performDynamicSync('is-authenticatable-multi-factor-active?', { authenticatable })) {
         if (authentication.options.enableLogInCount) {
