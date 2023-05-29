@@ -1,6 +1,7 @@
-import validator from 'validator'
 import { BaseValidation, Validator } from '@universal-packages/validations'
-import { Authentication, AttributesValidationOptions } from '../index'
+import validator from 'validator'
+
+import { AttributesValidationOptions, Authentication } from '../index'
 
 export default class AttributesValidation extends BaseValidation {
   public readonly authentication: Authentication

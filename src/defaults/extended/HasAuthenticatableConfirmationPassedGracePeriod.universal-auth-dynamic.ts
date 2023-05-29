@@ -1,4 +1,5 @@
 import ms from 'ms'
+
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, HasAuthenticatableConfirmationPassedGracePeriodPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'

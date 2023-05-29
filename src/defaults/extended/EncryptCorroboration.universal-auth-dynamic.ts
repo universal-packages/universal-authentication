@@ -1,4 +1,5 @@
 import { encryptSubject } from '@universal-packages/crypto-utils'
+
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, EncryptCorroborationPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'

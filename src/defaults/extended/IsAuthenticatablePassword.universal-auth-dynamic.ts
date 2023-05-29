@@ -1,4 +1,5 @@
 import { checkSubjectHash } from '@universal-packages/crypto-utils'
+
 import { AuthDynamicNames, IsAuthenticatablePasswordPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
 

@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { Authenticatable, AuthDynamicNames, AuthenticatableFromProviderUserDataPayload } from '../../Authentication.types'
+import { AuthDynamicNames, Authenticatable, AuthenticatableFromProviderUserDataPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('authenticatable-from-provider-user-data', true)

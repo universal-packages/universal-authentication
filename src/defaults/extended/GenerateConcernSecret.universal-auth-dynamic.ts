@@ -1,4 +1,5 @@
 import { digestSubject } from '@universal-packages/crypto-utils'
+
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, GenerateConcernSecretPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'

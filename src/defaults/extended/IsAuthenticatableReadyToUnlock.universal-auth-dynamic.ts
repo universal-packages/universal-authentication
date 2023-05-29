@@ -1,4 +1,5 @@
 import ms from 'ms'
+
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, IsAuthenticatableReadyToUnlockPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'

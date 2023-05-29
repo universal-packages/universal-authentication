@@ -1,4 +1,5 @@
 import { generate } from '@universal-packages/time-based-one-time-password'
+
 import Authentication from '../../Authentication'
 import { AuthDynamicNames, GenerateOneTimePasswordPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'

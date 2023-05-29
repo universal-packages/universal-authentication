@@ -1,4 +1,5 @@
 import { ValidationResult } from '@universal-packages/validations'
+
 import Authentication from '../../Authentication'
 import { AttributesValidationOptions, AuthDynamicNames, ValidateAttributesPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
