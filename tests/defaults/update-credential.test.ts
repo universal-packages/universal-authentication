@@ -117,26 +117,53 @@ describe('Authentication', (): void => {
             })
 
             describe(`and ${credentialKind} confirmation is enabled`, (): void => {
-              it('returns success and sends the confirmation request and sets the unconfirmed credential', async (): Promise<void> => {
-                const authentication = new Authentication(
-                  {
-                    [credentialKind]: { ...allDisabledOptions, enableConfirmation: true },
-                    secret: '123',
-                    dynamicsLocation: './src/defaults'
-                  },
-                  TestAuthenticatable
-                )
-                authentication.options['namespace'] = 'universal-auth'
-                await authentication.loadDynamics()
+              describe(`and current ${credentialKind} is already confirmed`, (): void => {
+                it('returns success and sends the confirmation request and sets the unconfirmed credential in the unconfirmed property', async (): Promise<void> => {
+                  const authentication = new Authentication(
+                    {
+                      [credentialKind]: { ...allDisabledOptions, enableConfirmation: true },
+                      secret: '123',
+                      dynamicsLocation: './src/defaults'
+                    },
+                    TestAuthenticatable
+                  )
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
 
-                const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.confirmed`)
+                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.confirmed`)
 
-                const result = await authentication.performDynamic('update-credential', { authenticatable, credential: credentialValues[credentialKind], credentialKind })
+                  const result = await authentication.performDynamic('update-credential', { authenticatable, credential: credentialValues[credentialKind], credentialKind })
 
-                expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                expect(authenticatable.save).toHaveBeenCalled()
-                expect(authenticatable).toMatchObject({
-                  [`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`]: credentialValues[credentialKind].toLowerCase()
+                  expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
+                  expect(authenticatable.save).toHaveBeenCalled()
+                  expect(authenticatable).toMatchObject({
+                    [`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`]: credentialValues[credentialKind].toLowerCase()
+                  })
+                })
+              })
+
+              describe(`and current ${credentialKind} is not confirmed`, (): void => {
+                it('returns success and sends the confirmation request and sets the unconfirmed credential in the same field', async (): Promise<void> => {
+                  const authentication = new Authentication(
+                    {
+                      [credentialKind]: { ...allDisabledOptions, enableConfirmation: true },
+                      secret: '123',
+                      dynamicsLocation: './src/defaults'
+                    },
+                    TestAuthenticatable
+                  )
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  const authenticatable = TestAuthenticatable.findByCredential(`${credentialKind}.unconfirmed`)
+
+                  const result = await authentication.performDynamic('update-credential', { authenticatable, credential: credentialValues[credentialKind], credentialKind })
+
+                  expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
+                  expect(authenticatable.save).toHaveBeenCalled()
+                  expect(authenticatable).toMatchObject({
+                    [credentialKind]: credentialValues[credentialKind].toLowerCase()
+                  })
                 })
               })
 
