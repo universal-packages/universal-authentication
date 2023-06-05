@@ -1,4 +1,5 @@
 import { Authentication, CredentialKind } from '../../src'
+import SendCorroborationDynamic from '../../src/defaults/extended/SendCorroboration.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -24,6 +25,7 @@ describe('Authentication', (): void => {
               const result = await authentication.performDynamic('request-corroboration', { credential: credentialKind, credentialKind })
 
               expect(result).toEqual({ status: 'success' })
+              expect(SendCorroborationDynamic).toHaveBeenPerformedWith({ credential: credentialKind, credentialKind, oneTimePassword: expect.any(String) })
             })
           })
         })
@@ -44,6 +46,7 @@ describe('Authentication', (): void => {
             const result = await authentication.performDynamic('request-corroboration', { credential: '', credentialKind })
 
             expect(result).toEqual({ status: 'failure', message: 'corroboration-disabled' })
+            expect(SendCorroborationDynamic).not.toHaveBeenPerformed()
           })
         })
       })

@@ -1,4 +1,5 @@
 import { Authentication, CredentialKind } from '../../src'
+import SendConfirmationDynamic from '../../src/defaults/extended/SendConfirmation.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -24,6 +25,7 @@ describe('Authentication', (): void => {
               const result = await authentication.performDynamic('request-confirmation', { credential: credentialKind, credentialKind })
 
               expect(result).toEqual({ status: 'success' })
+              expect(SendConfirmationDynamic).toHaveBeenPerformedWith({ credential: credentialKind, credentialKind, oneTimePassword: expect.any(String) })
             })
           })
 
@@ -43,6 +45,7 @@ describe('Authentication', (): void => {
               const result = await authentication.performDynamic('request-confirmation', { credential: '', credentialKind })
 
               expect(result).toEqual({ status: 'failure', message: 'confirmation-disabled' })
+              expect(SendConfirmationDynamic).not.toHaveBeenPerformed()
             })
           })
         })

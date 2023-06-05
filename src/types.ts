@@ -161,6 +161,7 @@ export interface Invitation {
   credential: string
   credentialKind: CredentialKind
   inviterId: string | number | bigint
+  metadata?: Record<string, any>
 }
 
 export interface MultiFactorMetadata {
@@ -205,6 +206,7 @@ export interface InviteAuthenticatablePayload {
   credential: string
   credentialKind: CredentialKind
   inviterId: number | bigint | string
+  metadata?: Record<string, any>
 }
 
 export interface LogInPayload {
@@ -287,6 +289,7 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'authenticatable-from-provider-id': { payload: AuthenticatableFromProviderIdPayload; result: Authenticatable }
   'authenticatable-from-provider-user-data': { payload: AuthenticatableFromProviderUserDataPayload; result: Authenticatable }
   'authenticatable-from-sign-up': { payload: AuthenticatableFromSignUpPayload; result: Authenticatable }
+  'consume-invitation': { payload: ConsumeInvitationPayload; result: Invitation }
   'credential-kind-from-credential-authenticatable': { payload: CredentialKindFromCredentialAuthenticatablePayload; result: CredentialKind }
   'decrypt-corroboration-token': { payload: DecryptCorroborationTokenPayload; result: Invitation }
   'decrypt-invitation-token': { payload: DecryptInvitationTokenPayload; result: Invitation }
@@ -352,6 +355,11 @@ export interface AuthenticatableFromSignUpPayload {
   credentialKind: CredentialKind
   corroboration?: Corroboration
   invitation?: Invitation
+}
+
+export interface ConsumeInvitationPayload {
+  authenticatable: Authenticatable
+  invitation: Invitation
 }
 
 export interface CredentialKindFromCredentialAuthenticatablePayload {

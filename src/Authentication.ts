@@ -1,6 +1,6 @@
 import { DynamicApi } from '@universal-packages/dynamic-api'
 
-import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, ExtensibleUnion } from './Authentication.types'
+import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, ExtensibleUnion } from './types'
 
 export default class Authentication<D extends Record<string, any> = AuthDynamicNames> extends DynamicApi<D> {
   public readonly options: AuthenticationOptions

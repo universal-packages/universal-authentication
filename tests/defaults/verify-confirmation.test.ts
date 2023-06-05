@@ -1,4 +1,5 @@
 import { Authentication, CredentialKind } from '../../src'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -23,7 +24,7 @@ describe('Authentication', (): void => {
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(TestAuthenticatable.lastInstance[`${credentialKind}ConfirmedAt`]).toEqual(expect.any(Date))
-              expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+              expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
             })
 
             describe(`and the unconfirmed ${credentialKind} is the one to confirm`, (): void => {
@@ -43,7 +44,7 @@ describe('Authentication', (): void => {
                 expect(TestAuthenticatable.lastInstance[credentialKind]).toEqual('new')
 
                 expect(TestAuthenticatable.lastInstance[`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`]).toBeNull()
-                expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
               })
             })
           })
@@ -57,6 +58,7 @@ describe('Authentication', (): void => {
               const result = await authentication.performDynamic('verify-confirmation', { credential: credentialKind, credentialKind, oneTimePassword: 'nop' })
 
               expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
+              expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
             })
           })
         })

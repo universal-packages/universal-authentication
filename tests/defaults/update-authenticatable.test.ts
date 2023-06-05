@@ -1,4 +1,5 @@
 import { Authentication } from '../../src'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -16,7 +17,7 @@ describe('Authentication', (): void => {
 
           expect(result).toEqual({ status: 'success', authenticatable })
           expect(result.authenticatable.username).toEqual('new')
-          expect(authenticatable.save).toHaveBeenCalled()
+          expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable })
         })
 
         it('ignores credential attributes', async (): Promise<void> => {
@@ -29,7 +30,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('update-authenticatable', { authenticatable, attributes: { email: '....', phone: '2313123' } })
 
           expect(result).toEqual({ status: 'success', authenticatable })
-          expect(authenticatable.save).toHaveBeenCalled()
+          expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable })
         })
 
         it('ignores to validate attributes not being changed', async (): Promise<void> => {
@@ -45,7 +46,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('update-authenticatable', { authenticatable, attributes: { firstName: 'yes' } })
 
           expect(result).toEqual({ status: 'success', authenticatable })
-          expect(authenticatable.save).toHaveBeenCalled()
+          expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable })
         })
       })
 
@@ -60,7 +61,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('update-authenticatable', { authenticatable, attributes: { username: '....', password: '12' } })
 
           expect(result).toEqual({ status: 'failure', validation: { valid: false, errors: { password: ['password-out-of-size'] } } })
-          expect(authenticatable.save).not.toHaveBeenCalled()
+          expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
         })
       })
     })

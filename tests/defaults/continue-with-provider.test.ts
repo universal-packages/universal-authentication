@@ -1,4 +1,5 @@
 import { Authentication } from '../../src'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import GetUniversalUserDataDynamic from '../__fixtures__/GetUniversalDataDynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
@@ -36,28 +37,76 @@ describe('Authentication', (): void => {
               const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'exists' })
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
-              expect(result.authenticatable.save).not.toHaveBeenCalled()
+              expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
             })
 
             describe('and confirmation is enabled', (): void => {
-              it('returns success and confirms the authenticatable email in place', async (): Promise<void> => {
-                const authentication = new Authentication({ email: { enableConfirmation: true }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
-                authentication.options['namespace'] = 'universal-auth'
-                await authentication.loadDynamics()
+              describe('and the provider email is the same as the authenticatable email', (): void => {
+                it('returns success and confirms the authenticatable email in place', async (): Promise<void> => {
+                  const authentication = new Authentication({ email: { enableConfirmation: true }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
 
-                authentication.dynamics['get-universal-user-data'] = {
-                  afterHooks: [],
-                  beforeHooks: [],
-                  implementations: [],
-                  name: 'get-universal-user-data',
-                  default: GetUniversalUserDataDynamic
-                }
+                  authentication.dynamics['get-universal-user-data'] = {
+                    afterHooks: [],
+                    beforeHooks: [],
+                    implementations: [],
+                    name: 'get-universal-user-data',
+                    default: GetUniversalUserDataDynamic
+                  }
 
-                const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'exists' })
+                  const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'exists' })
 
-                expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
-                expect(result.authenticatable.emailConfirmedAt).toEqual(expect.any(Date))
-                expect(result.authenticatable.save).toHaveBeenCalled()
+                  expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
+                  expect(result.authenticatable.emailConfirmedAt).toEqual(expect.any(Date))
+                  expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: result.authenticatable })
+                })
+              })
+
+              describe('and the provider email is the same as the authenticatable unconfirmedEmail', (): void => {
+                it('returns success and confirms the authenticatable email in place', async (): Promise<void> => {
+                  const authentication = new Authentication({ email: { enableConfirmation: true }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  authentication.dynamics['get-universal-user-data'] = {
+                    afterHooks: [],
+                    beforeHooks: [],
+                    implementations: [],
+                    name: 'get-universal-user-data',
+                    default: GetUniversalUserDataDynamic
+                  }
+
+                  const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'exists-confirmation-pending' })
+
+                  expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
+                  expect(result.authenticatable.emailConfirmedAt).toEqual(expect.any(Date))
+                  expect(result.authenticatable.unconfirmedEmail).toBeNull()
+                  expect(result.authenticatable.email).toEqual('user@universal.com')
+                  expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: result.authenticatable })
+                })
+              })
+
+              describe('and the provider email does not match any email in record', (): void => {
+                it('returns success and does nothing with confirmation', async (): Promise<void> => {
+                  const authentication = new Authentication({ email: { enableConfirmation: true }, secret: '123', dynamicsLocation: './src/defaults' }, TestAuthenticatable)
+                  authentication.options['namespace'] = 'universal-auth'
+                  await authentication.loadDynamics()
+
+                  authentication.dynamics['get-universal-user-data'] = {
+                    afterHooks: [],
+                    beforeHooks: [],
+                    implementations: [],
+                    name: 'get-universal-user-data',
+                    default: GetUniversalUserDataDynamic
+                  }
+
+                  const result = await authentication.performDynamic('continue-with-provider', { provider: 'universal', token: 'exists-independent-email' })
+
+                  expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
+                  expect(result.authenticatable.emailConfirmedAt).toBeNull()
+                  expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
+                })
               })
             })
 
@@ -79,7 +128,7 @@ describe('Authentication', (): void => {
 
                 expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                 expect(result.authenticatable.logInCount).toEqual(1)
-                expect(result.authenticatable.save).toHaveBeenCalled()
+                expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: result.authenticatable })
               })
             })
           })
@@ -110,7 +159,7 @@ describe('Authentication', (): void => {
                 name: 'david de anda',
                 profilePictureUrl: 'https://images.com/david'
               })
-              expect(result.authenticatable.save).toHaveBeenCalled()
+              expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: result.authenticatable })
             })
           })
         })

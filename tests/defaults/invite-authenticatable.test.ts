@@ -1,4 +1,5 @@
 import { Authentication, CredentialKind } from '../../src'
+import SendInvitationDynamic from '../../src/defaults/extended/SendInvitation.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -21,9 +22,10 @@ describe('Authentication', (): void => {
               authentication.options['namespace'] = 'universal-auth'
               await authentication.loadDynamics()
 
-              const result = await authentication.performDynamic('invite-authenticatable', { credential: 'credential', credentialKind, inviterId: 2 })
+              const result = await authentication.performDynamic('invite-authenticatable', { credential: 'credential', credentialKind, inviterId: 2, metadata: { foo: 'bar' } })
 
               expect(result).toEqual({ status: 'success' })
+              expect(SendInvitationDynamic).toHaveBeenPerformedWith({ credential: 'credential', credentialKind, invitationToken: expect.any(String) })
             })
           })
 
@@ -43,6 +45,7 @@ describe('Authentication', (): void => {
               const result = await authentication.performDynamic('invite-authenticatable', { credential: 'credential', credentialKind, inviterId: 2 })
 
               expect(result).toEqual({ status: 'failure', message: 'invitations-disabled' })
+              expect(SendInvitationDynamic).not.toHaveBeenPerformed()
             })
           })
         })

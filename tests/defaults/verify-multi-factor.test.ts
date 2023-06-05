@@ -1,4 +1,5 @@
 import { Authentication } from '../../src'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -17,7 +18,7 @@ describe('Authentication', (): void => {
 
             expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
             expect(TestAuthenticatable.lastInstance.multiFactorActiveAt).toBeNull()
-            expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+            expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
           })
 
           describe('and log in count is enabled', (): void => {
@@ -32,6 +33,7 @@ describe('Authentication', (): void => {
 
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(result.authenticatable.logInCount).toEqual(1)
+              expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
             })
           })
         })
@@ -47,6 +49,7 @@ describe('Authentication', (): void => {
             const result = await authentication.performDynamic('verify-multi-factor', { credential: 'any.multi-factor-active', oneTimePassword })
 
             expect(result).toEqual({ status: 'failure', message: 'multi-factor-inactive' })
+            expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
           })
         })
       })
@@ -60,6 +63,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('verify-multi-factor', { credential: 'any', oneTimePassword: 'nop' })
 
           expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
+          expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
         })
       })
     })

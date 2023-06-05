@@ -1,4 +1,8 @@
 import { Authentication, AuthenticationCredentialOptions, CredentialKind } from '../../src'
+import GenerateMultiFactorMetadataDynamic from '../../src/defaults/extended/GenerateMultiFactorMetadata.universal-auth-dynamic'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
+import SendMultiFactorDynamic from '../../src/defaults/extended/SendMultiFactor.universal-auth-dynamic'
+import SendResetUnlockDynamic from '../../src/defaults/extended/SendUnlock.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -55,7 +59,7 @@ describe('Authentication', (): void => {
 
                     expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                     expect(TestAuthenticatable.lastInstance.lockedAt).toBeNull()
-                    expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                    expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                   })
                 })
 
@@ -78,7 +82,7 @@ describe('Authentication', (): void => {
 
                     expect(result).toEqual({ status: 'failure', message: 'locked' })
                     expect(TestAuthenticatable.lastInstance.lockedAt).not.toBeNull()
-                    expect(TestAuthenticatable.lastInstance.save).not.toHaveBeenCalled()
+                    expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
                   })
                 })
               })
@@ -101,6 +105,7 @@ describe('Authentication', (): void => {
                   const result = await authentication.performDynamic('log-in', { credential: credentialKind })
 
                   expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
+                  expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
                 })
               })
             })
@@ -251,6 +256,7 @@ describe('Authentication', (): void => {
                       const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'password' })
 
                       expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { identifier: '69', [credentialKind]: credentialKind } })
+                      expect(GenerateMultiFactorMetadataDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                     })
 
                     describe('and multi-factor is set to be sent in place', (): void => {
@@ -275,6 +281,9 @@ describe('Authentication', (): void => {
                         const result = await authentication.performDynamic('log-in', { credential: credentialKind, password: 'password' })
 
                         expect(result).toEqual({ status: 'warning', message: 'multi-factor-inbound' })
+                        expect(TestAuthenticatable.lastInstance.multiFactorActiveAt).toEqual(expect.any(Date))
+                        expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                        expect(SendMultiFactorDynamic).toHaveBeenPerformedWith({ credential: credentialKind, oneTimePassword: expect.any(String) })
                       })
                     })
                   })
@@ -295,6 +304,7 @@ describe('Authentication', (): void => {
                       const result = await authentication.performDynamic('log-in', { credential: `${credentialKind}.multi-factor-enabled`, password: 'password' })
 
                       expect(result).toEqual({ status: 'warning', message: 'multi-factor-waiting', metadata: { identifier: '69', [credentialKind]: expect.any(String) } })
+                      expect(GenerateMultiFactorMetadataDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                     })
                   })
                 })
@@ -317,6 +327,7 @@ describe('Authentication', (): void => {
 
                     expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                     expect(result.authenticatable.logInCount).toEqual(1)
+                    expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: result.authenticatable })
                   })
                 })
               })
@@ -358,11 +369,11 @@ describe('Authentication', (): void => {
 
                       expect(result).toEqual({ status: 'failure', message: 'invalid-credentials' })
                       expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(1)
-                      expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                      expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                     })
 
                     describe('and authenticatable is about to lock', (): void => {
-                      it('locks it', async (): Promise<void> => {
+                      it('locks it and sends the unlock', async (): Promise<void> => {
                         const authentication = new Authentication(
                           {
                             [credentialKind]: { ...allDisabledOptions, enablePasswordCheck: true },
@@ -381,7 +392,8 @@ describe('Authentication', (): void => {
                         expect(result).toEqual({ status: 'failure', message: 'locked' })
                         expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(3)
                         expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(expect.any(Date))
-                        expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                        expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                        expect(SendResetUnlockDynamic).toHaveBeenPerformedWith({ credential: `${credentialKind}.about-to-lock`, oneTimePassword: expect.any(String) })
                       })
                     })
                   })

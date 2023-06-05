@@ -1,4 +1,5 @@
 import { Authentication } from '../../src'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -17,7 +18,7 @@ describe('Authentication', (): void => {
           expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
           expect(TestAuthenticatable.lastInstance.lockedAt).toEqual(null)
           expect(TestAuthenticatable.lastInstance.failedLogInAttempts).toEqual(0)
-          expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+          expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
         })
       })
 
@@ -30,6 +31,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('verify-unlock', { credential: '666', oneTimePassword: 'nop' })
 
           expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
+          expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
         })
       })
     })

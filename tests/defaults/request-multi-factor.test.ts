@@ -1,4 +1,5 @@
 import { Authentication } from '../../src'
+import SendMultiFactorDynamic from '../../src/defaults/extended/SendMultiFactor.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -13,6 +14,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('request-multi-factor', { credential: 'any.multi-factor-active' })
 
           expect(result).toEqual({ status: 'success' })
+          expect(SendMultiFactorDynamic).toHaveBeenPerformedWith({ credential: 'any.multi-factor-active', oneTimePassword: expect.any(String) })
         })
       })
 
@@ -25,6 +27,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('request-multi-factor', { credential: 'any.multi-factor-inactive' })
 
           expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
+          expect(SendMultiFactorDynamic).not.toHaveBeenPerformed()
         })
       })
 
@@ -37,6 +40,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('request-multi-factor', { credential: 'any.nothing' })
 
           expect(result).toEqual({ status: 'warning', message: 'nothing-to-do' })
+          expect(SendMultiFactorDynamic).not.toHaveBeenPerformed()
         })
       })
     })

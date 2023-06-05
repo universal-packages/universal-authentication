@@ -1,4 +1,6 @@
-import { Authentication, AuthenticationCredentialOptions, CredentialKind } from '../../src'
+import { Authentication, AuthenticationCredentialOptions, CredentialKind, Invitation } from '../../src'
+import ConsumeInvitationDynamic from '../../src/defaults/extended/ConsumeInvitation.universal-auth-dynamic'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -43,7 +45,6 @@ describe('Authentication', (): void => {
                 })
 
                 expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                 expect(TestAuthenticatable.lastInstance).toMatchObject({
                   [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                   [`${credentialKind}ConfirmedAt`]: null,
@@ -53,6 +54,7 @@ describe('Authentication', (): void => {
                   name: 'David De Anda',
                   encryptedPassword: null
                 })
+                expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
               })
 
               describe(`and ${credentialKind} password check is enabled`, (): void => {
@@ -78,6 +80,7 @@ describe('Authentication', (): void => {
 
                   expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
                   expect(TestAuthenticatable.lastInstance).toMatchObject({ encryptedPassword: expect.any(String) })
+                  expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                 })
               })
 
@@ -94,12 +97,14 @@ describe('Authentication', (): void => {
                   authentication.options['namespace'] = 'universal-auth'
                   await authentication.loadDynamics()
 
+                  const invitation: Invitation = {
+                    credential: credentialValues[credentialKind],
+                    credentialKind,
+                    inviterId: 2
+                  }
+
                   const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
-                    invitation: {
-                      credential: credentialValues[credentialKind],
-                      credentialKind,
-                      inviterId: 2
-                    }
+                    invitation
                   })
 
                   const result = await authentication.performDynamic('sign-up', {
@@ -116,12 +121,13 @@ describe('Authentication', (): void => {
                   })
 
                   expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                  expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                   expect(TestAuthenticatable.lastInstance).toMatchObject({
                     [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                     [`${credentialKind}ConfirmedAt`]: null,
                     inviterId: 2
                   })
+                  expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                  expect(ConsumeInvitationDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance, invitation })
                 })
 
                 describe('but an invitation is not provided', (): void => {
@@ -150,12 +156,13 @@ describe('Authentication', (): void => {
                     })
 
                     expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                    expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                     expect(TestAuthenticatable.lastInstance).toMatchObject({
                       [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                       [`${credentialKind}ConfirmedAt`]: null,
                       inviterId: null
                     })
+                    expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                    expect(ConsumeInvitationDynamic).not.toHaveBeenPerformed()
                   })
 
                   describe(`but ${credentialKind} invitations are enforced`, (): void => {
@@ -253,11 +260,11 @@ describe('Authentication', (): void => {
                   })
 
                   expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                  expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                   expect(TestAuthenticatable.lastInstance).toMatchObject({
                     [credentialKind]: credentialValues[credentialKind].toLowerCase(),
                     [`${credentialKind}ConfirmedAt`]: null
                   })
+                  expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                 })
 
                 describe('but the corroboration is not provided', (): void => {
@@ -346,7 +353,7 @@ describe('Authentication', (): void => {
                   })
 
                   expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                  expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                  expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                 })
 
                 describe(`and ${credentialKind} invitations are enabled`, (): void => {
@@ -362,12 +369,14 @@ describe('Authentication', (): void => {
                     authentication.options['namespace'] = 'universal-auth'
                     await authentication.loadDynamics()
 
+                    const invitation: Invitation = {
+                      inviterId: 2,
+                      credential: credentialValues[credentialKind],
+                      credentialKind
+                    }
+
                     const invitationToken = authentication.performDynamicSync('encrypt-invitation', {
-                      invitation: {
-                        inviterId: 2,
-                        credential: credentialValues[credentialKind],
-                        credentialKind
-                      }
+                      invitation
                     })
 
                     const result = await authentication.performDynamic('sign-up', {
@@ -384,8 +393,9 @@ describe('Authentication', (): void => {
                     })
 
                     expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                    expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                     expect(TestAuthenticatable.lastInstance).toMatchObject({ [`${credentialKind}ConfirmedAt`]: expect.any(Date) })
+                    expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                    expect(ConsumeInvitationDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance, invitation })
                   })
                 })
 
@@ -423,8 +433,8 @@ describe('Authentication', (): void => {
                     })
 
                     expect(result).toEqual({ status: 'success', authenticatable: TestAuthenticatable.lastInstance })
-                    expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
                     expect(TestAuthenticatable.lastInstance).toMatchObject({ [`${credentialKind}ConfirmedAt`]: expect.any(Date) })
+                    expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                   })
                 })
 
@@ -458,7 +468,7 @@ describe('Authentication', (): void => {
                       message: 'confirmation-inbound',
                       metadata: { credential: credentialValues[credentialKind].toLowerCase(), credentialKind }
                     })
-                    expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+                    expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
                   })
                 })
               })
@@ -495,6 +505,7 @@ describe('Authentication', (): void => {
                     valid: false
                   }
                 })
+                expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
               })
 
               describe(`and ${credentialKind} password check is enabled`, (): void => {

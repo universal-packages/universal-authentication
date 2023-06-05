@@ -1,4 +1,5 @@
 import { Authentication, CredentialKind } from '../../src'
+import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -16,7 +17,7 @@ describe('Authentication', (): void => {
 
           expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
           expect(TestAuthenticatable.lastInstance.password).toEqual('new-password')
-          expect(TestAuthenticatable.lastInstance.save).toHaveBeenCalled()
+          expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
         })
 
         describe('but the new password is not valid', (): void => {
@@ -31,7 +32,7 @@ describe('Authentication', (): void => {
 
             expect(result).toEqual({ status: 'failure', validation: { valid: false, errors: { password: ['password-out-of-size'] } } })
             expect(TestAuthenticatable.lastInstance.password).not.toEqual('new-password')
-            expect(TestAuthenticatable.lastInstance.save).not.toHaveBeenCalled()
+            expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
           })
         })
       })
@@ -47,6 +48,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('verify-password-reset', { credential: 'any.nothing', oneTimePassword, password: 'new' })
 
           expect(result).toEqual({ status: 'failure', message: 'nothing-to-do' })
+          expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
         })
       })
 
@@ -59,6 +61,7 @@ describe('Authentication', (): void => {
           const result = await authentication.performDynamic('verify-password-reset', { credential: 'any', oneTimePassword: 'nop', password: 'new' })
 
           expect(result).toEqual({ status: 'failure', message: 'invalid-one-time-password' })
+          expect(SaveAuthenticatableDynamic).not.toHaveBeenPerformed()
         })
       })
     })
