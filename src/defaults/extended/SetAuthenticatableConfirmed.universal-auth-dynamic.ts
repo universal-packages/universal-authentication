@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatableConfirmedPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatableConfirmedPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-confirmed', true)

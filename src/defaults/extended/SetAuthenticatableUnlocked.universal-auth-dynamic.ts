@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatableUnlockedPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatableUnlockedPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-unlocked', true)

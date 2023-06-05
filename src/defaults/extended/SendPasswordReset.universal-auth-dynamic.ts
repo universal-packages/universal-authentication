@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendPasswordResetPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SendPasswordResetPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('send-password-reset', true)

@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendConfirmationPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SendConfirmationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('send-confirmation', true)

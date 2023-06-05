@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, IsAuthenticatableLockablePayload } from '../../Authentication.types'
+import { AuthDynamicNames, IsAuthenticatableLockablePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-lockable?', true)

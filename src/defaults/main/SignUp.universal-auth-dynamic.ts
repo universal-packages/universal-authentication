@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AttributesValidationOptions, AuthDynamicNames, AuthenticationResult, Corroboration, Invitation, SignUpPayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
+import { AttributesValidationOptions, AuthDynamicNames, AuthenticationResult, Corroboration, Invitation, SignUpPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('sign-up', true)
 export default class SignUpDynamic {
@@ -60,6 +60,8 @@ export default class SignUpDynamic {
           }
         }
       }
+
+      if (invitation) await authentication.performDynamic('consume-invitation', { authenticatable, invitation })
 
       return { status: 'success', authenticatable }
     }

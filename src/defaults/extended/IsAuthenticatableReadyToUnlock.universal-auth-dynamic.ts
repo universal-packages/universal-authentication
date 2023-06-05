@@ -1,7 +1,7 @@
 import ms from 'ms'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, IsAuthenticatableReadyToUnlockPayload } from '../../Authentication.types'
+import { AuthDynamicNames, IsAuthenticatableReadyToUnlockPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-ready-to-unlock?', true)

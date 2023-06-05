@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, ContinueWithProviderPayload, ProviderDataResult } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, ContinueWithProviderPayload, ProviderDataResult } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('continue-with-provider', true)
 export default class ContinueWithProviderDynamic {
@@ -22,8 +22,10 @@ export default class ContinueWithProviderDynamic {
 
           if (
             authentication.options.email?.enableConfirmation &&
-            !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind: 'email' })
+            !authentication.performDynamicSync('is-authenticatable-confirmed?', { authenticatable, credentialKind: 'email' }) &&
+            (providerDataResult.attributes.email === authenticatable.email || providerDataResult.attributes.email === authenticatable.unconfirmedEmail)
           ) {
+            authentication.performDynamicSync('stablish-authenticatable-unconfirmed-credential', { authenticatable, credentialKind: 'email' })
             authentication.performDynamicSync('set-authenticatable-confirmed', { authenticatable, credentialKind: 'email' })
             shouldSave = true
           }

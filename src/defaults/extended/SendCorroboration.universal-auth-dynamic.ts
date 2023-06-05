@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendCorroborationPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SendCorroborationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('send-corroboration', true)

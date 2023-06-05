@@ -1,7 +1,7 @@
 import { decryptSubject } from '@universal-packages/crypto-utils'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, Corroboration, DecryptCorroborationTokenPayload } from '../../Authentication.types'
+import { AuthDynamicNames, Corroboration, DecryptCorroborationTokenPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('decrypt-corroboration-token', true)

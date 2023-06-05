@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, VerifyPasswordResetPayload } from '../../Authentication.types'
+import { AuthDynamicNames, AuthenticationResult, VerifyPasswordResetPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('verify-password-reset', true)

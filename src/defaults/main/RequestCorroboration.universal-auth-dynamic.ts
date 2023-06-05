@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, RequestCorroborationPayload } from '../../Authentication.types'
+import { AuthDynamicNames, AuthenticationResult, RequestCorroborationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('request-corroboration', true)

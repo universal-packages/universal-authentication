@@ -1,15 +1,15 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, InviteAuthenticatablePayload } from '../../Authentication.types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, InviteAuthenticatablePayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('invite-authenticatable', true)
 export default class InviteAuthenticatableDynamic {
   public perform(payload: InviteAuthenticatablePayload, authentication: Authentication): AuthenticationResult {
-    const { credential, credentialKind, inviterId } = payload
+    const { credential, credentialKind, inviterId, metadata } = payload
     const credentialKindOptions = authentication.options[credentialKind]
 
     if (credentialKindOptions.enableSignUpInvitations) {
-      const invitationToken = authentication.performDynamicSync('encrypt-invitation', { invitation: { credential, credentialKind, inviterId } })
+      const invitationToken = authentication.performDynamicSync('encrypt-invitation', { invitation: { credential, credentialKind, inviterId, metadata } })
 
       authentication.performDynamic('send-invitation', { credential, credentialKind, invitationToken })
 

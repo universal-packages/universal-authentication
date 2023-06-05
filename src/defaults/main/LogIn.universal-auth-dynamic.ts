@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, LogInPayload } from '../../Authentication.types'
+import { AuthDynamicNames, AuthenticationResult, LogInPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('log-in', true)

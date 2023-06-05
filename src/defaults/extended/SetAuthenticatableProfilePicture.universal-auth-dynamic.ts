@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatableProfilePicturePayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatableProfilePicturePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-profile-picture', true)

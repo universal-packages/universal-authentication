@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AssignableAttributes, AuthDynamicNames, SetAuthenticatableAttributesPayload } from '../../Authentication.types'
+import { AssignableAttributes, AuthDynamicNames, SetAuthenticatableAttributesPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-attributes', true)

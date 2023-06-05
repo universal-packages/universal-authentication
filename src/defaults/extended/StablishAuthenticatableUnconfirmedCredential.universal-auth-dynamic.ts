@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatableUnconfirmedCredentialPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatableUnconfirmedCredentialPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('stablish-authenticatable-unconfirmed-credential', true)

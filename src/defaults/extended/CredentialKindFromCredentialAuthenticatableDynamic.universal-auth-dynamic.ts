@@ -1,4 +1,4 @@
-import { AuthDynamicNames, CredentialKind, CredentialKindFromCredentialAuthenticatablePayload } from '../../Authentication.types'
+import { AuthDynamicNames, CredentialKind, CredentialKindFromCredentialAuthenticatablePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('credential-kind-from-credential-authenticatable', true)

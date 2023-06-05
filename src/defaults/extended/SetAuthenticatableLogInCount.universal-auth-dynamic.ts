@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatableLogInCountPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatableLogInCountPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-log-in-count', true)

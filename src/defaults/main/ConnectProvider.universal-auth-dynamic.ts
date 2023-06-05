@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, ConnectProviderPayload, ProviderDataResult } from '../../Authentication.types'
+import { AuthDynamicNames, AuthenticationResult, ConnectProviderPayload, ProviderDataResult } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('connect-provider', true)

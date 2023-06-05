@@ -1,7 +1,7 @@
 import ms from 'ms'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, IsAuthenticatableMultiFactorActivePayload } from '../../Authentication.types'
+import { AuthDynamicNames, IsAuthenticatableMultiFactorActivePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-multi-factor-active?', true)

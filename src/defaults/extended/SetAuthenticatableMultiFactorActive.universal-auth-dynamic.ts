@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatableMultiFactorActivePayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatableMultiFactorActivePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-multi-factor-active', true)

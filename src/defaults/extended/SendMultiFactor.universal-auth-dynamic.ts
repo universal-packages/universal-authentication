@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendMultiFactorPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SendMultiFactorPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('send-multi-factor', true)

@@ -1,7 +1,7 @@
 import { decryptSubject } from '@universal-packages/crypto-utils'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, DecryptInvitationTokenPayload, Invitation } from '../../Authentication.types'
+import { AuthDynamicNames, DecryptInvitationTokenPayload, Invitation } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('decrypt-invitation-token', true)

@@ -1,4 +1,4 @@
-import { AuthDynamicNames, SetAuthenticatablePasswordPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SetAuthenticatablePasswordPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-password', true)

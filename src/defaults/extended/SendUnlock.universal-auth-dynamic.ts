@@ -1,5 +1,5 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendUnlockPayload } from '../../Authentication.types'
+import { AuthDynamicNames, SendUnlockPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('send-unlock', true)

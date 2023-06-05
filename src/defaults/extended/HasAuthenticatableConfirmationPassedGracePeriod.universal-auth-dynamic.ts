@@ -1,7 +1,7 @@
 import ms from 'ms'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, HasAuthenticatableConfirmationPassedGracePeriodPayload } from '../../Authentication.types'
+import { AuthDynamicNames, HasAuthenticatableConfirmationPassedGracePeriodPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('has-authenticatable-confirmation-passed-grace-period?', true)
