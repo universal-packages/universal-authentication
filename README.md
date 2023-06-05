@@ -641,7 +641,19 @@ The extended dynamics are meant to be override in case your Authenticatable beha
     - **`credential`** `String`
     - **`credentialKind`** `email | phone`
     - **`inviterId`**`String | Number | BigInt`
+    - **`metadata`** `Object`
 - **`RESULT`** `Authenticatable`
+
+### consume-invitation
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`invitation`** `Invitation`
+  - **`credential`** `String`
+  - **`credentialKind`** `email | phone`
+  - **`inviterId`**`String | Number | BigInt`
+  - **`metadata`** `Object`
+- **`RESULT`** `void`
 
 ### credential-kind-from-credential-authenticatable
 
@@ -666,6 +678,7 @@ The extended dynamics are meant to be override in case your Authenticatable beha
   - **`credential`** `String`
   - **`credentialKind`** `email | phone`
   - **`inviterId`**`String | Number | BigInt`
+  - **`metadata`** `Object`
 
 ### does-authenticatable-have-password?
 
@@ -694,6 +707,7 @@ The extended dynamics are meant to be override in case your Authenticatable beha
     - **`credential`** `String`
     - **`credentialKind`** `email | phone`
     - **`inviterId`**`String | Number | BigInt`
+    - **`metadata`** `Object`
 - **`RESULT`** `String`
 
 ### generate-concern-secret
