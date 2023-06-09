@@ -315,6 +315,7 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'send-multi-factor': { payload: SendMultiFactorPayload; result: void }
   'send-password-reset': { payload: SendPasswordResetPayload; result: void }
   'send-unlock': { payload: SendUnlockPayload; result: void }
+  'send-welcome': { payload: SendWelcomePayload; result: void }
   'set-authenticatable-attributes': { payload: SetAuthenticatableAttributesPayload; result: void }
   'set-authenticatable-confirmed': { payload: SetAuthenticatableConfirmedPayload; result: void }
   'set-authenticatable-fail-attempt': { payload: SetAuthenticatableFailAttemptPayload; result: void }
@@ -476,6 +477,11 @@ export interface SendPasswordResetPayload {
 export interface SendUnlockPayload {
   credential: string
   oneTimePassword: string
+}
+
+export interface SendWelcomePayload {
+  authenticatable: Authenticatable
+  credentialKind: CredentialKind
 }
 
 export interface SetAuthenticatableAttributesPayload {

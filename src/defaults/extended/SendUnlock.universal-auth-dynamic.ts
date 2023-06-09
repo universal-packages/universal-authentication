@@ -3,7 +3,7 @@ import { AuthDynamicNames, SendUnlockPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
 
 @AuthDynamic<AuthDynamicNames>('send-unlock', true)
-export default class SendResetUnlockDynamic {
+export default class SendUnlockDynamic {
   public async perform(payload: SendUnlockPayload, authentication: Authentication): Promise<void> {
     const { credential, oneTimePassword } = payload
 

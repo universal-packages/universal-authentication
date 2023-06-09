@@ -63,6 +63,8 @@ export default class SignUpDynamic {
 
       if (invitation) await authentication.performDynamic('consume-invitation', { authenticatable, invitation })
 
+      await authentication.performDynamic('send-welcome', { authenticatable, credentialKind })
+
       return { status: 'success', authenticatable }
     }
 

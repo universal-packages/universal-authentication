@@ -1,6 +1,7 @@
 import { Authentication, AuthenticationCredentialOptions, CredentialKind, Invitation } from '../../src'
 import ConsumeInvitationDynamic from '../../src/defaults/extended/ConsumeInvitation.universal-auth-dynamic'
 import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
+import SendWelcomeDynamic from '../../src/defaults/extended/SendWelcome.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -55,6 +56,7 @@ describe('Authentication', (): void => {
                   encryptedPassword: null
                 })
                 expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                expect(SendWelcomeDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance, credentialKind })
               })
 
               describe(`and ${credentialKind} password check is enabled`, (): void => {
