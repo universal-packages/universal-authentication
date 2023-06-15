@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, VerifyCorroborationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, VerifyCorroborationPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('verify-confirmation', true)
 export default class VerifyConfirmationDynamic {
@@ -18,6 +18,8 @@ export default class VerifyConfirmationDynamic {
       } catch {
         return { status: 'failure', message: 'confirmation-impossible' }
       }
+
+      await authentication.performDynamic('send-confirmation-thanks', { authenticatable, credentialKind })
 
       return { status: 'success', authenticatable }
     }

@@ -1,5 +1,6 @@
 import { Authentication, CredentialKind } from '../../src'
 import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
+import SendConfirmationThanksDynamic from '../../src/defaults/extended/SendConfirmationThanks.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
 describe('Authentication', (): void => {
@@ -25,6 +26,7 @@ describe('Authentication', (): void => {
               expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
               expect(TestAuthenticatable.lastInstance[`${credentialKind}ConfirmedAt`]).toEqual(expect.any(Date))
               expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+              expect(SendConfirmationThanksDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance, credentialKind })
             })
 
             describe(`and the unconfirmed ${credentialKind} is the one to confirm`, (): void => {
@@ -42,9 +44,9 @@ describe('Authentication', (): void => {
 
                 expect(result).toEqual({ status: 'success', authenticatable: expect.any(TestAuthenticatable) })
                 expect(TestAuthenticatable.lastInstance[credentialKind]).toEqual('new')
-
                 expect(TestAuthenticatable.lastInstance[`unconfirmed${credentialKind.charAt(0).toUpperCase()}${credentialKind.slice(1)}`]).toBeNull()
                 expect(SaveAuthenticatableDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance })
+                expect(SendConfirmationThanksDynamic).toHaveBeenPerformedWith({ authenticatable: TestAuthenticatable.lastInstance, credentialKind })
               })
             })
           })

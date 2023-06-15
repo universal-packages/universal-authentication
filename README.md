@@ -799,6 +799,13 @@ The extended dynamics are meant to be override in case your Authenticatable beha
   - **`oneTimePassword`** `String`
 - **`RESULT`** `void`
 
+### send-confirmation-thanks
+
+- **`PAYLOAD`** `Object`
+  - **`authenticatable`** `Authenticatable`
+  - **`credentialKind`** `email | phone`
+- **`RESULT`** `void`
+
 ### send-corroboration
 
 - **`PAYLOAD`** `Object`

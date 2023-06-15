@@ -310,6 +310,7 @@ export interface AuthDynamicNames extends SimplifiedAuthDynamicNames {
   'is-authenticatable-ready-to-unlock?': { payload: IsAuthenticatableReadyToUnlockPayload; result: boolean }
   'save-authenticatable': { payload: SaveAuthenticatablePayload; result: void }
   'send-confirmation': { payload: SendConfirmationPayload; result: void }
+  'send-confirmation-thanks': { payload: SendConfirmationThanksPayload; result: void }
   'send-corroboration': { payload: SendCorroborationPayload; result: void }
   'send-invitation': { payload: SendInvitationPayload; result: void }
   'send-multi-factor': { payload: SendMultiFactorPayload; result: void }
@@ -450,6 +451,11 @@ export interface SendConfirmationPayload {
   credential: string
   credentialKind: CredentialKind
   oneTimePassword: string
+}
+
+export interface SendConfirmationThanksPayload {
+  authenticatable: Authenticatable
+  credentialKind: CredentialKind
 }
 
 export interface SendCorroborationPayload {
