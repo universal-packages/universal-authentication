@@ -1,8 +1,8 @@
 import { verify } from '@universal-packages/time-based-one-time-password'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, VerifyOneTimePasswordPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, VerifyOneTimePasswordPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('verify-one-time-password', true)
 export default class VerifyOneTimePasswordDynamic {

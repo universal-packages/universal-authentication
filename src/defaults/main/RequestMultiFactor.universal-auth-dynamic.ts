@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, RequestMultiFactorPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, RequestMultiFactorPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('request-multi-factor', true)
 export default class RequestMultiFactorDynamic {

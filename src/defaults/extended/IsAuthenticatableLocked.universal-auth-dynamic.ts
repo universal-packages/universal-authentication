@@ -1,5 +1,5 @@
-import { AuthDynamicNames, IsAuthenticatableLockedPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, IsAuthenticatableLockedPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-locked?', true)
 export default class IsAuthenticatableLockedDynamic {

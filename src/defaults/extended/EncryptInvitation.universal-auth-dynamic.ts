@@ -1,8 +1,8 @@
 import { encryptSubject } from '@universal-packages/crypto-utils'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, EncryptInvitationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, EncryptInvitationPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('encrypt-invitation', true)
 export default class EncryptInvitationDynamic {

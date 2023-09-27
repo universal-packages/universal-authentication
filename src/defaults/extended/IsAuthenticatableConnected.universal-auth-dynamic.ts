@@ -1,5 +1,5 @@
-import { AuthDynamicNames, IsAuthenticatableConnectedPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, IsAuthenticatableConnectedPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-connected?', true)
 export default class IsAuthenticatableConnectedDynamic {

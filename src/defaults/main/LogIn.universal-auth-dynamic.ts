@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, LogInPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, LogInPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('log-in', true)
 export default class LogInDynamic {

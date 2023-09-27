@@ -1,5 +1,5 @@
-import { AuthDynamicNames, SetAuthenticatableUnlockedPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, SetAuthenticatableUnlockedPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-unlocked', true)
 export default class SetAuthenticatableUnlockedDynamic {

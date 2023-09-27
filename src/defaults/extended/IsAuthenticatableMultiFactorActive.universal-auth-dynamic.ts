@@ -1,8 +1,8 @@
 import ms from 'ms'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, IsAuthenticatableMultiFactorActivePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, IsAuthenticatableMultiFactorActivePayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-multi-factor-active?', true)
 export default class IsAuthenticatableMultiFactorActiveDynamic {

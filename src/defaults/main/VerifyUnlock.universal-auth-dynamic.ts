@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, VerifyUnlockPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, VerifyUnlockPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('verify-unlock', true)
 export default class VerifyUnlockDynamic {

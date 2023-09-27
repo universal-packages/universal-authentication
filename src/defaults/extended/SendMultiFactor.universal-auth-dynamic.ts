@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendMultiFactorPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, SendMultiFactorPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('send-multi-factor', true)
 export default class SendMultiFactorDynamic {

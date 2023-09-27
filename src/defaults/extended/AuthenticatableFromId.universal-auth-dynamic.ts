@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, Authenticatable, AuthenticatableFromIdPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, Authenticatable, AuthenticatableFromIdPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('authenticatable-from-id', true)
 export default class AuthenticatableFromIdDynamic {

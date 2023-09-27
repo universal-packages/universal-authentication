@@ -1,7 +1,7 @@
 import { checkSubjectHash } from '@universal-packages/crypto-utils'
 
-import { AuthDynamicNames, IsAuthenticatablePasswordPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, IsAuthenticatablePasswordPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('is-authenticatable-password?', true)
 export default class IsAuthenticatablePasswordDynamic {

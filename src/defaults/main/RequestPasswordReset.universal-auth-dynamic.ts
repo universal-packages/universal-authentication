@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, RequestPasswordResetPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, RequestPasswordResetPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('request-password-reset', true)
 export default class RequestPasswordResetDynamic {

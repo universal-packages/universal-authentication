@@ -1,8 +1,8 @@
 import ms from 'ms'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, HasAuthenticatableConfirmationPassedGracePeriodPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, HasAuthenticatableConfirmationPassedGracePeriodPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('has-authenticatable-confirmation-passed-grace-period?', true)
 export default class HasAuthenticatableConfirmationPassedGracePeriodDynamic {

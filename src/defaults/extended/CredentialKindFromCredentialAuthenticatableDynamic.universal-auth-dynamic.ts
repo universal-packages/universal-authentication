@@ -1,5 +1,5 @@
-import { AuthDynamicNames, CredentialKind, CredentialKindFromCredentialAuthenticatablePayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, CredentialKind, CredentialKindFromCredentialAuthenticatablePayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('credential-kind-from-credential-authenticatable', true)
 export default class CredentialKindFromCredentialAuthenticatableDynamic {

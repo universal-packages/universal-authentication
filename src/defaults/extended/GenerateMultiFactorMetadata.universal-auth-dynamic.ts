@@ -1,5 +1,5 @@
-import { AuthDynamicNames, GenerateMultiFactorMetadataPayload, MultiFactorMetadata } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, GenerateMultiFactorMetadataPayload, MultiFactorMetadata } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('generate-multi-factor-metadata', true)
 export default class GenerateMultiFactorMetadataDynamic {

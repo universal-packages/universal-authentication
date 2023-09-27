@@ -1,5 +1,5 @@
-import { AuthDynamicNames, SetAuthenticatableFailAttemptPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, SetAuthenticatableFailAttemptPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-fail-attempt', true)
 export default class SetAuthenticatableFailAttemptDynamic {

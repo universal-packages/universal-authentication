@@ -1,8 +1,8 @@
 import { encryptSubject } from '@universal-packages/crypto-utils'
 
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, EncryptCorroborationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, EncryptCorroborationPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('encrypt-corroboration', true)
 export default class EncryptCorroborationDynamic {

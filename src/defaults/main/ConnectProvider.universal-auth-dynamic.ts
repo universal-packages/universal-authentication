@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, ConnectProviderPayload, ProviderDataResult } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, ConnectProviderPayload, ProviderDataResult } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('connect-provider', true)
 export default class ConnectProviderDynamic {

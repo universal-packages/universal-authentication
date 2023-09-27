@@ -1,5 +1,5 @@
-import { AuthDynamicNames, SetAuthenticatableProviderIdPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, SetAuthenticatableProviderIdPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('set-authenticatable-provider-id', true)
 export default class SetAuthenticatableProviderIdDynamic {

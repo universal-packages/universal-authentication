@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, AuthenticationResult, Corroboration, UpdateCredentialPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, AuthenticationResult, Corroboration, UpdateCredentialPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('update-credential', true)
 export default class UpdateCredentialDynamic {

@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendUnlockPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, SendUnlockPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('send-unlock', true)
 export default class SendUnlockDynamic {

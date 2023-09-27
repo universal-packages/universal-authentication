@@ -1,6 +1,6 @@
 import Authentication from '../../Authentication'
-import { AuthDynamicNames, SendInvitationPayload } from '../../types'
 import { AuthDynamic } from '../../decorators'
+import { AuthDynamicNames, SendInvitationPayload } from '../../types'
 
 @AuthDynamic<AuthDynamicNames>('send-invitation', true)
 export default class SendInvitationDynamic {
