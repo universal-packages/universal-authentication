@@ -4,6 +4,10 @@ import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenti
 import SendWelcomeDynamic from '../../src/defaults/extended/SendWelcome.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('sign-up', (): void => {
     const credentialKinds: CredentialKind[] = ['email', 'phone']

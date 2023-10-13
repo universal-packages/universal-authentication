@@ -2,6 +2,10 @@ import { Authentication } from '../../src'
 import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('update-authenticatable', (): void => {
     describe('when providing right attributes to change', (): void => {

@@ -2,6 +2,10 @@ import { Authentication } from '../../src'
 import SendPasswordResetDynamic from '../../src/defaults/extended/SendPasswordReset.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('request-password-reset', (): void => {
     describe('when the credential is valid to reset', (): void => {

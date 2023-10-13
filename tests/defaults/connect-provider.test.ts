@@ -4,6 +4,10 @@ import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenti
 import GetUniversalUserDataDynamic from '../__fixtures__/GetUniversalDataDynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('connect-provider', (): void => {
     describe('when the provider dynamic does not exist', (): void => {

@@ -2,6 +2,10 @@ import { Authentication, CredentialKind } from '../../src'
 import SendInvitationDynamic from '../../src/defaults/extended/SendInvitation.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('invite-authenticatable', (): void => {
     const credentialKinds: CredentialKind[] = ['email', 'phone']

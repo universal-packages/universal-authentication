@@ -3,6 +3,10 @@ import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenti
 import SendConfirmationThanksDynamic from '../../src/defaults/extended/SendConfirmationThanks.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('verify-confirmation', (): void => {
     const credentialKinds: CredentialKind[] = ['email', 'phone']

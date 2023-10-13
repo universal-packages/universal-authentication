@@ -2,6 +2,10 @@ import { Authentication } from '../../src'
 import SendMultiFactorDynamic from '../../src/defaults/extended/SendMultiFactor.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('request-multi-factor', (): void => {
     describe('when authenticatable has multi-factor active (it has log in successfully)', (): void => {

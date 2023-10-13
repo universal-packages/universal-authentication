@@ -2,6 +2,10 @@ import { Authentication, CredentialKind } from '../../src'
 import SendCorroborationDynamic from '../../src/defaults/extended/SendCorroboration.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
+beforeEach((): void => {
+  TestAuthenticatable.lastInstance = undefined
+})
+
 describe(Authentication, (): void => {
   describe('request-corroboration', (): void => {
     const credentialKinds: CredentialKind[] = ['email', 'phone']
