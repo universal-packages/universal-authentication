@@ -1,10 +1,6 @@
 import { Authentication, CredentialKind } from '../../src'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
-beforeEach((): void => {
-  TestAuthenticatable.lastInstance = undefined
-})
-
 describe(Authentication, (): void => {
   describe('verify-corroboration', (): void => {
     const credentialKinds: CredentialKind[] = ['email', 'phone']

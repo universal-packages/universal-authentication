@@ -2,10 +2,6 @@ import { Authentication } from '../../src'
 import SendResetUnlockDynamic from '../../src/defaults/extended/SendUnlock.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
-beforeEach((): void => {
-  TestAuthenticatable.lastInstance = undefined
-})
-
 describe(Authentication, (): void => {
   describe('request-unlock', (): void => {
     describe('when authenticatable is locked', (): void => {

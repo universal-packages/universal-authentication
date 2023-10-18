@@ -3,10 +3,6 @@ import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenti
 import RequestConfirmationDynamic from '../../src/defaults/main/RequestConfirmation.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
-beforeEach((): void => {
-  TestAuthenticatable.lastInstance = undefined
-})
-
 describe(Authentication, (): void => {
   describe('update-credential', (): void => {
     const credentialKinds: CredentialKind[] = ['email', 'phone']

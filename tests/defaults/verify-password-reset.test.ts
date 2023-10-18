@@ -2,10 +2,6 @@ import { Authentication, CredentialKind } from '../../src'
 import SaveAuthenticatableDynamic from '../../src/defaults/extended/SaveAuthenticatable.universal-auth-dynamic'
 import TestAuthenticatable from '../__fixtures__/TestAuthenticatable'
 
-beforeEach((): void => {
-  TestAuthenticatable.lastInstance = undefined
-})
-
 describe(Authentication, (): void => {
   describe('verify-password-reset', (): void => {
     describe('when the one time password is valid', (): void => {

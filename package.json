@@ -42,7 +42,8 @@
       "src/**/*.ts"
     ],
     "setupFilesAfterEnv": [
-      "@universal-packages/dynamic-api-jest"
+      "@universal-packages/dynamic-api-jest",
+      "<rootDir>/tests/setup.ts"
     ]
   },
   "prettier": {
