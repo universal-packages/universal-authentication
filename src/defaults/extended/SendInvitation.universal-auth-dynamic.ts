@@ -7,6 +7,6 @@ export default class SendInvitationDynamic {
   public async perform(payload: SendInvitationPayload, authentication: Authentication): Promise<void> {
     const { credential, credentialKind, invitationToken } = payload
 
-    authentication.emit('warning', { credential, credentialKind, invitationToken, dynamic: this.constructor.name, message: 'not implemented' })
+    authentication.emit('warning', { message: 'Not implemented', payload: { credential, credentialKind, invitationToken, dynamic: this.constructor.name } })
   }
 }

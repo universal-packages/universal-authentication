@@ -7,6 +7,6 @@ export default class SendConfirmationDynamic {
   public async perform(payload: SendConfirmationPayload, authentication: Authentication): Promise<void> {
     const { credential, credentialKind, oneTimePassword } = payload
 
-    authentication.emit('warning', { credential, credentialKind, oneTimePassword, dynamic: this.constructor.name, message: 'not implemented' })
+    authentication.emit('warning', { message: 'Not implemented', payload: { credential, credentialKind, oneTimePassword, dynamic: this.constructor.name } })
   }
 }
