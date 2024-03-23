@@ -1,6 +1,6 @@
 {
   "name": "@universal-packages/authentication",
-  "version": "1.9.10",
+  "version": "1.9.11",
   "description": "Dynamic authentication api",
   "author": "David De Anda <david@universal-packages.com> (https://github.com/universal-packages)",
   "license": "MIT",
