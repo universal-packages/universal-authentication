@@ -2,46 +2,25 @@ import { DynamicApi } from '@universal-packages/dynamic-api'
 
 import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, ExtensibleUnion } from './types'
 
-export default class Authentication<D extends Record<string, any> = AuthDynamicNames> extends DynamicApi<D> {
+export default class Authentication<D extends Record<string, any> = AuthDynamicNames, A = AuthenticatableClass> extends DynamicApi<D> {
   public readonly options: AuthenticationOptions
-  public Authenticatable?: AuthenticatableClass
+  public Authenticatable?: A
 
-  public constructor(options: AuthenticationOptions, Authenticatable?: AuthenticatableClass) {
+  public constructor(options: AuthenticationOptions, AuthenticatableClass?: A) {
     const newOptions: AuthenticationOptions = {
-      maxAttemptsUntilLock: 5,
-      multiFactorActivityLimit: '5 minutes',
       ...options,
-      email: {
-        enablePasswordCheck: true,
-        enforcePasswordCheck: true,
-        sendMultiFactorInPlace: true,
-        enableSignUp: true,
-        ...options.email
-      },
-      phone: {
-        enableMultiFactor: true,
-        enforceMultiFactor: true,
-        sendMultiFactorInPlace: true,
-        enableCorroboration: true,
-        enableSignUp: true,
-        ...options.phone
-      },
-      validations: {
-        password: { size: { min: 8, max: 256 } },
-        username: { matcher: /^[a-zA-Z.0-9_\-&]+$/i },
-        email: {},
-        phone: {},
-        ...options.validations
-      },
-      providerKeys: { ...options.providerKeys }
+      defaultModule: {
+        enabled: true,
+        ...options.defaultModule
+      }
     }
 
-    super({ ...newOptions, namespace: 'auth' })
+    super({ ...newOptions, namespace: 'auth', accumulate: true, modules: { default: newOptions.defaultModule, ...newOptions.modules } })
 
-    this.Authenticatable = Authenticatable
+    this.Authenticatable = AuthenticatableClass
   }
 
-  public setAuthenticatable(Authenticatable?: AuthenticatableClass): void {
+  public setAuthenticatableClass(Authenticatable?: A): void {
     this.Authenticatable = Authenticatable
   }
 
