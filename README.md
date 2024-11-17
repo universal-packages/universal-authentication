@@ -390,6 +390,42 @@ Dynamics that you need to override to have a fully functional default module.
   - **`errors`** `Object`
     - **`<attribute>`** `String[]`
 
+## Decorators
+
+#### **`Encrypt([propertyToEncrypt: string])`**
+
+Use this decorator to automatically encrypt attributes in a class. For example for the `password` attribute, when decorated, every time is set, the `encryptedPassword` attribute is going to set with a hashed and salted string based on the password. It sets depending on the base attribute name `encrypted<Attribute>`.
+
+```js
+import { Encrypt } from '@universal-packages/authentication'
+
+export default class User {
+  @Encrypt()
+  secret
+  encryptedSecret
+}
+
+const user = new User()
+
+user.secret = 'my password'
+
+console.log(user.secret, user.encryptedSecret)
+
+// > undefined C49HSl4okw8yoCKfoNRnsqD4T0T6SJZkdpTgU1o478Mk4GT995KV5HUKzvsnN1fShOo9sdDQq3Rjiz+Brj9bCIeJfWrt7tMl936wWyBARkPCdDlj9OfLNNDnhGo7dkmbU8YBfpgcmoMUmCuIftupOik+Nk/Eu83J4epW5y2w0fM=
+```
+
+You can also specify the attribute name to store the hashed password.
+
+```js
+import { Encrypt } from '@universal-packages/authentication'
+
+export default class User {
+  @Encrypt('hashedSecret')
+  secret
+  hashedSecret
+}
+```
+
 ## Typescript
 
 This library is developed in TypeScript and shipped fully typed.
