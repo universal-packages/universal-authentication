@@ -37,30 +37,30 @@ export interface AuthenticationResult<U = Record<string, any>, M = Record<string
 export interface DefaultModuleDynamicNames<U = Record<string, any>> extends AuthDynamicNames<U> {
   'log-in': { payload: EmailPasswordPayload; result: AuthenticationResult }
   'continue-before-log-in?': { payload: EmailPasswordPayload; result: boolean }
-  'continue-after-user-found?': { payload: UserPayload; result: boolean }
-  'after-log-in-success': { payload: UserPayload; result: void }
-  'after-log-in-failure': { payload: UserPayload; result: void }
+  'continue-after-user-found?': { payload: UserPayload<U>; result: boolean }
+  'after-log-in-success': { payload: UserPayload<U>; result: void }
+  'after-log-in-failure': { payload: UserPayload<U>; result: void }
   'after-log-in-user-not-found': { payload: EmailPayload; result: void }
 
   'sign-up': { payload: EmailPasswordPayload; result: AuthenticationResult }
   'continue-before-sign-up?': { payload: EmailPasswordPayload; result: boolean }
-  'after-sign-up-success': { payload: UserPayload; result: void }
+  'after-sign-up-success': { payload: UserPayload<U>; result: void }
   'after-sign-up-failure': { payload: EmailPasswordValidationPayload; result: void }
 
   'request-password-reset': { payload: EmailPayload; result: AuthenticationResult }
   'verify-password-reset': { payload: EmailPasswordOneTimePasswordPayload; result: AuthenticationResult }
 
   'update-email-password': { payload: UpdateEmailPasswordPayload<U>; result: AuthenticationResult }
-  'after-update-success': { payload: UserPayload; result: void }
+  'after-update-success': { payload: UserPayload<U>; result: void }
 
   'user-from-email': { payload: EmailPayload; result: U }
   'user-exists-with-email?': { payload: EmailPayload; result: boolean }
   'do-passwords-match?': { payload: PasswordsPayload; result: boolean }
-  'get-user-current-email': { payload: UserPayload; result: string }
-  'get-user-encrypted-password': { payload: UserPayload; result: string }
+  'get-user-current-email': { payload: UserPayload<U>; result: string }
+  'get-user-encrypted-password': { payload: UserPayload<U>; result: string }
   'send-password-reset': { payload: UserOneTimePasswordPayload; result: void }
-  'send-password-was-reset': { payload: UserPayload; result: void }
-  'send-welcome': { payload: UserPayload; result: void }
+  'send-password-was-reset': { payload: UserPayload<U>; result: void }
+  'send-welcome': { payload: UserPayload<U>; result: void }
   'validate-password-reset': { payload: PasswordPayload; result: ValidationResult }
   'validate-sign-up': { payload: EmailPasswordPayload; result: ValidationResult }
   'validate-update': { payload: EmailPasswordCurrentEmailPayload; result: ValidationResult }
@@ -86,8 +86,8 @@ export interface EmailPasswordOneTimePasswordPayload {
   oneTimePassword: string
 }
 
-export interface UserPayload {
-  user: Record<string, any>
+export interface UserPayload<U = Record<string, any>> {
+  user: U
 }
 
 export interface EmailPasswordCurrentEmailPayload {
