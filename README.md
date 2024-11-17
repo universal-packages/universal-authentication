@@ -27,7 +27,7 @@ const result = await authentication.performDynamic('log-in', { email: 'david@uni
 
 console.log(result)
 
-// > { status: 'success', authenticatable: { id: 69, username: 'username', createdAt: [Date] } }
+// > { status: 'success', user: { id: 69, username: 'username', createdAt: [Date] } }
 ```
 
 To override override parts of the default system just create non default dynamics in your dynamics location with the extension prefix `auth-dynamic`, ex: `LogIn.auth-dynamic.js` and export ad default dynamic class there. More about all the dynamics that can be override below.
@@ -70,77 +70,76 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
         - **`max`** `Number`
           Maximum size of the password.
 
-## Authenticatable
+## Authentication Api override required dynamics
 
-Internally this auth system will handle an abstract `Authenticatable` class, we need to provided it in order for the whole thing to work.
+These dynamics are required to be override to have a fully functional authentication system.
 
-```js
-import User from './User'
+### create-user
 
-authentication.setAuthenticatableClass(User)
-```
+Logic to create a new user with the given attributes.
 
-```js
-import { Encrypt } from '@universal-packages/authentication'
+- **`PAYLOAD`** `Object`
+  - **`attributes`** `UserAttributes`
+- **`RESULT`** `User`
 
-export default class User {
-  id
+### update-user
 
-  email
+- **`PAYLOAD`** `Object`
+  - **`user`** `User`
+  - **`attributes`** `UserAttributes`
+- **`RESULT`** `void`
 
-  @Encrypt()
-  password
-  encryptedPassword
+### user-from-id
 
-  save() {}
+- **`PAYLOAD`** `Object`
+  - **`id`** `String | Number | BigInt`
+- **`RESULT`** `User`
 
-  static async existsWithEmail(email) {}
-  static async fromId(id) {}
-  static async fromEmail(email) {}
-}
-```
+## Authentication Api override non required dynamics
 
-## Decorators
+These dynamics are not required to be override but can be to have a more sophisticated authentication system and they provide good default behavior.
 
-#### **`Encrypt([propertyToEncrypt: string])`**
+### encrypt-password
 
-Use this decorator to automatically encrypt attributes in a class. For example for the `password` attribute, when decorated, every time is set, the `encryptedPassword` attribute is going to set with a hashed and salted string based on the password. It sets depending on the base attribute name `encrypted<Attribute>`.
+It encrypts a password to be stored in the database.
 
-```js
-import { Encrypt } from '@universal-packages/authentication'
+- **`PAYLOAD`** `Object`
+  - **`password`** `String`
+- **`RESULT`** `String`
 
-export default class User {
-  @Encrypt()
-  secret
-  encryptedSecret
-}
+### generate-concern-secret
 
-const user = new User()
+Generates a secret for a concern. Hopeful to be used to generate tokens for a concern
 
-user.secret = 'my password'
+- **`PAYLOAD`** `Object`
+  - **`concern`** `String`
+  - **`identifier`** `String`
+- **`RESULT`** `String`
 
-console.log(user.secret, user.encryptedSecret)
+### generate-one-time-password
 
-// > undefined C49HSl4okw8yoCKfoNRnsqD4T0T6SJZkdpTgU1o478Mk4GT995KV5HUKzvsnN1fShOo9sdDQq3Rjiz+Brj9bCIeJfWrt7tMl936wWyBARkPCdDlj9OfLNNDnhGo7dkmbU8YBfpgcmoMUmCuIftupOik+Nk/Eu83J4epW5y2w0fM=
-```
+Generates a one time password for a concern and identifier. For example to be used to reset a password.
 
-You can also specify the attribute name to store the hashed password.
+- **`PAYLOAD`** `Object`
+  - **`concern`** `String`
+  - **`identifier`** `String`
+- **`RESULT`** `String`
 
-```js
-import { Encrypt } from '@universal-packages/authentication'
+### verify-one-time-password
 
-export default class User {
-  @Encrypt('hashedSecret')
-  secret
-  hashedSecret
-}
-```
+Verifies a one time password for a concern and identifier. For example to be used to reset a password.
+
+- **`PAYLOAD`** `Object`
+  - **`concern`** `String`
+  - **`identifier`** `String`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `Boolean`
 
 ## Default module dynamics
 
 ### log-in `Async`
 
-Verifies email and password and if all configured behavior is positive it returns the authenticatable for which the credentials matched.
+Verifies email and password and if all configured behavior is positive it returns the user for which the credentials matched.
 
 ```js
 const result = authentication.perform('log-in', { email: 'david@universal-packages.com', password: 'password' })
@@ -150,7 +149,7 @@ const result = authentication.perform('log-in', { email: 'david@universal-packag
   - **`email`** `String`
   - **`password`** `String`
 - **`RESULT`** `AuthenticationResult`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
   - **`message?`**
     - `invalid-credentials` `failure`
 
@@ -170,7 +169,7 @@ const result = authentication.perform('request-password-reset', { email: 'david@
 
 ### sign-up `Async`
 
-Validates sign up attributes and creates the new authenticatable.
+Validates sign up attributes and creates the new user.
 
 ```js
 const result = authentication.perform('sign-up', { email: 'some email', password: 'some password' })
@@ -180,7 +179,7 @@ const result = authentication.perform('sign-up', { email: 'some email', password
   - **`email`** `String`
   - **`password`** `String`
 - **`RESULT`** `AuthenticationResult`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
   - **`validation`** `ValidationResult` `failure`
     - **`valid`** `Boolean`
     - **`errors`** `Object`
@@ -188,18 +187,18 @@ const result = authentication.perform('sign-up', { email: 'some email', password
 
 ### update-email-password `Async`
 
-Validates and updates an authenticatable with new email and or password.
+Validates and updates an user with new email and or password.
 
 ```js
-const result = authentication.perform('update-email-password', { email: 'new-email', authenticatable })
+const result = authentication.perform('update-email-password', { email: 'new-email', user })
 ```
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
   - **`email`** `String`
   - **`password`** `String`
 - **`RESULT`** `AuthenticationResult`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
   - **`validation`** `ValidationResult` `failure`
     - **`valid`** `Boolean`
     - **`errors`** `Object`
@@ -226,13 +225,14 @@ const result = authentication.perform('verify-password-reset', { email: 'email@e
     - `invalid-one-time-password` `failure`
 
 ### Default module extensions
+
 [file](src/default-module/extensions/AfterLogInFailure.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterLogInAuthenticatableNotFound.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterLogInSuccess.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterSignUpFailure.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterSignUpSuccess.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterUpdateSuccess.universal-auth-dynamic.ts) [file](src/default-module/extensions/ContinueAfterLogInAuthenticatableFound.universal-auth-dynamic.ts) [file](src/default-module/extensions/ContinueBeforeLogIn.universal-auth-dynamic.ts) [file](src/default-module/extensions/ContinueBeforeSignUp.universal-auth-dynamic.ts)
 
 These dynamics are used to extend the default module dynamics, they are called on specific points while logging in and signing up.
 
-#### after-log-in-authenticatable-not-found
+#### after-log-in-user-not-found
 
-When the authenticatable is not found while logging in. Write your custom dynamic to handle this case.
+When the user is not found while logging in. Write your custom dynamic to handle this case.
 
 - **`PAYLOAD`** `Object`
   - **`email`** `String`
@@ -243,7 +243,7 @@ When the authenticatable is not found while logging in. Write your custom dynami
 When the log in fails. Write your custom dynamic to handle this case.
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
 - **`RESULT`** `void`
 
 #### after-log-in-success
@@ -251,7 +251,7 @@ When the log in fails. Write your custom dynamic to handle this case.
 When the log in is successful. Write your custom dynamic to handle this case.
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
 - **`RESULT`** `void`
 
 #### after-sign-up-failure
@@ -269,7 +269,7 @@ When the sign up fails. Write your custom dynamic to handle this case.
 When the sign up is successful. Write your custom dynamic to handle this case.
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
 - **`RESULT`** `void`
 
 #### after-update-success
@@ -277,18 +277,18 @@ When the sign up is successful. Write your custom dynamic to handle this case.
 When the update is successful. Write your custom dynamic to handle this case.
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
 - **`RESULT`** `void`
 
-#### continue-after-log-in-authenticatable-found
+#### continue-after-log-in-user-found?
 
-When the authenticatable is found while logging in. Write your custom dynamic to handle this case and return true if you want to continue with the default behavior.
+When the user is found while logging in. Write your custom dynamic to handle this case and return true if you want to continue with the default behavior.
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
 - **`RESULT`** `Boolean`
 
-#### continue-before-log-in
+#### continue-before-log-in?
 
 Before logging in. Write your custom dynamic to handle this case and return true if you want to continue with the default behavior.
 
@@ -297,7 +297,7 @@ Before logging in. Write your custom dynamic to handle this case and return true
   - **`password`** `String`
 - **`RESULT`** `Boolean`
 
-#### continue-before-sign-up
+#### continue-before-sign-up?
 
 Before signing up. Write your custom dynamic to handle this case and return true if you want to continue with the default behavior.
 
@@ -305,28 +305,42 @@ Before signing up. Write your custom dynamic to handle this case and return true
   - **`email`** `String`
   - **`password`** `String`
 
-### Default module internal dynamics
+### Default module override required dynamics
 
-Dynamics used internally by the default module dynamics that can be overridden in case your Authenticatable behaves differently as expected by the default module dynamics.
+Dynamics that you need to override to have a fully functional default module.
 
-### authenticatable-from-email
-
-- **`PAYLOAD`** `Object`
-  - **`email`** `String`
-- **`RESULT`** `Authenticatable`
-
-### authenticatable-from-sign-up-attributes
+### user-from-email
 
 - **`PAYLOAD`** `Object`
   - **`email`** `String`
-  - **`password`** `String`
-- **`RESULT`** `Authenticatable`
+- **`RESULT`** `User`
 
-### authenticatable-exists-with-email?
+### user-exists-with-email?
 
 - **`PAYLOAD`** `Object`
   - **`email`** `String`
 - **`RESULT`** `Boolean`
+
+### send-password-reset
+
+- **`PAYLOAD`** `Object`
+  - **`user`** `User`
+  - **`oneTimePassword`** `String`
+- **`RESULT`** `void`
+
+### send-password-was-reset
+
+- **`PAYLOAD`** `Object`
+  - **`user`** `User`
+- **`RESULT`** `void`
+
+### send-welcome
+
+- **`PAYLOAD`** `Object`
+  - **`user`** `User`
+- **`RESULT`** `void`
+
+### Default module override non required dynamics
 
 ### do-passwords-match?
 
@@ -335,31 +349,17 @@ Dynamics used internally by the default module dynamics that can be overridden i
   - **`encryptedPassword`** `String`
 - **`RESULT`** `Boolean`
 
-### get-authenticatable-encrypted-password
+### get-user-current-email
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
+  - **`user`** `User`
 - **`RESULT`** `String`
 
-### set-authenticatable-password
+### get-user-encrypted-password
 
 - **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
-  - **`password`** `String`
-- **`RESULT`** `void`
-
-### send-password-reset
-
-- **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
-  - **`oneTimePassword`** `String`
-- **`RESULT`** `void`
-
-### send-password-was-reset
-
-- **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
-- **`RESULT`** `void`
+  - **`user`** `User`
+- **`RESULT`** `String`
 
 ### validate-password-reset
 
@@ -380,43 +380,15 @@ Dynamics used internally by the default module dynamics that can be overridden i
   - **`errors`** `Object`
     - **`<attribute>`** `String[]`
 
-## Authentication Api non modularized dynamics
-
-Auth dynamic has a set of dynamics that can be used across different modules.
-
-### authenticatable-from-id
+### validate-update
 
 - **`PAYLOAD`** `Object`
-  - **`id`** `String | Number | BigInt`
-- **`RESULT`** `Authenticatable`
-
-### generate-concern-secret
-
-- **`PAYLOAD`** `Object`
-  - **`concern`** `String`
-  - **`identifier`** `String`
-- **`RESULT`** `String`
-
-### generate-one-time-password
-
-- **`PAYLOAD`** `Object`
-  - **`concern`** `String`
-  - **`identifier`** `String`
-- **`RESULT`** `String`
-
-### save-authenticatable
-
-- **`PAYLOAD`** `Object`
-  - **`authenticatable`** `Authenticatable`
-- **`RESULT`** `void`
-
-### verify-one-time-password
-
-- **`PAYLOAD`** `Object`
-  - **`concern`** `String`
-  - **`identifier`** `String`
-  - **`oneTimePassword`** `String`
-- **`RESULT`** `Boolean`
+  - **`email`** `String`
+  - **`password`** `String`
+- **`RESULT`** `ValidationResult`
+  - **`valid`** `Boolean`
+  - **`errors`** `Object`
+    - **`<attribute>`** `String[]`
 
 ## Typescript
 

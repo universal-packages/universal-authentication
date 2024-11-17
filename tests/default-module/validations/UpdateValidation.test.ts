@@ -1,12 +1,11 @@
-import { Authentication } from '../../../src'
+import { Authentication, DefaultModuleDynamicNames } from '../../../src'
+import UserExistsWithEmailDynamic from '../../../src/default-module/UserExistsWithEmail.universal-auth-dynamic'
 import UpdateValidation from '../../../src/default-module/validations/UpdateValidation'
-import TestAuthenticatable from '../../__fixtures__/TestAuthenticatable'
 
 describe(UpdateValidation, (): void => {
   it('ignore empty entries', async (): Promise<void> => {
-    const authentication = new Authentication({ dynamicsLocation: './src', secret: '123' }, TestAuthenticatable)
-    const authenticatable = TestAuthenticatable.fromId(10)
-    const validation = new UpdateValidation(authentication, authenticatable, {})
+    const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+    const validation = new UpdateValidation(authentication, 'email@email.com', {})
 
     const result = await validation.validate({})
 
@@ -17,9 +16,8 @@ describe(UpdateValidation, (): void => {
   })
 
   it('validates invalid email', async (): Promise<void> => {
-    const authentication = new Authentication({ dynamicsLocation: './src', secret: '123' }, TestAuthenticatable)
-    const authenticatable = TestAuthenticatable.fromId(10)
-    const validation = new UpdateValidation(authentication, authenticatable, {})
+    const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+    const validation = new UpdateValidation(authentication, 'email@email.com', {})
     const result = await validation.validate({ email: 'david', password: 'password' })
 
     expect(result).toEqual({
@@ -31,12 +29,13 @@ describe(UpdateValidation, (): void => {
   })
 
   it('validates if the email is already in use', async (): Promise<void> => {
-    const authentication = new Authentication({ dynamicsLocation: './src', secret: '123' }, TestAuthenticatable)
+    const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
     authentication.options['namespace'] = 'universal-auth'
     await authentication.loadDynamics()
 
-    const authenticatable = TestAuthenticatable.fromId(10)
-    const validation = new UpdateValidation(authentication, authenticatable, {})
+    dynamicApiJest.mockDynamicReturnValue(UserExistsWithEmailDynamic, true)
+
+    const validation = new UpdateValidation(authentication, 'email@email.com', {})
     const result = await validation.validate({ email: 'exists@email.com', password: 'password' })
 
     expect(result).toEqual({
@@ -48,12 +47,11 @@ describe(UpdateValidation, (): void => {
   })
 
   it('ignores if the email is the same as the authenticatable email', async (): Promise<void> => {
-    const authentication = new Authentication({ dynamicsLocation: './src', secret: '123' }, TestAuthenticatable)
+    const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
     authentication.options['namespace'] = 'universal-auth'
     await authentication.loadDynamics()
 
-    const authenticatable = TestAuthenticatable.fromEmail('exists@email.com')
-    const validation = new UpdateValidation(authentication, authenticatable, {})
+    const validation = new UpdateValidation(authentication, 'exists@email.com', {})
     const result = await validation.validate({ email: 'exists@email.com', password: 'password' })
 
     expect(result).toEqual({
@@ -63,9 +61,8 @@ describe(UpdateValidation, (): void => {
   })
 
   it('can use a custom email matcher', async (): Promise<void> => {
-    const authentication = new Authentication({ dynamicsLocation: './src', secret: '123' }, TestAuthenticatable)
-    const authenticatable = TestAuthenticatable.fromId(10)
-    const validation = new UpdateValidation(authentication, authenticatable, { emailValidation: { matcher: /@universal-packages.com$/ } })
+    const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+    const validation = new UpdateValidation(authentication, 'email@email.com', { emailValidation: { matcher: /@universal-packages.com$/ } })
 
     const result = await validation.validate({ email: 'david@nottheone.com', password: 'password' })
 
@@ -78,9 +75,8 @@ describe(UpdateValidation, (): void => {
   })
 
   it('can validate custom email and password sizes', async (): Promise<void> => {
-    const authentication = new Authentication({ dynamicsLocation: './src', secret: '123' }, TestAuthenticatable)
-    const authenticatable = TestAuthenticatable.fromId(10)
-    const validation = new UpdateValidation(authentication, authenticatable, { emailValidation: { size: { min: 10 } }, passwordValidation: { size: { min: 10 } } })
+    const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+    const validation = new UpdateValidation(authentication, 'email@email.com', { emailValidation: { size: { min: 10 } }, passwordValidation: { size: { min: 10 } } })
 
     const result = await validation.validate({ email: 'a@my.com', password: 'short' })
 

@@ -4,18 +4,23 @@ import { AuthenticationResult, DefaultModuleDynamicNames, UpdateEmailPasswordPay
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'update-email-password', true)
 export default class UpdateEmailPasswordDynamic {
-  public async perform(payload: UpdateEmailPasswordPayload, authentication: Authentication): Promise<AuthenticationResult> {
-    const { authenticatable, email, password } = payload
+  public async perform(payload: UpdateEmailPasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
+    const { user, email, password } = payload
 
-    const validation = await authentication.performDynamic('validate-update', { authenticatable, email, password })
+    const currentEmail = authentication.performDynamicSync('get-user-current-email', { user })
+    const validation = await authentication.performDynamic('validate-update', { currentEmail, email, password })
 
     if (validation.valid) {
-      authentication.performDynamicSync('set-authenticatable-update-attributes', { authenticatable, email, password })
-      await authentication.performDynamic('save-authenticatable', { authenticatable })
+      const attributes = {}
 
-      await authentication.performDynamic('after-update-success', { authenticatable })
+      if (email) attributes['email'] = email
+      if (password) attributes['encryptedPassword'] = authentication.performDynamicSync('encrypt-password', { password })
 
-      return { status: 'success', authenticatable }
+      await authentication.performDynamic('update-user', { user, attributes })
+
+      await authentication.performDynamic('after-update-success', { user })
+
+      return { status: 'success', user }
     }
 
     return { status: 'failure', validation }

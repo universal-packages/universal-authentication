@@ -4,22 +4,23 @@ import { AuthenticationResult, DefaultModuleDynamicNames, EmailPasswordOneTimePa
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'verify-password-reset', true)
 export default class VerifyPasswordResetDynamic {
-  public async perform(payload: EmailPasswordOneTimePasswordPayload, authentication: Authentication): Promise<AuthenticationResult> {
+  public async perform(payload: EmailPasswordOneTimePasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
     const { email, oneTimePassword, password } = payload
 
     if (authentication.performDynamicSync('verify-one-time-password', { concern: 'password-reset', identifier: email, oneTimePassword })) {
-      const authenticatable = await authentication.performDynamic('authenticatable-from-email', { email })
+      const user = await authentication.performDynamic('user-from-email', { email })
 
-      if (authenticatable) {
+      if (user) {
         const validation = await authentication.performDynamic('validate-password-reset', { password })
 
         if (validation.valid) {
-          authentication.performDynamicSync('set-authenticatable-password', { authenticatable, password })
-          await authentication.performDynamic('save-authenticatable', { authenticatable })
+          const encryptedPassword = await authentication.performDynamic('encrypt-password', { password })
 
-          await authentication.performDynamic('send-password-was-reset', { authenticatable })
+          await authentication.performDynamic('update-user', { user, attributes: { encryptedPassword } })
 
-          return { status: 'success', authenticatable }
+          await authentication.performDynamic('send-password-was-reset', { user })
+
+          return { status: 'success', user }
         } else {
           return { status: 'failure', validation }
         }

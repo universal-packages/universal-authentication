@@ -2,13 +2,13 @@ import { BaseValidation, Validator } from '@universal-packages/validations'
 import validator from 'validator'
 
 import Authentication from '../../Authentication'
-import { DefaultModuleOptions } from '../../types'
+import { DefaultModuleDynamicNames, DefaultModuleOptions } from '../../types'
 
 export default class SignUpValidation extends BaseValidation {
-  public readonly authentication: Authentication
+  public readonly authentication: Authentication<DefaultModuleDynamicNames>
   public readonly options: DefaultModuleOptions
 
-  public constructor(authentication: Authentication, options: DefaultModuleOptions) {
+  public constructor(authentication: Authentication<DefaultModuleDynamicNames>, options: DefaultModuleOptions) {
     super()
     this.authentication = authentication
     this.options = options
@@ -34,7 +34,7 @@ export default class SignUpValidation extends BaseValidation {
 
   @Validator('email', { priority: 2, message: 'email-in-use' })
   public async emailUnique(email: string): Promise<boolean> {
-    return !(await this.authentication.performDynamic('authenticatable-exists-with-email?', { email }))
+    return !(await this.authentication.performDynamic('user-exists-with-email?', { email }))
   }
 
   @Validator('password', { message: 'empty-password' })

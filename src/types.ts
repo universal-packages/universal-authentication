@@ -21,73 +21,49 @@ export interface DefaultModuleOptions {
   }
 }
 
-export interface Authenticatable {
-  id: number | bigint | string
-}
-
-export interface AuthenticatableClass<A = Authenticatable> {
-  new (...args: any[]): A
-  fromId: (id: string | number | bigint) => Promise<Authenticatable>
-}
-
-export interface DefaultModuleAuthenticatable {
-  id: number | bigint | string
-  email: string
-  password: string
-  encryptedPassword: string
-  save: () => Promise<void>
-}
-
-export interface DefaultModuleAuthenticatableClass extends AuthenticatableClass<DefaultModuleAuthenticatable> {
-  existsWithEmail: (email: string) => Promise<boolean>
-  fromEmail: (email: string) => Promise<DefaultModuleAuthenticatable>
-}
-
 export interface ValidationResult {
   errors: { [name: string]: string[] }
   valid: boolean
 }
 
-export interface AuthenticationResult<M = Record<string, any>> {
-  authenticatable?: Authenticatable
+export interface AuthenticationResult<U = Record<string, any>, M = Record<string, any>> {
+  user?: U
   message?: string
   metadata?: M
   status: 'success' | 'failure' | 'warning'
   validation?: ValidationResult
 }
 
-export interface DefaultModuleDynamicNames {
+export interface DefaultModuleDynamicNames<U = Record<string, any>> extends AuthDynamicNames<U> {
   'log-in': { payload: EmailPasswordPayload; result: AuthenticationResult }
   'continue-before-log-in?': { payload: EmailPasswordPayload; result: boolean }
-  'continue-after-authenticatable-found?': { payload: AuthenticatablePayload; result: boolean }
-  'after-log-in-success': { payload: AuthenticatablePayload; result: void }
-  'after-log-in-failure': { payload: AuthenticatablePayload; result: void }
-  'after-log-in-authenticatable-not-found': { payload: EmailPayload; result: void }
+  'continue-after-user-found?': { payload: UserPayload; result: boolean }
+  'after-log-in-success': { payload: UserPayload; result: void }
+  'after-log-in-failure': { payload: UserPayload; result: void }
+  'after-log-in-user-not-found': { payload: EmailPayload; result: void }
 
   'sign-up': { payload: EmailPasswordPayload; result: AuthenticationResult }
   'continue-before-sign-up?': { payload: EmailPasswordPayload; result: boolean }
-  'after-sign-up-success': { payload: AuthenticatablePayload; result: void }
+  'after-sign-up-success': { payload: UserPayload; result: void }
   'after-sign-up-failure': { payload: EmailPasswordValidationPayload; result: void }
 
   'request-password-reset': { payload: EmailPayload; result: AuthenticationResult }
   'verify-password-reset': { payload: EmailPasswordOneTimePasswordPayload; result: AuthenticationResult }
 
-  'update-email-password': { payload: UpdateEmailPasswordPayload; result: AuthenticationResult }
-  'after-update-success': { payload: AuthenticatablePayload; result: void }
+  'update-email-password': { payload: UpdateEmailPasswordPayload<U>; result: AuthenticationResult }
+  'after-update-success': { payload: UserPayload; result: void }
 
-  'authenticatable-from-email': { payload: EmailPayload; result: Authenticatable }
-  'authenticatable-from-sign-up-attributes': { payload: EmailPasswordPayload; result: Authenticatable }
-  'authenticatable-exists-with-email?': { payload: EmailPayload; result: boolean }
+  'user-from-email': { payload: EmailPayload; result: U }
+  'user-exists-with-email?': { payload: EmailPayload; result: boolean }
   'do-passwords-match?': { payload: PasswordsPayload; result: boolean }
-  'get-authenticatable-encrypted-password': { payload: AuthenticatablePayload; result: string }
-  'send-password-reset': { payload: AuthenticatableOneTimePasswordPayload; result: void }
-  'send-password-was-reset': { payload: AuthenticatablePayload; result: void }
-  'send-welcome': { payload: AuthenticatablePayload; result: void }
-  'set-authenticatable-password': { payload: AuthenticatablePasswordPayload; result: void }
-  'set-authenticatable-update-attributes': { payload: UpdateEmailPasswordPayload; result: void }
+  'get-user-current-email': { payload: UserPayload; result: string }
+  'get-user-encrypted-password': { payload: UserPayload; result: string }
+  'send-password-reset': { payload: UserOneTimePasswordPayload; result: void }
+  'send-password-was-reset': { payload: UserPayload; result: void }
+  'send-welcome': { payload: UserPayload; result: void }
   'validate-password-reset': { payload: PasswordPayload; result: ValidationResult }
   'validate-sign-up': { payload: EmailPasswordPayload; result: ValidationResult }
-  'validate-update': { payload: AuthenticatableEmailPasswordPayload; result: ValidationResult }
+  'validate-update': { payload: EmailPasswordCurrentEmailPayload; result: ValidationResult }
 }
 
 export interface EmailPayload {
@@ -110,23 +86,23 @@ export interface EmailPasswordOneTimePasswordPayload {
   oneTimePassword: string
 }
 
-export interface AuthenticatablePayload {
-  authenticatable: DefaultModuleAuthenticatable
+export interface UserPayload {
+  user: Record<string, any>
 }
 
-export interface AuthenticatableEmailPasswordPayload {
-  authenticatable: DefaultModuleAuthenticatable
+export interface EmailPasswordCurrentEmailPayload {
+  currentEmail: string
   email: string
   password: string
 }
 
-export interface AuthenticatableOneTimePasswordPayload {
-  authenticatable: DefaultModuleAuthenticatable
+export interface UserOneTimePasswordPayload {
+  user: Record<string, any>
   oneTimePassword: string
 }
 
-export interface AuthenticatablePasswordPayload {
-  authenticatable: DefaultModuleAuthenticatable
+export interface UserPasswordPayload {
+  user: Record<string, any>
   password: string
 }
 
@@ -136,34 +112,35 @@ export interface EmailPasswordValidationPayload {
   validation: ValidationResult
 }
 
-export interface PasswordPayload {
-  password: string
-}
-
 export interface PasswordsPayload {
   password: string
   encryptedPassword: string
 }
 
-export interface UpdateEmailPasswordPayload {
-  authenticatable: DefaultModuleAuthenticatable
+export interface UpdateEmailPasswordPayload<U = Record<string, any>> {
+  user: U
   email?: string
   password?: string
 }
+
 export interface VerifyEmailPasswordResetPayload {
   email: string
   oneTimePassword: string
   password: string
 }
 
-export interface AuthDynamicNames {
-  'authenticatable-from-id': { payload: IdPayload; result: Authenticatable }
+export interface AuthDynamicNames<U = Record<string, any>> {
+  'create-user': { payload: CreateUserPayload; result: U }
+  'encrypt-password': { payload: PasswordPayload; result: string }
   'generate-concern-secret': { payload: GenerateConcernSecretPayload; result: string }
   'generate-one-time-password': { payload: GenerateOneTimePasswordPayload; result: string }
-  'save-authenticatable': { payload: SaveAuthenticatablePayload; result: void }
+  'update-user': { payload: UpdateUserPayload<U>; result: void }
+  'user-from-id': { payload: IdPayload; result: U }
   'verify-one-time-password': { payload: VerifyOneTimePasswordPayload; result: boolean }
+}
 
-  zz__ignore: { payload: Record<string, any>; result: any }
+export interface CreateUserPayload<U = Record<string, any>> {
+  attributes: U
 }
 
 export interface IdPayload {
@@ -179,8 +156,13 @@ export interface GenerateOneTimePasswordPayload {
   identifier: string
 }
 
-export interface SaveAuthenticatablePayload {
-  authenticatable: Authenticatable
+export interface UpdateUserPayload<U = Record<string, any>> {
+  user: U
+  attributes: U
+}
+
+export interface PasswordPayload {
+  password: string
 }
 
 export interface VerifyOneTimePasswordPayload {

@@ -2,17 +2,17 @@ import { BaseValidation, Validator } from '@universal-packages/validations'
 import validator from 'validator'
 
 import Authentication from '../../Authentication'
-import { DefaultModuleAuthenticatable, DefaultModuleOptions } from '../../types'
+import { DefaultModuleDynamicNames, DefaultModuleOptions } from '../../types'
 
 export default class UpdateValidation extends BaseValidation {
-  public readonly authentication: Authentication
-  public readonly authenticatable: DefaultModuleAuthenticatable
+  public readonly authentication: Authentication<DefaultModuleDynamicNames>
+  public readonly currentEmail: string
   public readonly options: DefaultModuleOptions
 
-  public constructor(authentication: Authentication, authenticatable: DefaultModuleAuthenticatable, options: DefaultModuleOptions) {
+  public constructor(authentication: Authentication<DefaultModuleDynamicNames>, currentEmail: string, options: DefaultModuleOptions) {
     super()
     this.authentication = authentication
-    this.authenticatable = authenticatable
+    this.currentEmail = currentEmail
     this.options = options
   }
 
@@ -30,8 +30,8 @@ export default class UpdateValidation extends BaseValidation {
 
   @Validator('email', { priority: 1, message: 'email-in-use', optional: true })
   public async emailUnique(email: string): Promise<boolean> {
-    if (this.authenticatable.email === email) return true
-    return !(await this.authentication.performDynamic('authenticatable-exists-with-email?', { email }))
+    if (this.currentEmail === email) return true
+    return !(await this.authentication.performDynamic('user-exists-with-email?', { email }))
   }
 
   @Validator('password', { priority: 1, message: 'password-out-of-size', optional: true })

@@ -1,5 +1,4 @@
 import PasswordResetValidation from '../../../src/default-module/validations/PasswordResetValidation'
-import TestAuthenticatable from '../../__fixtures__/TestAuthenticatable'
 
 describe(PasswordResetValidation, (): void => {
   it('validates empty entries', async (): Promise<void> => {

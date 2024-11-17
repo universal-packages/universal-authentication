@@ -4,15 +4,15 @@ import { AuthenticationResult, DefaultModuleDynamicNames, EmailPayload } from '.
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'request-password-reset', true)
 export default class RequestPasswordResetDynamic {
-  public async perform(payload: EmailPayload, authentication: Authentication): Promise<AuthenticationResult> {
+  public async perform(payload: EmailPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
     const { email } = payload
 
-    const authenticatable = await authentication.performDynamic('authenticatable-from-email', { email })
+    const user = await authentication.performDynamic('user-from-email', { email })
 
-    if (authenticatable) {
+    if (user) {
       const oneTimePassword = authentication.performDynamicSync('generate-one-time-password', { concern: 'password-reset', identifier: email })
 
-      await authentication.performDynamic('send-password-reset', { authenticatable, oneTimePassword })
+      await authentication.performDynamic('send-password-reset', { user, oneTimePassword })
 
       return { status: 'success' }
     }

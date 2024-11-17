@@ -4,7 +4,7 @@ import { AuthenticationResult, DefaultModuleDynamicNames, EmailPasswordPayload }
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'sign-up', true)
 export default class SignUpDynamic {
-  public async perform(payload: EmailPasswordPayload, authentication: Authentication): Promise<AuthenticationResult> {
+  public async perform(payload: EmailPasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
     let shouldContinue = await authentication.performDynamic('continue-before-sign-up?', payload)
     if (!shouldContinue) return { status: 'failure', message: 'sign-up-not-allowed' }
 
@@ -12,14 +12,15 @@ export default class SignUpDynamic {
     const validation = await authentication.performDynamic('validate-sign-up', { email, password })
 
     if (validation.valid) {
-      const authenticatable = authentication.performDynamicSync('authenticatable-from-sign-up-attributes', { email, password })
-      await authentication.performDynamic('save-authenticatable', { authenticatable })
+      const encryptedPassword = authentication.performDynamicSync('encrypt-password', { password })
 
-      await authentication.performDynamic('send-welcome', { authenticatable })
+      const user = await authentication.performDynamic('create-user', { attributes: { email, encryptedPassword } })
 
-      await authentication.performDynamic('after-sign-up-success', { authenticatable })
+      await authentication.performDynamic('send-welcome', { user })
 
-      return { status: 'success', authenticatable }
+      await authentication.performDynamic('after-sign-up-success', { user })
+
+      return { status: 'success', user }
     }
 
     await authentication.performDynamic('after-sign-up-failure', { email, password, validation })

@@ -1,12 +1,11 @@
 import { DynamicApi } from '@universal-packages/dynamic-api'
 
-import { AuthDynamicNames, AuthenticatableClass, AuthenticationOptions, ExtensibleUnion } from './types'
+import { AuthDynamicNames, AuthenticationOptions, ExtensibleUnion } from './types'
 
-export default class Authentication<D extends Record<string, any> = AuthDynamicNames, A = AuthenticatableClass> extends DynamicApi<D> {
+export default class Authentication<D extends Record<string, any> = AuthDynamicNames> extends DynamicApi<D> {
   public readonly options: AuthenticationOptions
-  public Authenticatable?: A
 
-  public constructor(options: AuthenticationOptions, AuthenticatableClass?: A) {
+  public constructor(options: AuthenticationOptions) {
     const newOptions: AuthenticationOptions = {
       ...options,
       defaultModule: {
@@ -16,12 +15,6 @@ export default class Authentication<D extends Record<string, any> = AuthDynamicN
     }
 
     super({ ...newOptions, namespace: 'auth', accumulate: true, modules: { default: newOptions.defaultModule, ...newOptions.modules } })
-
-    this.Authenticatable = AuthenticatableClass
-  }
-
-  public setAuthenticatableClass(Authenticatable?: A): void {
-    this.Authenticatable = Authenticatable
   }
 
   public async performDynamic<N extends keyof D>(name: ExtensibleUnion<N>, payload?: D[N]['payload']): Promise<D[N]['result']> {

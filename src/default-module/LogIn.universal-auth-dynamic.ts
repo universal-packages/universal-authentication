@@ -4,29 +4,29 @@ import { AuthenticationResult, DefaultModuleDynamicNames, EmailPasswordPayload }
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'log-in', true)
 export default class LogInDynamic {
-  public async perform(payload: EmailPasswordPayload, authentication: Authentication): Promise<AuthenticationResult> {
+  public async perform(payload: EmailPasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
     let shouldContinue = await authentication.performDynamic('continue-before-log-in?', payload)
     if (!shouldContinue) return { status: 'failure', message: 'log-in-not-allowed' }
 
     const { email, password } = payload
-    const authenticatable = await authentication.performDynamic('authenticatable-from-email', { email })
+    const user = await authentication.performDynamic('user-from-email', { email })
 
-    if (authenticatable) {
-      shouldContinue = await authentication.performDynamic('continue-after-authenticatable-found?', { authenticatable })
+    if (user) {
+      shouldContinue = await authentication.performDynamic('continue-after-user-found?', { user })
       if (!shouldContinue) return { status: 'failure', message: 'log-in-not-allowed' }
 
-      const encryptedPassword = await authentication.performDynamicSync('get-authenticatable-encrypted-password', { authenticatable })
+      const encryptedPassword = await authentication.performDynamicSync('get-user-encrypted-password', { user })
       const passwordCheck = authentication.performDynamicSync('do-passwords-match?', { encryptedPassword, password })
 
       if (passwordCheck) {
-        await authentication.performDynamic('after-log-in-success', { authenticatable })
+        await authentication.performDynamic('after-log-in-success', { user })
 
-        return { authenticatable, status: 'success' }
+        return { user, status: 'success' }
       } else {
-        await authentication.performDynamic('after-log-in-failure', { authenticatable })
+        await authentication.performDynamic('after-log-in-failure', { user })
       }
     } else {
-      await authentication.performDynamic('after-log-in-authenticatable-not-found', { email })
+      await authentication.performDynamic('after-log-in-user-not-found', { email })
     }
 
     return { status: 'failure', message: 'invalid-credentials' }
