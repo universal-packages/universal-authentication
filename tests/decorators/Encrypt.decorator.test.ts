@@ -1,4 +1,4 @@
-import { Authentication, DefaultModuleDynamicNames, Encrypt } from '../../src'
+import { Authentication, Encrypt } from '../../src'
 
 describe(Authentication, (): void => {
   describe(Encrypt, (): void => {
