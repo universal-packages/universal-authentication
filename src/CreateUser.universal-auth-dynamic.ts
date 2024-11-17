@@ -7,6 +7,6 @@ export default class CreateUserDynamic {
   public async perform(payload: EmailPasswordPayload, authentication: Authentication): Promise<unknown> {
     authentication.emit('warning', { message: 'Not implemented', payload: { dynamic: this.constructor.name, with: payload } })
 
-    return false
+    return null
   }
 }
