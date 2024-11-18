@@ -29,7 +29,7 @@ describe(Authentication, (): void => {
       })
     })
 
-    describe('when no authenticatable can be found by the email', (): void => {
+    describe('when no user can be found by the email', (): void => {
       it('returns failure', async (): Promise<void> => {
         const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
         authentication.options['namespace'] = 'universal-auth'

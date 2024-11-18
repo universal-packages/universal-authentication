@@ -4,7 +4,7 @@ import { AuthDynamic } from '../decorators'
 import { DefaultModuleDynamicNames, PasswordsPayload } from '../types'
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'do-passwords-match?', true)
-export default class IsAuthenticatablePasswordDynamic {
+export default class DoPasswordsMatchDynamic {
   public perform(payload: PasswordsPayload): boolean {
     const { password, encryptedPassword } = payload
 

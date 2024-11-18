@@ -5,7 +5,7 @@ import UserFromEmailDynamic from '../../src/default-module/UserFromEmail.univers
 
 describe(Authentication, (): void => {
   describe(RequestPasswordResetDynamic, (): void => {
-    describe('when an authenticatable exists to be reset', (): void => {
+    describe('when an user exists to be reset', (): void => {
       it('returns success', async (): Promise<void> => {
         const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
         authentication.options['namespace'] = 'universal-auth'
@@ -22,7 +22,7 @@ describe(Authentication, (): void => {
       })
     })
 
-    describe('when an authenticatable does not exist to be reset', (): void => {
+    describe('when an user does not exist to be reset', (): void => {
       it('returns failure', async (): Promise<void> => {
         const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
         authentication.options['namespace'] = 'universal-auth'

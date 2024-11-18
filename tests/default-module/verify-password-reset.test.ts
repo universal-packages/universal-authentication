@@ -48,7 +48,7 @@ describe(Authentication, (): void => {
       })
     })
 
-    describe('when authenticatable does not exist', (): void => {
+    describe('when user does not exist', (): void => {
       it('returns failure', async (): Promise<void> => {
         const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
         authentication.options['namespace'] = 'universal-auth'

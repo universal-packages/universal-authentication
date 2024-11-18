@@ -46,7 +46,7 @@ describe(UpdateValidation, (): void => {
     })
   })
 
-  it('ignores if the email is the same as the authenticatable email', async (): Promise<void> => {
+  it('ignores if the email is the same as the user email', async (): Promise<void> => {
     const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
     authentication.options['namespace'] = 'universal-auth'
     await authentication.loadDynamics()
