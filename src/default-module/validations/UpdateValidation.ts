@@ -6,13 +6,11 @@ import { DefaultModuleDynamicNames, DefaultModuleOptions } from '../../types'
 
 export default class UpdateValidation extends BaseValidation {
   public readonly authentication: Authentication<DefaultModuleDynamicNames>
-  public readonly currentEmail: string
   public readonly options: DefaultModuleOptions
 
-  public constructor(authentication: Authentication<DefaultModuleDynamicNames>, currentEmail: string, options: DefaultModuleOptions) {
-    super()
+  public constructor(initialValues: Record<string, any>, authentication: Authentication<DefaultModuleDynamicNames>, options: DefaultModuleOptions) {
+    super(initialValues)
     this.authentication = authentication
-    this.currentEmail = currentEmail
     this.options = options
   }
 
@@ -29,8 +27,8 @@ export default class UpdateValidation extends BaseValidation {
   }
 
   @Validator('email', { priority: 1, message: 'email-in-use', optional: true })
-  public async emailUnique(email: string): Promise<boolean> {
-    if (this.currentEmail === email) return true
+  public async emailUnique(email: string, initialEmail: string): Promise<boolean> {
+    if (email === initialEmail) return true
     return !(await this.authentication.performDynamic('user-exists-with-email?', { email }))
   }
 

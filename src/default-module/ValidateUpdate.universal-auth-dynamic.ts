@@ -14,6 +14,6 @@ export default class ValidateSignUpDynamic {
   public async perform(payload: EmailPasswordCurrentEmailPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<ValidationResult> {
     const { currentEmail, email, password } = payload
 
-    return await new UpdateValidation(authentication, currentEmail, this.options).validate({ email, password })
+    return await new UpdateValidation({ email: currentEmail }, authentication, this.options).validate({ email, password })
   }
 }
