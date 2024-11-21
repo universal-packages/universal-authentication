@@ -11,11 +11,12 @@ describe(Authentication, (): void => {
         authentication.options['namespace'] = 'universal-auth'
         await authentication.loadDynamics()
 
-        const user = { email: 'david@universal-packages.com' }
+        dynamicApiJest.mockDynamicReturnValue(UpdateUserDynamic, { email: 'another@universal-packages.com' })
 
+        const user = { email: 'david@universal-packages.com' }
         const result = await authentication.performDynamic('update-email-password', { user, email: 'another@universal-packages.com', password: 'new-password' })
 
-        expect(result).toEqual({ status: 'success', user })
+        expect(result).toEqual({ status: 'success', user: { email: 'another@universal-packages.com' } })
         expect(UpdateUserDynamic).toHaveBeenPerformedWith({ user, attributes: { email: 'another@universal-packages.com', encryptedPassword: expect.any(String) } })
         expect(AfterUpdateSuccessDynamic).toHaveBeenPerformedWith({ user })
       })
@@ -27,11 +28,12 @@ describe(Authentication, (): void => {
         authentication.options['namespace'] = 'universal-auth'
         await authentication.loadDynamics()
 
-        const user = { email: 'david@universal-packages.com', password: 'password' }
+        dynamicApiJest.mockDynamicReturnValue(UpdateUserDynamic, { email: 'another@universal-packages.com' })
 
+        const user = { email: 'david@universal-packages.com', password: 'password' }
         const result = await authentication.performDynamic('update-email-password', { user, email: 'another@universal-packages.com' })
 
-        expect(result).toEqual({ status: 'success', user })
+        expect(result).toEqual({ status: 'success', user: { email: 'another@universal-packages.com' } })
         expect(UpdateUserDynamic).toHaveBeenPerformedWith({ user, attributes: { email: 'another@universal-packages.com' } })
         expect(AfterUpdateSuccessDynamic).toHaveBeenPerformedWith({ user })
       })
@@ -43,11 +45,12 @@ describe(Authentication, (): void => {
         authentication.options['namespace'] = 'universal-auth'
         await authentication.loadDynamics()
 
-        const user = { email: 'david@universal-packages.com', password: 'password' }
+        dynamicApiJest.mockDynamicReturnValue(UpdateUserDynamic, { email: 'another@universal-packages.com' })
 
+        const user = { email: 'david@universal-packages.com', password: 'password' }
         const result = await authentication.performDynamic('update-email-password', { user, password: 'new-password' })
 
-        expect(result).toEqual({ status: 'success', user })
+        expect(result).toEqual({ status: 'success', user: { email: 'another@universal-packages.com' } })
         expect(UpdateUserDynamic).toHaveBeenPerformedWith({ user, attributes: { encryptedPassword: expect.any(String) } })
         expect(AfterUpdateSuccessDynamic).toHaveBeenPerformedWith({ user })
       })

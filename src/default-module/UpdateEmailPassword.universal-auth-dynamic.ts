@@ -16,11 +16,11 @@ export default class UpdateEmailPasswordDynamic {
       if (email) attributes['email'] = email
       if (password) attributes['encryptedPassword'] = authentication.performDynamicSync('encrypt-password', { password })
 
-      await authentication.performDynamic('update-user', { user, attributes })
+      const updatedUser = await authentication.performDynamic('update-user', { user, attributes })
 
       await authentication.performDynamic('after-update-success', { user })
 
-      return { status: 'success', user }
+      return { status: 'success', user: updatedUser }
     }
 
     return { status: 'failure', validation }

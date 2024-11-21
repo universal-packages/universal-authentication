@@ -134,7 +134,7 @@ export interface AuthDynamicNames<U = Record<string, any>> {
   'encrypt-password': { payload: PasswordPayload; result: string }
   'generate-concern-secret': { payload: GenerateConcernSecretPayload; result: string }
   'generate-one-time-password': { payload: GenerateOneTimePasswordPayload; result: string }
-  'update-user': { payload: UpdateUserPayload<U>; result: void }
+  'update-user': { payload: UpdateUserPayload<U>; result: U }
   'user-from-id': { payload: IdPayload; result: U }
   'verify-one-time-password': { payload: VerifyOneTimePasswordPayload; result: boolean }
 }
