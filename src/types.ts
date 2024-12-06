@@ -101,11 +101,6 @@ export interface UserOneTimePasswordPayload {
   oneTimePassword: string
 }
 
-export interface UserPasswordPayload {
-  user: Record<string, any>
-  password: string
-}
-
 export interface EmailPasswordValidationPayload {
   email: string
   password: string
