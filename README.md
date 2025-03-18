@@ -178,6 +178,7 @@ const result = authentication.perform('sign-up', { email: 'some email', password
 - **`PAYLOAD`** `Object`
   - **`email`** `String`
   - **`password`** `String`
+  - **`locale`** `String` `optional`
 - **`RESULT`** `AuthenticationResult`
   - **`user`** `User`
   - **`validation`** `ValidationResult` `failure`
@@ -225,8 +226,6 @@ const result = authentication.perform('verify-password-reset', { email: 'email@e
     - `invalid-one-time-password` `failure`
 
 ### Default module extensions
-
-[file](src/default-module/extensions/AfterLogInFailure.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterLogInUserNotFound.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterLogInSuccess.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterSignUpFailure.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterSignUpSuccess.universal-auth-dynamic.ts) [file](src/default-module/extensions/AfterUpdateSuccess.universal-auth-dynamic.ts) [file](src/default-module/extensions/ContinueAfterLogInUserFound.universal-auth-dynamic.ts) [file](src/default-module/extensions/ContinueBeforeLogIn.universal-auth-dynamic.ts) [file](src/default-module/extensions/ContinueBeforeSignUp.universal-auth-dynamic.ts)
 
 These dynamics are used to extend the default module dynamics, they are called on specific points while logging in and signing up.
 

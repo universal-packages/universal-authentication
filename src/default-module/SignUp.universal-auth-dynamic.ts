@@ -1,20 +1,20 @@
 import Authentication from '../Authentication'
 import { AuthDynamic } from '../decorators'
-import { AuthenticationResult, DefaultModuleDynamicNames, EmailPasswordPayload } from '../types'
+import { AuthenticationResult, DefaultModuleDynamicNames, EmailPasswordLocalePayload } from '../types'
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'sign-up', true)
 export default class SignUpDynamic {
-  public async perform(payload: EmailPasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
+  public async perform(payload: EmailPasswordLocalePayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
     let shouldContinue = await authentication.performDynamic('continue-before-sign-up?', payload)
     if (!shouldContinue) return { status: 'failure', message: 'sign-up-not-allowed' }
 
-    const { email, password } = payload
+    const { email, password, locale } = payload
     const validation = await authentication.performDynamic('validate-sign-up', { email, password })
 
     if (validation.valid) {
       const encryptedPassword = authentication.performDynamicSync('encrypt-password', { password })
 
-      const user = await authentication.performDynamic('create-user', { attributes: { email, encryptedPassword } })
+      const user = await authentication.performDynamic('create-user', { attributes: { email, encryptedPassword, locale } })
 
       await authentication.performDynamic('send-welcome', { user })
 

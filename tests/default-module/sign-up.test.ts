@@ -17,12 +17,12 @@ describe(Authentication, (): void => {
         const user = { email: 'david@universal-packages.com', password: 'password' }
         dynamicApiJest.mockDynamicReturnValue(CreateUserDynamic, user)
 
-        const result = await authentication.performDynamic('sign-up', { email: 'david@universal-packages.com', password: 'password' })
+        const result = await authentication.performDynamic('sign-up', { email: 'david@universal-packages.com', password: 'password', locale: 'en-US' })
 
         expect(result).toEqual({ status: 'success', user })
-        expect(CreateUserDynamic).toHaveBeenPerformedWith({ attributes: { email: 'david@universal-packages.com', encryptedPassword: expect.any(String) } })
+        expect(CreateUserDynamic).toHaveBeenPerformedWith({ attributes: { email: 'david@universal-packages.com', encryptedPassword: expect.any(String), locale: 'en-US' } })
         expect(SendWelcomeDynamic).toHaveBeenPerformedWith({ user })
-        expect(ContinueBeforeSignUpDynamic).toHaveBeenPerformedWith({ email: 'david@universal-packages.com', password: 'password' })
+        expect(ContinueBeforeSignUpDynamic).toHaveBeenPerformedWith({ email: 'david@universal-packages.com', password: 'password', locale: 'en-US' })
         expect(AfterSignUpSuccessDynamic).toHaveBeenPerformedWith({ user })
       })
     })

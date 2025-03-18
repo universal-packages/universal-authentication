@@ -42,7 +42,7 @@ export interface DefaultModuleDynamicNames<U = Record<string, any>> extends Auth
   'after-log-in-failure': { payload: UserPayload<U>; result: void }
   'after-log-in-user-not-found': { payload: EmailPayload; result: void }
 
-  'sign-up': { payload: EmailPasswordPayload; result: AuthenticationResult }
+  'sign-up': { payload: EmailPasswordLocalePayload; result: AuthenticationResult }
   'continue-before-sign-up?': { payload: EmailPasswordPayload; result: boolean }
   'after-sign-up-success': { payload: UserPayload<U>; result: void }
   'after-sign-up-failure': { payload: EmailPasswordValidationPayload; result: void }
@@ -73,6 +73,12 @@ export interface EmailPayload {
 export interface EmailPasswordPayload {
   email: string
   password: string
+}
+
+export interface EmailPasswordLocalePayload {
+  email: string
+  password: string
+  locale?: string
 }
 
 export interface EmailOneTimePasswordPayload {
