@@ -6,11 +6,20 @@ export interface AuthenticationOptions {
   debug?: boolean
   defaultModule?: DynamicModule<DefaultModuleOptions>
   dynamicsLocation: string
+  initialDetails?: InitialDetailsOptions
   modules?: Record<string, DynamicModule>
   oneTimePassword?: VerifyOptions
   secret: string
 }
 
+export interface InitialDetailsOptions {
+  localeValidation?: {
+    optional?: boolean
+  }
+  timezoneValidation?: {
+    optional?: boolean
+  }
+}
 export interface DefaultModuleOptions {
   emailValidation?: {
     matcher?: RegExp | string
@@ -18,12 +27,6 @@ export interface DefaultModuleOptions {
   }
   passwordValidation?: {
     size?: { min?: number; max?: number }
-  }
-  localeValidation?: {
-    optional?: boolean
-  }
-  timezoneValidation?: {
-    optional?: boolean
   }
 }
 

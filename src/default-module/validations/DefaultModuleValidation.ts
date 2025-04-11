@@ -12,8 +12,10 @@ export default class DefaultModuleValidation extends BaseUserValidation {
     if (options.emailValidation?.matcher) this.emailMatcher = new RegExp(options.emailValidation.matcher)
     if (options.emailValidation?.size) this.emailSize = options.emailValidation.size
     if (options.passwordValidation?.size) this.passwordSize = options.passwordValidation.size
-    if (typeof options.localeValidation?.optional === 'boolean') this.localeOptional = options.localeValidation.optional
-    if (typeof options.timezoneValidation?.optional === 'boolean') this.timezoneOptional = options.timezoneValidation.optional
+    if (typeof authentication.options.initialDetails?.localeValidation?.optional === 'boolean')
+      this.localeOptional = authentication.options.initialDetails.localeValidation.optional
+    if (typeof authentication.options.initialDetails?.timezoneValidation?.optional === 'boolean')
+      this.timezoneOptional = authentication.options.initialDetails.timezoneValidation.optional
   }
 
   protected async isEmailTaken(email: string): Promise<boolean> {

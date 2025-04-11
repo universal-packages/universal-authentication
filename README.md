@@ -70,6 +70,14 @@ Authentication take options similar to [DynamicApi options](https://github.com/u
         - **`max`** `Number`
           Maximum size of the password.
 
+- **`initialDetails`** `Object`
+  - **`localeValidation`** `Object`
+    - **`optional`** `Boolean` `Default: true`
+      Whether the locale validation is optional or not.
+  - **`timezoneValidation`** `Object`
+    - **`optional`** `Boolean` `Default: true`
+      Whether the timezone validation is optional or not.
+
 ## Authentication Api override required dynamics
 
 These dynamics are required to be override to have a fully functional authentication system.
