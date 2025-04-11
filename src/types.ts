@@ -61,6 +61,8 @@ export interface DefaultModuleDynamicNames<U = Record<string, any>> extends Auth
   'send-password-reset': { payload: UserOneTimePasswordPayload; result: void }
   'send-password-was-reset': { payload: UserPayload<U>; result: void }
   'send-welcome': { payload: UserPayload<U>; result: void }
+
+  'validate-log-in': { payload: EmailPasswordPayload; result: ValidationResult }
   'validate-password-reset': { payload: PasswordPayload; result: ValidationResult }
   'validate-sign-up': { payload: EmailPasswordPayload; result: ValidationResult }
   'validate-update': { payload: EmailPasswordCurrentEmailPayload; result: ValidationResult }

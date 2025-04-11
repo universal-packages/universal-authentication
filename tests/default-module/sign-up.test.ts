@@ -39,8 +39,8 @@ describe(Authentication, (): void => {
           status: 'failure',
           validation: {
             errors: {
-              email: ['invalid-email'],
-              password: ['password-out-of-size']
+              email: ['email-should-be-right-sized'],
+              password: ['password-should-be-right-sized']
             },
             valid: false
           }
@@ -53,8 +53,8 @@ describe(Authentication, (): void => {
           password: 'wow',
           validation: {
             errors: {
-              email: ['invalid-email'],
-              password: ['password-out-of-size']
+              email: ['email-should-be-right-sized'],
+              password: ['password-should-be-right-sized']
             },
             valid: false
           }

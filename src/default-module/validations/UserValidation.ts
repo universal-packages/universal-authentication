@@ -4,11 +4,17 @@ import BaseUserValidation from './BaseUserValidation'
 
 export default class UserValidation extends BaseUserValidation {
   protected readonly authentication: Authentication<DefaultModuleDynamicNames>
-  protected readonly options: DefaultModuleOptions
 
-  public constructor(authentication: Authentication<DefaultModuleDynamicNames>, options: DefaultModuleOptions) {
-    super()
+  public constructor(initialValues: Record<string, any>, authentication: Authentication<DefaultModuleDynamicNames>, options: DefaultModuleOptions) {
+    super(initialValues)
     this.authentication = authentication
-    this.options = options
+
+    if (options.emailValidation?.matcher) this.emailMatcher = new RegExp(options.emailValidation.matcher)
+    if (options.emailValidation?.size) this.emailSize = options.emailValidation.size
+    if (options.passwordValidation?.size) this.passwordSize = options.passwordValidation.size
+  }
+
+  protected async isEmailTaken(email: string): Promise<boolean> {
+    return await this.authentication.performDynamic('user-exists-with-email?', { email })
   }
 }

@@ -9,26 +9,33 @@ export default class LogInDynamic {
     if (!shouldContinue) return { status: 'failure', message: 'log-in-not-allowed' }
 
     const { email, password } = payload
-    const user = await authentication.performDynamic('user-from-email', { email })
 
-    if (user) {
-      shouldContinue = await authentication.performDynamic('continue-after-user-found?', { user })
-      if (!shouldContinue) return { status: 'failure', message: 'log-in-not-allowed' }
+    const validation = await authentication.performDynamic('validate-log-in', { email, password })
 
-      const encryptedPassword = await authentication.performDynamicSync('get-user-encrypted-password', { user })
-      const passwordCheck = authentication.performDynamicSync('do-passwords-match?', { encryptedPassword, password })
+    if (validation.valid) {
+      const user = await authentication.performDynamic('user-from-email', { email })
 
-      if (passwordCheck) {
-        await authentication.performDynamic('after-log-in-success', { user })
+      if (user) {
+        shouldContinue = await authentication.performDynamic('continue-after-user-found?', { user })
+        if (!shouldContinue) return { status: 'failure', message: 'log-in-not-allowed' }
 
-        return { user, status: 'success' }
+        const encryptedPassword = await authentication.performDynamicSync('get-user-encrypted-password', { user })
+        const passwordCheck = authentication.performDynamicSync('do-passwords-match?', { encryptedPassword, password })
+
+        if (passwordCheck) {
+          await authentication.performDynamic('after-log-in-success', { user })
+
+          return { user, status: 'success' }
+        } else {
+          await authentication.performDynamic('after-log-in-failure', { user })
+        }
       } else {
-        await authentication.performDynamic('after-log-in-failure', { user })
+        await authentication.performDynamic('after-log-in-user-not-found', { email })
       }
-    } else {
-      await authentication.performDynamic('after-log-in-user-not-found', { email })
-    }
 
-    return { status: 'failure', message: 'invalid-credentials' }
+      return { status: 'failure', message: 'invalid-credentials' }
+    } else {
+      return { status: 'failure', validation }
+    }
   }
 }

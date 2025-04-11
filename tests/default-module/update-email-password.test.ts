@@ -1,6 +1,7 @@
 import { Authentication, DefaultModuleDynamicNames } from '../../src'
 import UpdateUserDynamic from '../../src/UpdateUser.universal-auth-dynamic'
 import UpdateEmailPasswordDynamic from '../../src/default-module/UpdateEmailPassword.universal-auth-dynamic'
+import UserExistsWithEmailDynamic from '../../src/default-module/UserExistsWithEmail.universal-auth-dynamic'
 import AfterUpdateSuccessDynamic from '../../src/default-module/extensions/AfterUpdateSuccess.universal-auth-dynamic'
 
 describe(Authentication, (): void => {
@@ -12,6 +13,7 @@ describe(Authentication, (): void => {
         await authentication.loadDynamics()
 
         dynamicApiJest.mockDynamicReturnValue(UpdateUserDynamic, { email: 'another@universal-packages.com' })
+        dynamicApiJest.mockDynamicReturnValue(UserExistsWithEmailDynamic, false)
 
         const user = { email: 'david@universal-packages.com' }
         const result = await authentication.performDynamic('update-email-password', { user, email: 'another@universal-packages.com', password: 'new-password' })
@@ -66,7 +68,10 @@ describe(Authentication, (): void => {
 
         const result = await authentication.performDynamic('update-email-password', { user, email: 'bad', password: 'short' })
 
-        expect(result).toEqual({ status: 'failure', validation: { valid: false, errors: { email: ['invalid-email'], password: ['password-out-of-size'] } } })
+        expect(result).toEqual({
+          status: 'failure',
+          validation: { valid: false, errors: { email: ['email-should-be-right-sized'], password: ['password-should-be-right-sized'] } }
+        })
       })
     })
   })

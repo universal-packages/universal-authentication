@@ -85,7 +85,7 @@ describe(Authentication, (): void => {
           password: 'short'
         })
 
-        expect(result).toEqual({ status: 'failure', validation: { valid: false, errors: { password: ['password-out-of-size'] } } })
+        expect(result).toEqual({ status: 'failure', validation: { valid: false, errors: { password: ['password-should-be-right-sized'] } } })
       })
     })
   })
