@@ -150,7 +150,7 @@ describe(DefaultModuleValidation, (): void => {
       expect(invalidEmailResult.errors.email).toContain('email-should-be-valid')
     })
 
-    it('validates email uniqueness for sign-up', async (): Promise<void> => {
+    it('validates email uniqueness for sign-up-backend', async (): Promise<void> => {
       // Initialize authentication for this test
       const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
       authentication.options['namespace'] = 'universal-auth'
@@ -178,7 +178,7 @@ describe(DefaultModuleValidation, (): void => {
           email: 'taken@example.com',
           password: 'password123'
         },
-        'sign-up'
+        'sign-up-backend'
       )
 
       expect(result.valid).toBe(false)

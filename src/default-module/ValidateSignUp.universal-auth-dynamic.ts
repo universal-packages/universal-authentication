@@ -12,6 +12,6 @@ export default class ValidateSignUpDynamic {
   }
 
   public async perform(payload: EmailPasswordAndDetailsPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<ValidationResult> {
-    return await new DefaultModuleValidation(payload, authentication, this.options).validate(payload, ['sign-up', 'initial-details'])
+    return await new DefaultModuleValidation(payload, authentication, this.options).validate(payload, ['sign-up', 'sign-up-backend', 'initial-details'])
   }
 }

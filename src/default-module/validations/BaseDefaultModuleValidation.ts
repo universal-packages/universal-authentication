@@ -25,7 +25,7 @@ export default class BaseDefaultModuleValidation extends InitialDetailsValidatio
     return validator.isEmail(email)
   }
 
-  @Validator('email', { priority: 3, message: 'email-should-be-unique', schema: ['sign-up', { for: 'update', options: { optional: true } }] })
+  @Validator('email', { priority: 3, message: 'email-should-be-unique', schema: ['sign-up-backend', { for: 'update', options: { optional: true } }] })
   public async validateEmailUniqueness(email: string, initialEmail: string): Promise<boolean> {
     if (initialEmail && email === initialEmail) return true
     return !(await this.isEmailTaken(email))
