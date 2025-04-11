@@ -2,8 +2,8 @@ import { BaseValidation, Validator } from '@universal-packages/validations'
 import validator from 'validator'
 
 export default class InitialDetailsValidation extends BaseValidation {
-  protected localeOptional?: boolean = true
-  protected timezoneOptional?: boolean = true
+  public localeOptional?: boolean = true
+  public timezoneOptional?: boolean = true
 
   @Validator('locale', { message: 'locale-should-be-present', schema: 'initial-details' })
   public validateLocalePresence(locale: string): boolean {

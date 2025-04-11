@@ -143,6 +143,18 @@ Verifies a one time password for a concern and identifier. For example to be use
   - **`oneTimePassword`** `String`
 - **`RESULT`** `Boolean`
 
+### validate-initial-details
+
+Validates the initial details of the user.
+
+- **`PAYLOAD`** `Object`
+  - **`locale`** `String`
+  - **`timezone`** `String`
+- **`RESULT`** `ValidationResult`
+  - **`valid`** `Boolean`
+  - **`errors`** `Object`
+    - **`<attribute>`** `String[]`
+
 ## Default module dynamics
 
 ### log-in `Async`

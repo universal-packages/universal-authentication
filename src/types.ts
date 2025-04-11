@@ -150,6 +150,7 @@ export interface AuthDynamicNames<U = Record<string, any>> {
   'update-user': { payload: UpdateUserPayload<U>; result: U }
   'user-from-id': { payload: IdPayload; result: U }
   'verify-one-time-password': { payload: VerifyOneTimePasswordPayload; result: boolean }
+  'validate-initial-details': { payload: ValidateInitialDetailsPayload; result: ValidationResult }
 }
 
 export interface CreateUserPayload<U = Record<string, any>> {
@@ -182,4 +183,9 @@ export interface VerifyOneTimePasswordPayload {
   concern: string
   identifier: string
   oneTimePassword: string
+}
+
+export interface ValidateInitialDetailsPayload {
+  locale?: string
+  timezone?: string
 }

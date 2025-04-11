@@ -7,8 +7,6 @@ export default class BaseDefaultModuleValidation extends InitialDetailsValidatio
   protected emailMatcher?: RegExp
   protected emailSize?: { min?: number; max?: number } = { min: 6, max: 256 }
   protected passwordSize?: { min?: number; max?: number } = { min: 8, max: 256 }
-  protected localeOptional?: boolean = true
-  protected timezoneOptional?: boolean = true
 
   @Validator('email', { message: 'email-should-be-present', schema: ['sign-up', 'log-in', { for: 'update', options: { optional: true } }] })
   public validateEmailPresence(email: string): boolean {
