@@ -1,8 +1,8 @@
 import Authentication from '../../Authentication'
 import { DefaultModuleDynamicNames, DefaultModuleOptions } from '../../types'
-import BaseUserValidation from './BaseUserValidation'
+import BaseUserValidation from './BaseDefaultModuleValidation'
 
-export default class UserValidation extends BaseUserValidation {
+export default class DefaultModuleValidation extends BaseUserValidation {
   protected readonly authentication: Authentication<DefaultModuleDynamicNames>
 
   public constructor(initialValues: Record<string, any>, authentication: Authentication<DefaultModuleDynamicNames>, options: DefaultModuleOptions) {

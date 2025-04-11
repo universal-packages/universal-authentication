@@ -1,7 +1,7 @@
 import { BaseValidation, Validator } from '@universal-packages/validations'
 import validator from 'validator'
 
-export default class BaseUserValidation extends BaseValidation {
+export default class BaseDefaultModuleValidation extends BaseValidation {
   protected emailMatcher?: RegExp
   protected emailSize?: { min?: number; max?: number } = { min: 6, max: 256 }
   protected passwordSize?: { min?: number; max?: number } = { min: 8, max: 256 }

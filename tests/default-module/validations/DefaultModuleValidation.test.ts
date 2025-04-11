@@ -1,9 +1,9 @@
 import Authentication from '../../../src/Authentication'
 import UserExistsWithEmailDynamic from '../../../src/default-module/UserExistsWithEmail.universal-auth-dynamic'
-import UserValidation from '../../../src/default-module/validations/UserValidation'
+import DefaultModuleValidation from '../../../src/default-module/validations/DefaultModuleValidation'
 import { DefaultModuleDynamicNames, DefaultModuleOptions } from '../../../src/types'
 
-describe('UserValidation', (): void => {
+describe(DefaultModuleValidation, (): void => {
   describe('email validation', (): void => {
     it('validates email presence', async (): Promise<void> => {
       // Initialize authentication for this test
@@ -22,7 +22,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Test with missing email
       const result = await validation.validate({ password: 'password123' }, 'sign-up')
@@ -48,7 +48,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Test with too short email
       const tooShortResult = await validation.validate(
@@ -93,7 +93,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Test with invalid email format
       const result = await validation.validate(
@@ -124,7 +124,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, customOptions)
+      const validation = new DefaultModuleValidation({}, authentication, customOptions)
 
       // Test with valid email according to custom rules
       const validResult = await validation.validate(
@@ -170,7 +170,7 @@ describe('UserValidation', (): void => {
       // Mock that the email is already taken
       dynamicApiJest.mockDynamicReturnValue(UserExistsWithEmailDynamic, true)
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Test with already taken email
       const result = await validation.validate(
@@ -204,7 +204,7 @@ describe('UserValidation', (): void => {
       }
 
       // Set initial values to simulate an update operation
-      const validation = new UserValidation({ email: 'taken@example.com' }, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({ email: 'taken@example.com' }, authentication, defaultOptions)
 
       // Test with the same email (should pass uniqueness check)
       const result = await validation.validate(
@@ -240,7 +240,7 @@ describe('UserValidation', (): void => {
       // Even if email exists, login validation doesn't check uniqueness
       dynamicApiJest.mockDynamicReturnValue(UserExistsWithEmailDynamic, true)
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Email uniqueness is NOT checked for log-in, only format
       const result = await validation.validate(
@@ -275,7 +275,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Test with missing password
       const result = await validation.validate(
@@ -306,7 +306,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Test with too short password
       const tooShortResult = await validation.validate(
@@ -349,7 +349,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, customOptions)
+      const validation = new DefaultModuleValidation({}, authentication, customOptions)
 
       // Test with valid password according to custom rules
       const validResult = await validation.validate(
@@ -392,7 +392,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Providing an invalid password in update still validates it
       const result = await validation.validate(
@@ -423,7 +423,7 @@ describe('UserValidation', (): void => {
         }
       }
 
-      const validation = new UserValidation({}, authentication, defaultOptions)
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
 
       // Password is optional for update schema
       const result = await validation.validate({}, 'update')

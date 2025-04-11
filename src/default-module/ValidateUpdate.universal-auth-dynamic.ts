@@ -1,7 +1,7 @@
 import Authentication from '../Authentication'
 import { AuthDynamic } from '../decorators'
 import { DefaultModuleDynamicNames, DefaultModuleOptions, EmailPasswordCurrentEmailPayload, ValidationResult } from '../types'
-import UserValidation from './validations/UserValidation'
+import DefaultModuleValidation from './validations/DefaultModuleValidation'
 
 @AuthDynamic<DefaultModuleDynamicNames>('default', 'validate-update', true)
 export default class ValidateSignUpDynamic {
@@ -14,6 +14,6 @@ export default class ValidateSignUpDynamic {
   public async perform(payload: EmailPasswordCurrentEmailPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<ValidationResult> {
     const { currentEmail, email, password } = payload
 
-    return await new UserValidation({ email: currentEmail }, authentication, this.options).validate({ email, password }, 'update')
+    return await new DefaultModuleValidation({ email: currentEmail }, authentication, this.options).validate({ email, password }, 'update')
   }
 }
