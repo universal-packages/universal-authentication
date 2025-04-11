@@ -13,11 +13,17 @@ export interface AuthenticationOptions {
 
 export interface DefaultModuleOptions {
   emailValidation?: {
-    matcher?: RegExp
+    matcher?: RegExp | string
     size?: { min?: number; max?: number }
   }
   passwordValidation?: {
     size?: { min?: number; max?: number }
+  }
+  localeValidation?: {
+    optional?: boolean
+  }
+  timezoneValidation?: {
+    optional?: boolean
   }
 }
 
@@ -42,7 +48,7 @@ export interface DefaultModuleDynamicNames<U = Record<string, any>> extends Auth
   'after-log-in-failure': { payload: UserPayload<U>; result: void }
   'after-log-in-user-not-found': { payload: EmailPayload; result: void }
 
-  'sign-up': { payload: EmailPasswordLocalePayload; result: AuthenticationResult }
+  'sign-up': { payload: EmailPasswordAndDetailsPayload; result: AuthenticationResult }
   'continue-before-sign-up?': { payload: EmailPasswordPayload; result: boolean }
   'after-sign-up-success': { payload: UserPayload<U>; result: void }
   'after-sign-up-failure': { payload: EmailPasswordValidationPayload; result: void }
@@ -64,7 +70,7 @@ export interface DefaultModuleDynamicNames<U = Record<string, any>> extends Auth
 
   'validate-log-in': { payload: EmailPasswordPayload; result: ValidationResult }
   'validate-password-reset': { payload: PasswordPayload; result: ValidationResult }
-  'validate-sign-up': { payload: EmailPasswordPayload; result: ValidationResult }
+  'validate-sign-up': { payload: EmailPasswordAndDetailsPayload; result: ValidationResult }
   'validate-update': { payload: EmailPasswordCurrentEmailPayload; result: ValidationResult }
 }
 
@@ -77,10 +83,11 @@ export interface EmailPasswordPayload {
   password: string
 }
 
-export interface EmailPasswordLocalePayload {
+export interface EmailPasswordAndDetailsPayload {
   email: string
   password: string
   locale?: string
+  timezone?: string
 }
 
 export interface EmailOneTimePasswordPayload {

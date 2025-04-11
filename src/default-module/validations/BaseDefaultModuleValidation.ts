@@ -5,6 +5,8 @@ export default class BaseDefaultModuleValidation extends BaseValidation {
   protected emailMatcher?: RegExp
   protected emailSize?: { min?: number; max?: number } = { min: 6, max: 256 }
   protected passwordSize?: { min?: number; max?: number } = { min: 8, max: 256 }
+  protected localeOptional?: boolean = true
+  protected timezoneOptional?: boolean = true
 
   @Validator('email', { message: 'email-should-be-present', schema: ['sign-up', 'log-in', { for: 'update', options: { optional: true } }] })
   public validateEmailPresence(email: string): boolean {
@@ -46,5 +48,32 @@ export default class BaseDefaultModuleValidation extends BaseValidation {
 
   protected isEmailTaken(_email: string): Promise<boolean> {
     throw new Error('Not implemented')
+  }
+
+  @Validator('locale', { message: 'locale-should-be-present', schema: ['sign-up'] })
+  public validateLocalePresence(locale: string): boolean {
+    return this.localeOptional || !!locale
+  }
+
+  @Validator('locale', { priority: 1, message: 'locale-should-be-a-valid-locale', schema: ['sign-up'] })
+  public validateLocaleFormat(locale: string): boolean {
+    if (!locale && this.localeOptional) return true
+    return validator.isLocale(locale)
+  }
+
+  @Validator('timezone', { message: 'timezone-should-be-present', schema: ['sign-up'] })
+  public validateTimezonePresence(timezone: string): boolean {
+    return this.timezoneOptional || !!timezone
+  }
+
+  @Validator('timezone', { priority: 1, message: 'timezone-should-be-a-valid-timezone', schema: ['sign-up'] })
+  public validateTimezoneFormat(timezone: string): boolean {
+    if (!timezone && this.timezoneOptional) return true
+    try {
+      new Intl.DateTimeFormat('en-US', { timeZone: timezone })
+      return true
+    } catch {
+      return false
+    }
   }
 }

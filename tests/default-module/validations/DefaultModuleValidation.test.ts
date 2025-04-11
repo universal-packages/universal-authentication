@@ -431,4 +431,159 @@ describe(DefaultModuleValidation, (): void => {
       expect(result.valid).toBe(true)
     })
   })
+
+  describe('locale validation', (): void => {
+    it('validates locale presence for sign-up when not optional', async (): Promise<void> => {
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      const validation = new DefaultModuleValidation({}, authentication, { localeValidation: { optional: false } })
+
+      // Test with missing locale
+      const result = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123'
+        },
+        'sign-up'
+      )
+
+      expect(result.valid).toBe(false)
+      expect(result.errors.locale).toContain('locale-should-be-present')
+    })
+
+    it('makes locale optional by default', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Using default options (locale is optional)
+      const validation = new DefaultModuleValidation({}, authentication, {})
+
+      // Test with missing locale but valid email/password
+      const result = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123'
+        },
+        'sign-up'
+      )
+
+      expect(result.valid).toBe(true)
+    })
+
+    it('validates locale format', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      const validation = new DefaultModuleValidation({}, authentication, {})
+
+      // Test with invalid locale
+      const invalidResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123',
+          locale: 'not-a-locale'
+        },
+        'sign-up'
+      )
+
+      expect(invalidResult.valid).toBe(false)
+      expect(invalidResult.errors.locale).toContain('locale-should-be-a-valid-locale')
+
+      // Test with valid locale
+      const validResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123',
+          locale: 'en-US'
+        },
+        'sign-up'
+      )
+
+      expect(validResult.valid).toBe(true)
+    })
+  })
+
+  describe('timezone validation', (): void => {
+    it('validates timezone presence for sign-up when not optional', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Create custom DefaultModuleValidation with timezoneOptional set to false
+      const validation = new DefaultModuleValidation({}, authentication, { timezoneValidation: { optional: false } })
+      // Test with missing timezone
+      const result = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123'
+        },
+        'sign-up'
+      )
+
+      expect(result.valid).toBe(false)
+      expect(result.errors.timezone).toContain('timezone-should-be-present')
+    })
+
+    it('makes timezone optional by default', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Using default options (timezone is optional)
+      const validation = new DefaultModuleValidation({}, authentication, {})
+
+      // Test with missing timezone but valid email/password
+      const result = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123'
+        },
+        'sign-up'
+      )
+
+      expect(result.valid).toBe(true)
+    })
+
+    it('validates timezone format', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      const validation = new DefaultModuleValidation({}, authentication, {})
+
+      // Test with invalid timezone
+      const invalidResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123',
+          timezone: 'Not/A/Timezone'
+        },
+        'sign-up'
+      )
+
+      expect(invalidResult.valid).toBe(false)
+      expect(invalidResult.errors.timezone).toContain('timezone-should-be-a-valid-timezone')
+
+      // Test with valid timezone
+      const validResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'password123',
+          timezone: 'America/New_York'
+        },
+        'sign-up'
+      )
+
+      expect(validResult.valid).toBe(true)
+    })
+  })
 })
