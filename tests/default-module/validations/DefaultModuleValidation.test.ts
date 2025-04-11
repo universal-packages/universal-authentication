@@ -507,6 +507,52 @@ describe(DefaultModuleValidation, (): void => {
 
       expect(validResult.valid).toBe(true)
     })
+
+    it('validates locale for initial-details schema', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Create validation with locale not optional
+      const validation = new DefaultModuleValidation({}, authentication, {
+        localeValidation: { optional: false }
+      })
+
+      // Test with missing locale
+      const missingResult = await validation.validate(
+        {
+          timezone: 'America/New_York'
+        },
+        'initial-details'
+      )
+
+      expect(missingResult.valid).toBe(false)
+      expect(missingResult.errors.locale).toContain('locale-should-be-present')
+
+      // Test with invalid locale
+      const invalidResult = await validation.validate(
+        {
+          locale: 'not-a-locale',
+          timezone: 'America/New_York'
+        },
+        'initial-details'
+      )
+
+      expect(invalidResult.valid).toBe(false)
+      expect(invalidResult.errors.locale).toContain('locale-should-be-a-valid-locale')
+
+      // Test with valid locale
+      const validResult = await validation.validate(
+        {
+          locale: 'en-US',
+          timezone: 'America/New_York'
+        },
+        'initial-details'
+      )
+
+      expect(validResult.valid).toBe(true)
+    })
   })
 
   describe('timezone validation', (): void => {
@@ -581,6 +627,52 @@ describe(DefaultModuleValidation, (): void => {
           timezone: 'America/New_York'
         },
         'sign-up'
+      )
+
+      expect(validResult.valid).toBe(true)
+    })
+
+    it('validates timezone for initial-details schema', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Create validation with timezone not optional
+      const validation = new DefaultModuleValidation({}, authentication, {
+        timezoneValidation: { optional: false }
+      })
+
+      // Test with missing timezone
+      const missingResult = await validation.validate(
+        {
+          locale: 'en-US'
+        },
+        'initial-details'
+      )
+
+      expect(missingResult.valid).toBe(false)
+      expect(missingResult.errors.timezone).toContain('timezone-should-be-present')
+
+      // Test with invalid timezone
+      const invalidResult = await validation.validate(
+        {
+          locale: 'en-US',
+          timezone: 'Not/A/Timezone'
+        },
+        'initial-details'
+      )
+
+      expect(invalidResult.valid).toBe(false)
+      expect(invalidResult.errors.timezone).toContain('timezone-should-be-a-valid-timezone')
+
+      // Test with valid timezone
+      const validResult = await validation.validate(
+        {
+          locale: 'en-US',
+          timezone: 'America/New_York'
+        },
+        'initial-details'
       )
 
       expect(validResult.valid).toBe(true)

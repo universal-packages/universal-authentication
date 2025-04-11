@@ -50,23 +50,23 @@ export default class BaseDefaultModuleValidation extends BaseValidation {
     throw new Error('Not implemented')
   }
 
-  @Validator('locale', { message: 'locale-should-be-present', schema: ['sign-up'] })
+  @Validator('locale', { message: 'locale-should-be-present', schema: ['sign-up', 'initial-details'] })
   public validateLocalePresence(locale: string): boolean {
     return this.localeOptional || !!locale
   }
 
-  @Validator('locale', { priority: 1, message: 'locale-should-be-a-valid-locale', schema: ['sign-up'] })
+  @Validator('locale', { priority: 1, message: 'locale-should-be-a-valid-locale', schema: ['sign-up', 'initial-details'] })
   public validateLocaleFormat(locale: string): boolean {
     if (!locale && this.localeOptional) return true
     return validator.isLocale(locale)
   }
 
-  @Validator('timezone', { message: 'timezone-should-be-present', schema: ['sign-up'] })
+  @Validator('timezone', { message: 'timezone-should-be-present', schema: ['sign-up', 'initial-details'] })
   public validateTimezonePresence(timezone: string): boolean {
     return this.timezoneOptional || !!timezone
   }
 
-  @Validator('timezone', { priority: 1, message: 'timezone-should-be-a-valid-timezone', schema: ['sign-up'] })
+  @Validator('timezone', { priority: 1, message: 'timezone-should-be-a-valid-timezone', schema: ['sign-up', 'initial-details'] })
   public validateTimezoneFormat(timezone: string): boolean {
     if (!timezone && this.timezoneOptional) return true
     try {
