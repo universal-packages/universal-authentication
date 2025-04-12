@@ -12,6 +12,6 @@ export default class ValidateSignUpAttributesDynamic {
   }
 
   public async perform(payload: PasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<ValidationResult> {
-    return await new DefaultModuleValidation(payload, authentication, this.options).validate(payload, 'reset-password')
+    return await new DefaultModuleValidation({}, authentication, this.options).validate(payload, 'reset-password')
   }
 }
