@@ -235,7 +235,7 @@ const result = authentication.perform('verify-password-reset', { email: 'email@e
 
 - **`PAYLOAD`** `Object`
   - **`email`** `String`
-  - **`oneTimePassword`** `String`
+  - **`oneTimePassword`** `Number`
   - **`password`** `String`
 - **`RESULT`** `AuthenticationResult`
   - **`validation`** `ValidationResult` `failure`
@@ -344,7 +344,7 @@ Dynamics that you need to override to have a fully functional default module.
 
 - **`PAYLOAD`** `Object`
   - **`user`** `User`
-  - **`oneTimePassword`** `String`
+  - **`oneTimePassword`** `Number`
 - **`RESULT`** `void`
 
 ### send-password-was-reset
@@ -384,6 +384,7 @@ Dynamics that you need to override to have a fully functional default module.
 
 - **`PAYLOAD`** `Object`
   - **`password`** `String`
+  - **`oneTimePassword`** `Number`
 - **`RESULT`** `ValidationResult`
   - **`valid`** `Boolean`
   - **`errors`** `Object`

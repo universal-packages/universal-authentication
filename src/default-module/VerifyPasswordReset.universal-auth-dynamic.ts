@@ -7,13 +7,13 @@ export default class VerifyPasswordResetDynamic {
   public async perform(payload: EmailPasswordOneTimePasswordPayload, authentication: Authentication<DefaultModuleDynamicNames>): Promise<AuthenticationResult> {
     const { email, oneTimePassword, password } = payload
 
-    if (authentication.performDynamicSync('verify-one-time-password', { concern: 'password-reset', identifier: email, oneTimePassword })) {
-      const user = await authentication.performDynamic('user-from-email', { email })
+    const validation = await authentication.performDynamic('validate-password-reset', { password, oneTimePassword })
 
-      if (user) {
-        const validation = await authentication.performDynamic('validate-password-reset', { password })
+    if (validation.valid) {
+      if (authentication.performDynamicSync('verify-one-time-password', { concern: 'password-reset', identifier: email, oneTimePassword })) {
+        const user = await authentication.performDynamic('user-from-email', { email })
 
-        if (validation.valid) {
+        if (user) {
           const encryptedPassword = await authentication.performDynamic('encrypt-password', { password })
 
           await authentication.performDynamic('update-user', { user, attributes: { encryptedPassword } })
@@ -22,13 +22,13 @@ export default class VerifyPasswordResetDynamic {
 
           return { status: 'success', user }
         } else {
-          return { status: 'failure', validation }
+          return { status: 'failure', message: 'nothing-to-do' }
         }
-      } else {
-        return { status: 'failure', message: 'nothing-to-do' }
       }
-    }
 
-    return { status: 'failure', message: 'invalid-one-time-password' }
+      return { status: 'failure', message: 'invalid-one-time-password' }
+    } else {
+      return { status: 'failure', validation }
+    }
   }
 }

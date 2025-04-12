@@ -20,7 +20,7 @@ describe(Authentication, (): void => {
 
         const result = await authentication.performDynamic('verify-password-reset', {
           email: 'david@universal-packages.com',
-          oneTimePassword: '123',
+          oneTimePassword: '123456',
           password: 'new-password'
         })
 
@@ -38,7 +38,7 @@ describe(Authentication, (): void => {
 
         const result = await authentication.performDynamic('verify-password-reset', {
           email: 'david@universal-packages.com',
-          oneTimePassword: '123',
+          oneTimePassword: '123456',
           password: 'password'
         })
 
@@ -59,7 +59,7 @@ describe(Authentication, (): void => {
 
         const result = await authentication.performDynamic('verify-password-reset', {
           email: 'invalid@universal-packages.com',
-          oneTimePassword: '123',
+          oneTimePassword: '123456',
           password: 'password'
         })
 
@@ -81,7 +81,7 @@ describe(Authentication, (): void => {
 
         const result = await authentication.performDynamic('verify-password-reset', {
           email: 'david@universal-packages.com',
-          oneTimePassword: '123',
+          oneTimePassword: '123456',
           password: 'short'
         })
 

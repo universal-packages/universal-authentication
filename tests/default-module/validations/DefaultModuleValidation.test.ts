@@ -431,4 +431,153 @@ describe(DefaultModuleValidation, (): void => {
       expect(result.valid).toBe(true)
     })
   })
+
+  describe('oneTimePassword validation', (): void => {
+    it('validates oneTimePassword presence', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Create default options for this test
+      const defaultOptions: DefaultModuleOptions = {
+        emailValidation: {
+          matcher: new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'),
+          size: { min: 6, max: 256 }
+        },
+        passwordValidation: {
+          size: { min: 8, max: 256 }
+        }
+      }
+
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
+
+      // Test with missing oneTimePassword
+      const result = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'newpassword123'
+        },
+        'reset-password'
+      )
+
+      expect(result.valid).toBe(false)
+      expect(result.errors.oneTimePassword).toContain('one-time-password-should-be-present')
+    })
+
+    it('validates oneTimePassword is numeric', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Create default options for this test
+      const defaultOptions: DefaultModuleOptions = {
+        emailValidation: {
+          matcher: new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'),
+          size: { min: 6, max: 256 }
+        },
+        passwordValidation: {
+          size: { min: 8, max: 256 }
+        }
+      }
+
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
+
+      // Test with non-numeric oneTimePassword
+      const result = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'newpassword123',
+          oneTimePassword: 'ABC123'
+        },
+        'reset-password'
+      )
+
+      expect(result.valid).toBe(false)
+      expect(result.errors.oneTimePassword).toContain('one-time-password-should-be-numeric')
+    })
+
+    it('validates oneTimePassword length', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Create default options for this test
+      const defaultOptions: DefaultModuleOptions = {
+        emailValidation: {
+          matcher: new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'),
+          size: { min: 6, max: 256 }
+        },
+        passwordValidation: {
+          size: { min: 8, max: 256 }
+        }
+      }
+
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
+
+      // Test with too short oneTimePassword
+      const tooShortResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'newpassword123',
+          oneTimePassword: '12345'
+        },
+        'reset-password'
+      )
+
+      expect(tooShortResult.valid).toBe(false)
+      expect(tooShortResult.errors.oneTimePassword).toContain('one-time-password-should-be-right-sized')
+
+      // Test with too long oneTimePassword
+      const tooLongResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'newpassword123',
+          oneTimePassword: '1234567'
+        },
+        'reset-password'
+      )
+
+      expect(tooLongResult.valid).toBe(false)
+      expect(tooLongResult.errors.oneTimePassword).toContain('one-time-password-should-be-right-sized')
+    })
+
+    it('validates valid oneTimePassword passes all validations', async (): Promise<void> => {
+      // Initialize authentication for this test
+      const authentication = new Authentication<DefaultModuleDynamicNames>({ dynamicsLocation: './src', secret: '123' })
+      authentication.options['namespace'] = 'universal-auth'
+      await authentication.loadDynamics()
+
+      // Mock dynamic behavior for this test
+      dynamicApiJest.mockDynamicReturnValue(UserExistsWithEmailDynamic, true)
+
+      // Create default options for this test
+      const defaultOptions: DefaultModuleOptions = {
+        emailValidation: {
+          matcher: new RegExp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'),
+          size: { min: 6, max: 256 }
+        },
+        passwordValidation: {
+          size: { min: 8, max: 256 }
+        }
+      }
+
+      const validation = new DefaultModuleValidation({}, authentication, defaultOptions)
+
+      // Test with valid oneTimePassword
+      const validResult = await validation.validate(
+        {
+          email: 'test@example.com',
+          password: 'newpassword123',
+          oneTimePassword: '123456'
+        },
+        'reset-password'
+      )
+
+      expect(validResult.valid).toBe(true)
+      expect(validResult.errors.oneTimePassword).toBeUndefined()
+    })
+  })
 })

@@ -72,7 +72,7 @@ export interface DefaultModuleDynamicNames<U = Record<string, any>> extends Auth
   'send-welcome': { payload: UserPayload<U>; result: void }
 
   'validate-log-in': { payload: EmailPasswordPayload; result: ValidationResult }
-  'validate-password-reset': { payload: PasswordPayload; result: ValidationResult }
+  'validate-password-reset': { payload: PasswordOneTimePasswordPayload; result: ValidationResult }
   'validate-sign-up': { payload: EmailPasswordAndDetailsPayload; result: ValidationResult }
   'validate-update': { payload: EmailPasswordCurrentEmailPayload; result: ValidationResult }
 }
@@ -128,6 +128,11 @@ export interface EmailPasswordValidationPayload {
 export interface PasswordsPayload {
   password: string
   encryptedPassword: string
+}
+
+export interface PasswordOneTimePasswordPayload {
+  password: string
+  oneTimePassword: string
 }
 
 export interface UpdateEmailPasswordPayload<U = Record<string, any>> {
