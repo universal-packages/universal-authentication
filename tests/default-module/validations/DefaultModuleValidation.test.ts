@@ -522,7 +522,7 @@ describe(DefaultModuleValidation, (): void => {
         {
           email: 'test@example.com',
           password: 'newpassword123',
-          oneTimePassword: '12345'
+          oneTimePassword: 12345
         },
         'reset-password'
       )

@@ -43,12 +43,12 @@ export default class BaseDefaultModuleValidation extends InitialDetailsValidatio
 
   @Validator('oneTimePassword', { priority: 1, message: 'one-time-password-should-be-numeric', schema: 'reset-password' })
   public oneTimePasswordIsNumber(oneTimePassword: string): boolean {
-    return validator.isNumeric(oneTimePassword)
+    return validator.isNumeric(String(oneTimePassword))
   }
 
   @Validator('oneTimePassword', { priority: 1, message: 'one-time-password-should-be-right-sized', schema: 'reset-password' })
   public oneTimePasswordLength(oneTimePassword: string): boolean {
-    return validator.isLength(oneTimePassword, { min: 6, max: 6 })
+    return validator.isLength(String(oneTimePassword), { min: 6, max: 6 })
   }
 
   @Validator('password', { message: 'password-should-be-present', schema: ['sign-up', 'log-in', 'reset-password', { for: 'update', options: { optional: true } }] })
