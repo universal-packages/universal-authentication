@@ -1,6 +1,8 @@
 import { DynamicModule } from '@universal-packages/dynamic-api'
 import { VerifyOptions } from '@universal-packages/time-based-one-time-password'
+import { ValidationResult as UniversalValidationResult } from '@universal-packages/validations'
 
+export type ValidationResult = UniversalValidationResult
 export type ExtensibleUnion<T extends U, U = string | number | symbol> = T | (U & { zz__ignore?: never })
 export interface AuthenticationOptions {
   debug?: boolean
@@ -29,12 +31,6 @@ export interface DefaultModuleOptions {
     size?: { min?: number; max?: number }
   }
 }
-
-export interface ValidationResult {
-  errors: { [name: string]: string[] }
-  valid: boolean
-}
-
 export interface AuthenticationResult<U = Record<string, any>, M = Record<string, any>> {
   user?: U
   message?: string
